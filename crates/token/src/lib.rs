@@ -1,4 +1,4 @@
-use std::fmt;
+use std::fmt::Write;
 
 use text_size::{TextRange, TextSize};
 
@@ -10,6 +10,7 @@ pub struct Tokens {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum TokenKind {
+	Identifier,
 	Whitespace,
 	Error,
 
@@ -32,14 +33,16 @@ impl Tokens {
 	}
 }
 
-impl fmt::Debug for Tokens {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl Tokens {
+	pub fn debug(&self, input: &str) -> String {
+		let mut output = String::new();
+
 		for i in 0..self.kinds.len() {
 			let kind = self.kind(i);
 			let range = self.range(i);
-			writeln!(f, "{kind:?}@{range:?}")?;
+			writeln!(output, "{kind:?}@{range:?} {:?}", &input[range]).unwrap();
 		}
 
-		Ok(())
+		output
 	}
 }

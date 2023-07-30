@@ -1,0 +1,32 @@
+lower
+UPPER
+lowerFIRST
+UPPERfirst
+_u_n_d_e_r_s_c_o_r_e_s_
+numbers1_234_
+a
+_
+___
+_a_
+---
+Identifier@0..5 "lower"
+Whitespace@5..6 "\n"
+Identifier@6..11 "UPPER"
+Whitespace@11..12 "\n"
+Identifier@12..22 "lowerFIRST"
+Whitespace@22..23 "\n"
+Identifier@23..33 "UPPERfirst"
+Whitespace@33..34 "\n"
+Identifier@34..57 "_u_n_d_e_r_s_c_o_r_e_s_"
+Whitespace@57..58 "\n"
+Identifier@58..71 "numbers1_234_"
+Whitespace@71..72 "\n"
+Identifier@72..73 "a"
+Whitespace@73..74 "\n"
+Error@74..75 "_"
+Whitespace@75..76 "\n"
+Error@76..77 "_"
+Error@77..78 "_"
+Error@78..79 "_"
+Whitespace@79..80 "\n"
+Identifier@80..83 "_a_"

@@ -26,6 +26,9 @@ pub fn lex(input: &str) -> Tokens {
 #[derive(Logos)]
 #[repr(u8)]
 enum TokenKind {
+	#[regex("_?[a-zA-Z][a-zA-Z0-9_]*")]
+	Identifier,
+
 	#[regex("[ \n\t]+")]
 	Whitespace,
 
@@ -36,7 +39,7 @@ enum TokenKind {
 
 #[cfg(test)]
 mod tests {
-	use std::{env, fs, io};
+	use std::{env, ffi::OsStr, fs, io};
 
 	use super::*;
 
@@ -55,9 +58,13 @@ mod tests {
 
 			let path = entry.path();
 
+			if path.extension() != Some(OsStr::new("test")) {
+				panic!("test at {} doesn’t have .test extension", path.display());
+			}
+
 			// This unwrap can never fire because we must have a file now,
 			// not a directory.
-			let test_name = path.file_name().unwrap();
+			let test_name = path.file_stem().unwrap();
 
 			let content = fs::read_to_string(&path)?;
 			let Some((input, _actual)) = content.split_once(SEPARATOR) else {
@@ -65,7 +72,7 @@ mod tests {
             };
 
 			let tokens = lex(input);
-			let expected = format!("{input}{SEPARATOR}{tokens:?}");
+			let expected = format!("{input}{SEPARATOR}{}", tokens.debug(input));
 			dbg!(&expected, &content);
 			expect_test::expect_file![path].assert_eq(&expected);
 		}
