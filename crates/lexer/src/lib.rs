@@ -45,7 +45,7 @@ mod tests {
 
 	#[test]
 	fn run_test() -> io::Result<()> {
-		const SEPARATOR: &str = "\n---\n";
+		const SEPARATOR: &str = "\n======\n";
 
 		let tests_dir = env::current_dir()?.join("test-data");
 		for entry in fs::read_dir(tests_dir)? {
