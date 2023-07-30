@@ -1,0 +1,4 @@
+[package]
+edition.workspace = true
+name = "parser"
+version = "0.0.0"

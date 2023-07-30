@@ -1,0 +1,4 @@
+[package]
+edition.workspace = true
+name = "index"
+version = "0.0.0"

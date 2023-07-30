@@ -1,0 +1,8 @@
+[workspace]
+members = ["crates/*"]
+
+[workspace.package]
+edition = "2021"
+
+[profile.release]
+lto = "thin"
