@@ -2,3 +2,6 @@
 edition.workspace = true
 name = "token"
 version = "0.0.0"
+
+[dependencies]
+text-size = "1.1.1"
