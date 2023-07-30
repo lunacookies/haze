@@ -13,6 +13,7 @@ pub struct Tokens {
 #[repr(u8)]
 pub enum TokenKind {
 	Identifier,
+	Number,
 	Whitespace,
 	Error,
 

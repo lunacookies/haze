@@ -31,6 +31,9 @@ enum TokenKind {
 	#[regex("_?[a-zA-Z][a-zA-Z0-9_]*")]
 	Identifier,
 
+	#[regex("[0-9]+")]
+	Number,
+
 	#[regex("[ \n\t]+")]
 	Whitespace,
 
@@ -75,7 +78,6 @@ mod tests {
 
 			let tokens = lex(input);
 			let expected = format!("{input}{SEPARATOR}{}", tokens.debug(input));
-			dbg!(&expected, &content);
 			expect_test::expect_file![path].assert_eq(&expected);
 		}
 
