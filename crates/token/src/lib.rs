@@ -1,3 +1,5 @@
+#![warn(rust_2018_idioms, unreachable_pub)]
+
 use std::fmt::Write;
 
 use text_size::{TextRange, TextSize};
