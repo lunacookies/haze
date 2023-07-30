@@ -30,13 +30,87 @@ pub fn lex(input: &str) -> Tokens {
 enum TokenKind {
 	#[regex("_?[a-zA-Z][a-zA-Z0-9_]*")]
 	Identifier,
+	#[token("_")]
+	Underscore,
 
 	#[regex("[0-9]+")]
 	Number,
 
+	#[token("(")]
+	OpenParenthesis,
+	#[token(")")]
+	CloseParenthesis,
+	#[token("[")]
+	OpenBracket,
+	#[token("]")]
+	CloseBracket,
+	#[token("{")]
+	OpenBrace,
+	#[token("}")]
+	CloseBrace,
+	#[token("<")]
+	Less,
+	#[token(">")]
+	Greater,
+
+	#[token("=")]
+	Equals,
+
+	#[token("+")]
+	Plus,
+	#[token("-")]
+	Hyphen,
+	#[token("*")]
+	Star,
+	#[token("/")]
+	Slash,
+	#[token("%")]
+	Percent,
+
+	#[token("!")]
+	Bang,
+	#[token("~")]
+	Tilde,
+
+	#[token("&")]
+	Ampersand,
+	#[token("|")]
+	Pipe,
+	#[token("^")]
+	Caret,
+
+	#[token("#")]
+	Hash,
+
+	#[token("$")]
+	Dollar,
+
+	#[token(",")]
+	Comma,
+
+	#[token(".")]
+	Period,
+
+	#[token(":")]
+	Colon,
+
+	#[token(";")]
+	Semicolon,
+
+	#[token("?")]
+	Question,
+
+	#[token("@")]
+	At,
+
+	#[token("\\")]
+	Backslash,
+
+	#[token("`")]
+	Backtick,
+
 	#[regex("[ \n\t]+")]
 	Whitespace,
-
 	Error,
 
 	Last,
