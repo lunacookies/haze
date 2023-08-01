@@ -6,3 +6,4 @@ version = "0.0.0"
 [dependencies]
 diagnostics = {path = "../diagnostics"}
 project = {path = "../project"}
+thread = {path = "../thread"}

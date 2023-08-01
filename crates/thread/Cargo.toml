@@ -1,0 +1,8 @@
+[package]
+edition.workspace = true
+name = "thread"
+version = "0.0.0"
+
+[dependencies]
+flume = {version = "0.10.14", default_features = false}
+libc = "0.2.147"
