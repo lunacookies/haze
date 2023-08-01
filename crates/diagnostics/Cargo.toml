@@ -1,7 +1,7 @@
 [package]
 edition.workspace = true
-name = "project"
+name = "diagnostics"
 version = "0.0.0"
 
 [dependencies]
-diagnostics = {path = "../diagnostics"}
+text-size = "1.1.1"
