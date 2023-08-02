@@ -1,4 +1,8 @@
-use std::{io, path::Path, sync::Arc};
+use std::{
+	io::{self, Write},
+	path::Path,
+	sync::Arc,
+};
 
 use diagnostics::Diagnostics;
 
@@ -16,7 +20,10 @@ fn main() -> io::Result<()> {
 		for &file_id in &package.files {
 			let project = Arc::clone(&project);
 			pool.submit_job(move || {
-				println!("{}", project.file(file_id).name);
+				let file = project.file(file_id);
+				let tokens = lexer::lex(&file.content);
+				let mut stdout = io::stdout().lock();
+				writeln!(stdout, "{}:\n{}", file.name, tokens.debug(&file.content)).unwrap();
 			});
 		}
 	}
