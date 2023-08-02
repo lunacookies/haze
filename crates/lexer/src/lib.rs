@@ -28,6 +28,9 @@ pub fn lex(input: &str) -> Tokens {
 #[derive(Logos)]
 #[repr(u8)]
 enum TokenKind {
+	#[token("func")]
+	FuncKw,
+
 	#[regex("_?[a-zA-Z][a-zA-Z0-9_]*")]
 	Identifier,
 	#[token("_")]
