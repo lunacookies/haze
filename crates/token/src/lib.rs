@@ -23,6 +23,14 @@ impl Tokens {
 	pub fn range(&self, index: usize) -> TextRange {
 		TextRange::new(self.starts[index], self.starts[index + 1])
 	}
+
+	pub fn len(&self) -> usize {
+		self.kinds.len()
+	}
+
+	pub fn is_empty(&self) -> bool {
+		self.kinds.is_empty()
+	}
 }
 
 impl Tokens {

@@ -44,7 +44,12 @@ impl Parser<'_> {
 	}
 
 	fn finish(self) -> Vec<Event> {
+		assert!(self.at_eof());
 		self.events
+	}
+
+	fn at_eof(&self) -> bool {
+		self.cursor == self.tokens.len()
 	}
 }
 
