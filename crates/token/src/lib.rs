@@ -2,55 +2,12 @@
 
 use std::fmt::Write;
 
+use syntax::TokenKind;
 use text_size::{TextRange, TextSize};
 
 pub struct Tokens {
 	kinds: Vec<TokenKind>,
 	starts: Vec<TextSize>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-#[repr(u8)]
-pub enum TokenKind {
-	FuncKw,
-	Identifier,
-	Underscore,
-	Number,
-	OpenParenthesis,
-	CloseParenthesis,
-	OpenBracket,
-	CloseBracket,
-	OpenBrace,
-	CloseBrace,
-	Less,
-	Greater,
-	Equals,
-	Plus,
-	Hyphen,
-	Star,
-	Slash,
-	Percent,
-	Bang,
-	Tilde,
-	Ampersand,
-	Pipe,
-	Caret,
-	Hash,
-	Dollar,
-	Comma,
-	Period,
-	Colon,
-	Semicolon,
-	Question,
-	At,
-	Backslash,
-	Backtick,
-
-	Whitespace,
-	Error,
-
-	#[doc(hidden)]
-	Last,
 }
 
 impl Tokens {

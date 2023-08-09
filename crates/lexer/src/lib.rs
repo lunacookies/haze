@@ -10,12 +10,12 @@ pub fn lex(input: &str) -> Tokens {
 	let mut kinds = Vec::new();
 	let mut starts = Vec::new();
 
-	assert_eq!(TokenKind::Last as u8, token::TokenKind::Last as u8);
+	assert_eq!(TokenKind::Last as u8, syntax::TokenKind::Last as u8);
 
 	let lexer = TokenKind::lexer(input).spanned();
 	for (kind, span) in lexer {
 		let kind = kind.unwrap_or(TokenKind::Error);
-		let kind = unsafe { mem::transmute::<TokenKind, token::TokenKind>(kind) };
+		let kind = unsafe { mem::transmute::<TokenKind, syntax::TokenKind>(kind) };
 		kinds.push(kind);
 		starts.push(TextSize::from(span.start as u32));
 	}

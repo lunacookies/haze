@@ -40,6 +40,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86e3bdc80eee6e16b2b6b0f87fbc98c04bee3455e35174c0de1a125d0688c632"
 
 [[package]]
+name = "eventree"
+version = "0.6.2"
+dependencies = [
+ "static_assertions",
+ "text-size",
+]
+
+[[package]]
 name = "expect-test"
 version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -92,6 +100,7 @@ version = "0.0.0"
 dependencies = [
  "expect-test",
  "logos",
+ "syntax",
  "text-size",
  "token",
 ]
@@ -153,6 +162,13 @@ checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
 [[package]]
 name = "parser"
 version = "0.0.0"
+dependencies = [
+ "diagnostics",
+ "expect-test",
+ "lexer",
+ "syntax",
+ "token",
+]
 
 [[package]]
 name = "proc-macro2"
@@ -205,6 +221,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "static_assertions"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
+
+[[package]]
 name = "syn"
 version = "2.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -218,6 +240,9 @@ dependencies = [
 [[package]]
 name = "syntax"
 version = "0.0.0"
+dependencies = [
+ "eventree",
+]
 
 [[package]]
 name = "text-size"
@@ -237,6 +262,7 @@ dependencies = [
 name = "token"
 version = "0.0.0"
 dependencies = [
+ "syntax",
  "text-size",
 ]
 

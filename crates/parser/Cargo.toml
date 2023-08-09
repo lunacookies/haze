@@ -2,3 +2,12 @@
 edition.workspace = true
 name = "parser"
 version = "0.0.0"
+
+[dependencies]
+diagnostics = {path = "../diagnostics"}
+syntax = {path = "../syntax"}
+token = {path = "../token"}
+
+[dev-dependencies]
+expect-test = "1.4.1"
+lexer = {path = "../lexer"}
