@@ -3,7 +3,7 @@
 mod grammar;
 
 use diagnostics::DiagnosticsContext;
-use syntax::{NodeKind, SyntaxBuilder, SyntaxTree};
+use syntax::{NodeKind, SyntaxBuilder, SyntaxTree, TokenKind};
 use token::Tokens;
 
 pub fn parse_source_file(
@@ -51,14 +51,69 @@ impl Parser<'_> {
 	fn advance_with_error(&mut self, message: &str) {
 		let range = self.tokens.range(self.cursor);
 		let m = self.start();
-		self.advance();
+		self.bump_any();
 		m.complete(self, NodeKind::Error);
 		self.diagnostics.add(message.to_string(), range);
 	}
 
-	fn advance(&mut self) {
+	fn expect(&mut self, kind: TokenKind) {
+		self.expect_with_name(kind, &kind.to_string());
+	}
+
+	fn expect_with_name(&mut self, kind: TokenKind, name: &str) {
+		if self.at(kind) {
+			self.bump_any();
+			return;
+		}
+
+		self.advance_with_error(&format!("expected {name}"));
+	}
+
+	fn bump(&mut self, kind: TokenKind) {
+		assert!(self.eat(kind));
+	}
+
+	fn eat(&mut self, kind: TokenKind) -> bool {
+		if !self.at(kind) {
+			return false;
+		}
+
+		let token_count = match kind {
+			TokenKind::Arrow => 2,
+			_ => 1,
+		};
+
+		for _ in 0..token_count {
+			self.bump_any();
+		}
+
+		true
+	}
+
+	fn bump_any(&mut self) {
 		self.events.push(Event::AddToken);
 		self.cursor += 1;
+	}
+
+	fn at(&mut self, kind: TokenKind) -> bool {
+		self.skip_trivia();
+
+		let (first, second) = match kind {
+			TokenKind::Arrow => (TokenKind::Hyphen, TokenKind::Greater),
+			_ => return self.current() == kind,
+		};
+
+		self.nth(0) == first && self.nth(1) == second
+	}
+
+	fn current(&mut self) -> TokenKind {
+		self.nth(0)
+	}
+
+	fn nth(&mut self, n: usize) -> TokenKind {
+		assert!(n <= 1);
+		self.skip_trivia();
+		self.tokens.kind(self.cursor + n)
 	}
 
 	fn at_eof(&mut self) -> bool {
@@ -75,6 +130,11 @@ impl Parser<'_> {
 			self.cursor += 1;
 		}
 	}
+
+	fn error(&mut self, message: &str) {
+		let range = self.tokens.range(self.cursor);
+		self.diagnostics.add(message.to_string(), range);
+	}
 }
 
 struct Marker {
@@ -82,8 +142,8 @@ struct Marker {
 }
 
 impl Marker {
-	fn complete(self, p: &mut Parser<'_>, node_kind: NodeKind) -> CompletedMarker {
-		p.events[self.position as usize] = Event::StartNode(node_kind);
+	fn complete(self, p: &mut Parser<'_>, kind: NodeKind) -> CompletedMarker {
+		p.events[self.position as usize] = Event::StartNode(kind);
 		p.events.push(Event::FinishNode);
 		CompletedMarker
 	}
@@ -111,7 +171,7 @@ impl EventProcessor<'_> {
 
 	fn process_events(&mut self) {
 		match self.events[0] {
-			Event::StartNode(node_kind) => self.builder.start_node(node_kind),
+			Event::StartNode(kind) => self.builder.start_node(kind),
 			Event::AddToken | Event::FinishNode | Event::Placeholder => {
 				panic!("first event must be StartNode")
 			}
@@ -121,7 +181,7 @@ impl EventProcessor<'_> {
 			self.skip_trivia();
 
 			match event {
-				Event::StartNode(node_kind) => self.builder.start_node(node_kind),
+				Event::StartNode(kind) => self.builder.start_node(kind),
 				Event::AddToken => self.add_token(),
 				Event::FinishNode => self.builder.finish_node(),
 				Event::Placeholder => unreachable!(),

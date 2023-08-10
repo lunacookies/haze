@@ -1,9 +1,15 @@
 #![warn(rust_2018_idioms, unreachable_pub)]
 
+use std::fmt;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(u8)]
 pub enum NodeKind {
 	SourceFile,
+	Function,
+	ParameterList,
+	Parameter,
+	Type,
 	BinaryExpr,
 	Error,
 }
@@ -44,6 +50,7 @@ pub enum TokenKind {
 	At,
 	Backslash,
 	Backtick,
+	Arrow,
 
 	Whitespace,
 	Error,
@@ -88,3 +95,51 @@ pub type SyntaxBuilder = eventree::SyntaxBuilder<TreeConfig>;
 pub type SyntaxNode = eventree::SyntaxNode<TreeConfig>;
 pub type SyntaxToken = eventree::SyntaxToken<TreeConfig>;
 pub type SyntaxElement = eventree::SyntaxElement<TreeConfig>;
+
+impl fmt::Display for TokenKind {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		let s = match self {
+			TokenKind::FuncKw => "“func”",
+			TokenKind::Identifier => "identifier",
+			TokenKind::Underscore => "“_”",
+			TokenKind::Number => "number",
+			TokenKind::OpenParenthesis => "“(”",
+			TokenKind::CloseParenthesis => "“)”",
+			TokenKind::OpenBracket => "“[”",
+			TokenKind::CloseBracket => "“]”",
+			TokenKind::OpenBrace => "“{”",
+			TokenKind::CloseBrace => "“}”",
+			TokenKind::Less => "“<”",
+			TokenKind::Greater => "“>”",
+			TokenKind::Equals => "“=”",
+			TokenKind::Plus => "“+”",
+			TokenKind::Hyphen => "“-”",
+			TokenKind::Star => "“*”",
+			TokenKind::Slash => "“/”",
+			TokenKind::Percent => "“%”",
+			TokenKind::Bang => "“!”",
+			TokenKind::Tilde => "“~”",
+			TokenKind::Ampersand => "“&”",
+			TokenKind::Pipe => "“|”",
+			TokenKind::Caret => "“^”",
+			TokenKind::Hash => "“#”",
+			TokenKind::Dollar => "“$”",
+			TokenKind::Comma => "“,”",
+			TokenKind::Period => "“.”",
+			TokenKind::Colon => "“:”",
+			TokenKind::Semicolon => "“;”",
+			TokenKind::Question => "“?”",
+			TokenKind::At => "“@”",
+			TokenKind::Backslash => "“\\”",
+			TokenKind::Backtick => "“`”",
+			TokenKind::Arrow => "“->”",
+
+			TokenKind::Whitespace => "whitespace",
+			TokenKind::Error => "bad token",
+
+			TokenKind::Last => unreachable!(),
+		};
+
+		f.write_str(s)
+	}
+}

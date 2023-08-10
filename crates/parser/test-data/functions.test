@@ -1,0 +1,90 @@
+func NoParameters() {}
+
+func Add(x: Int32, y: Int32) -> Int32 {}
+
+func TrailingComma(
+	a: Int32,
+	b: Int32,
+	c: Int32,
+) {}
+
+======
+SourceFile@0..124
+  Function@0..24
+    FuncKw@0..4 "func"
+    Whitespace@4..5 " "
+    Identifier@5..17 "NoParameters"
+    ParameterList@17..20
+      OpenParenthesis@17..18 "("
+      CloseParenthesis@18..19 ")"
+      Whitespace@19..20 " "
+    OpenBrace@20..21 "{"
+    CloseBrace@21..22 "}"
+    Whitespace@22..24 "\n\n"
+  Function@24..66
+    FuncKw@24..28 "func"
+    Whitespace@28..29 " "
+    Identifier@29..32 "Add"
+    ParameterList@32..53
+      OpenParenthesis@32..33 "("
+      Parameter@33..41
+        Identifier@33..34 "x"
+        Colon@34..35 ":"
+        Whitespace@35..36 " "
+        Type@36..41
+          Identifier@36..41 "Int32"
+      Comma@41..42 ","
+      Whitespace@42..43 " "
+      Parameter@43..51
+        Identifier@43..44 "y"
+        Colon@44..45 ":"
+        Whitespace@45..46 " "
+        Type@46..51
+          Identifier@46..51 "Int32"
+      CloseParenthesis@51..52 ")"
+      Whitespace@52..53 " "
+    Hyphen@53..54 "-"
+    Greater@54..55 ">"
+    Whitespace@55..56 " "
+    Type@56..62
+      Identifier@56..61 "Int32"
+      Whitespace@61..62 " "
+    OpenBrace@62..63 "{"
+    CloseBrace@63..64 "}"
+    Whitespace@64..66 "\n\n"
+  Function@66..124
+    FuncKw@66..70 "func"
+    Whitespace@70..71 " "
+    Identifier@71..84 "TrailingComma"
+    ParameterList@84..121
+      OpenParenthesis@84..85 "("
+      Whitespace@85..87 "\n\t"
+      Parameter@87..95
+        Identifier@87..88 "a"
+        Colon@88..89 ":"
+        Whitespace@89..90 " "
+        Type@90..95
+          Identifier@90..95 "Int32"
+      Comma@95..96 ","
+      Whitespace@96..98 "\n\t"
+      Parameter@98..106
+        Identifier@98..99 "b"
+        Colon@99..100 ":"
+        Whitespace@100..101 " "
+        Type@101..106
+          Identifier@101..106 "Int32"
+      Comma@106..107 ","
+      Whitespace@107..109 "\n\t"
+      Parameter@109..117
+        Identifier@109..110 "c"
+        Colon@110..111 ":"
+        Whitespace@111..112 " "
+        Type@112..117
+          Identifier@112..117 "Int32"
+      Comma@117..118 ","
+      Whitespace@118..119 "\n"
+      CloseParenthesis@119..120 ")"
+      Whitespace@120..121 " "
+    OpenBrace@121..122 "{"
+    CloseBrace@122..123 "}"
+    Whitespace@123..124 "\n"

@@ -27,6 +27,7 @@ pub fn lex(input: &str) -> Tokens {
 
 #[derive(Logos)]
 #[repr(u8)]
+#[allow(dead_code)]
 enum TokenKind {
 	#[token("func")]
 	FuncKw,
@@ -111,6 +112,8 @@ enum TokenKind {
 
 	#[token("`")]
 	Backtick,
+
+	Arrow,
 
 	#[regex("[ \n\t]+")]
 	Whitespace,
