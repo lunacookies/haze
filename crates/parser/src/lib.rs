@@ -43,13 +43,37 @@ impl Parser<'_> {
 		Marker { position }
 	}
 
-	fn finish(self) -> Vec<Event> {
+	fn finish(mut self) -> Vec<Event> {
 		assert!(self.at_eof());
 		self.events
 	}
 
-	fn at_eof(&self) -> bool {
-		self.cursor == self.tokens.len()
+	fn advance_with_error(&mut self, message: &str) {
+		let range = self.tokens.range(self.cursor);
+		let m = self.start();
+		self.advance();
+		m.complete(self, NodeKind::Error);
+		self.diagnostics.add(message.to_string(), range);
+	}
+
+	fn advance(&mut self) {
+		self.events.push(Event::AddToken);
+		self.cursor += 1;
+	}
+
+	fn at_eof(&mut self) -> bool {
+		self.skip_trivia();
+		self.at_eof_raw()
+	}
+
+	fn at_eof_raw(&self) -> bool {
+		self.cursor >= self.tokens.len()
+	}
+
+	fn skip_trivia(&mut self) {
+		while !self.at_eof_raw() && self.tokens.kind(self.cursor).is_trivia() {
+			self.cursor += 1;
+		}
 	}
 }
 
@@ -61,36 +85,65 @@ impl Marker {
 	fn complete(self, p: &mut Parser<'_>, node_kind: NodeKind) -> CompletedMarker {
 		p.events[self.position as usize] = Event::StartNode(node_kind);
 		p.events.push(Event::FinishNode);
-		CompletedMarker { position: self.position }
+		CompletedMarker
 	}
 }
 
-struct CompletedMarker {
-	position: u32,
-}
+struct CompletedMarker;
 
 fn process_events(text: &str, tokens: &Tokens, events: &[Event]) -> SyntaxTree {
-	let mut builder = SyntaxBuilder::new(text);
-	let mut cursor = 0;
+	let mut event_processor = EventProcessor::new(text, tokens, events);
+	event_processor.process_events();
+	event_processor.finish()
+}
 
-	for &event in events {
-		match event {
-			Event::StartNode(node_kind) => builder.start_node(node_kind),
+struct EventProcessor<'a> {
+	events: &'a [Event],
+	tokens: &'a Tokens,
+	cursor: usize,
+	builder: SyntaxBuilder,
+}
 
-			Event::AddToken => {
-				let kind = tokens.kind(cursor);
-				let range = tokens.range(cursor);
-				builder.add_token(kind, range);
-				cursor += 1;
+impl EventProcessor<'_> {
+	fn new<'a>(text: &str, tokens: &'a Tokens, events: &'a [Event]) -> EventProcessor<'a> {
+		EventProcessor { events, tokens, cursor: 0, builder: SyntaxBuilder::new(text) }
+	}
+
+	fn process_events(&mut self) {
+		for &event in self.events {
+			self.skip_trivia();
+
+			match event {
+				Event::StartNode(node_kind) => self.builder.start_node(node_kind),
+				Event::AddToken => self.add_token(),
+				Event::FinishNode => self.builder.finish_node(),
+				Event::Placeholder => unreachable!(),
 			}
+		}
 
-			Event::FinishNode => builder.finish_node(),
+		self.skip_trivia();
+	}
 
-			Event::Placeholder => unreachable!(),
+	fn finish(self) -> SyntaxTree {
+		self.builder.finish()
+	}
+
+	fn skip_trivia(&mut self) {
+		while !self.at_eof() && self.tokens.kind(self.cursor).is_trivia() {
+			self.add_token();
 		}
 	}
 
-	builder.finish()
+	fn at_eof(&mut self) -> bool {
+		self.cursor >= self.tokens.len()
+	}
+
+	fn add_token(&mut self) {
+		let kind = self.tokens.kind(self.cursor);
+		let range = self.tokens.range(self.cursor);
+		self.builder.add_token(kind, range);
+		self.cursor += 1;
+	}
 }
 
 #[cfg(test)]
@@ -134,12 +187,7 @@ mod tests {
 
 			let mut expected = format!("{input}{SEPARATOR}{syntax:#?}");
 			for diagnostic in diagnostics.diagnostics() {
-				expected.push_str(&format!(
-					"{}:{:?}: {}",
-					diagnostic.file.display(),
-					diagnostic.range,
-					diagnostic.message
-				));
+				expected.push_str(&format!("{diagnostic}\n"));
 			}
 
 			expect_test::expect_file![path].assert_eq(&expected);

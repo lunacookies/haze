@@ -1,6 +1,6 @@
 #![warn(rust_2018_idioms, unreachable_pub)]
 
-use std::path::PathBuf;
+use std::{fmt, path::PathBuf};
 
 use text_size::TextRange;
 
@@ -53,5 +53,19 @@ impl DiagnosticsContext<'_> {
 
 	pub fn add_without_range(&mut self, message: String) {
 		self.diagnostics.add_without_range(message, self.file.clone());
+	}
+}
+
+impl fmt::Display for Diagnostic {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		write!(f, "{}:", self.file.display())?;
+
+		if let Some(range) = self.range {
+			write!(f, "{:?}:", range)?;
+		}
+
+		write!(f, " {}", self.message)?;
+
+		Ok(())
 	}
 }

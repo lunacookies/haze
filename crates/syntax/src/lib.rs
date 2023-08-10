@@ -5,6 +5,7 @@
 pub enum NodeKind {
 	SourceFile,
 	BinaryExpr,
+	Error,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -49,6 +50,12 @@ pub enum TokenKind {
 
 	#[doc(hidden)]
 	Last,
+}
+
+impl TokenKind {
+	pub fn is_trivia(self) -> bool {
+		matches!(self, TokenKind::Whitespace)
+	}
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

@@ -1,0 +1,14 @@
+foo bar baz
+======
+SourceFile@0..11
+  Error@0..4
+    Identifier@0..3 "foo"
+    Whitespace@3..4 " "
+  Error@4..8
+    Identifier@4..7 "bar"
+    Whitespace@7..8 " "
+  Error@8..11
+    Identifier@8..11 "baz"
+test:0..3: expected item
+test:4..7: expected item
+test:8..11: expected item
