@@ -10,7 +10,10 @@ pub enum NodeKind {
 	ParameterList,
 	Parameter,
 	Type,
-	BinaryExpr,
+	BlockExpression,
+	VariableDeclaration,
+	PathExpression,
+	IntegerLiteral,
 	Error,
 }
 
@@ -51,9 +54,11 @@ pub enum TokenKind {
 	Backslash,
 	Backtick,
 	Arrow,
+	ColonEquals,
 
 	Whitespace,
 	Error,
+	EndOfFile,
 
 	#[doc(hidden)]
 	Last,
@@ -133,9 +138,11 @@ impl fmt::Display for TokenKind {
 			TokenKind::Backslash => "“\\”",
 			TokenKind::Backtick => "“`”",
 			TokenKind::Arrow => "“->”",
+			TokenKind::ColonEquals => "“:=”",
 
 			TokenKind::Whitespace => "whitespace",
 			TokenKind::Error => "bad token",
+			TokenKind::EndOfFile => "end of file",
 
 			TokenKind::Last => unreachable!(),
 		};

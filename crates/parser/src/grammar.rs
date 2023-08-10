@@ -23,20 +23,19 @@ fn function(p: &mut Parser<'_>) -> CompletedMarker {
 	let m = p.start();
 	p.bump(TokenKind::FuncKw);
 
-	p.expect_with_name(TokenKind::Identifier, "function name");
+	p.expect_with_name(TokenKind::Identifier, "expected function name");
 
 	if p.at(TokenKind::OpenParenthesis) {
 		parameter_list(p);
 	} else {
-		p.error("parameter list");
+		p.error("expected parameter list");
 	}
 
 	if p.eat(TokenKind::Arrow) {
 		ty(p);
 	}
 
-	p.expect(TokenKind::OpenBrace);
-	p.expect(TokenKind::CloseBrace);
+	block_expression_opt(p);
 
 	m.complete(p, NodeKind::Function)
 }
@@ -46,9 +45,9 @@ fn parameter_list(p: &mut Parser<'_>) -> CompletedMarker {
 	let m = p.start();
 	p.bump(TokenKind::OpenParenthesis);
 
-	while !p.at(TokenKind::CloseParenthesis) {
+	while !p.at_eof() && !p.at(TokenKind::CloseParenthesis) {
 		let m = p.start();
-		p.expect_with_name(TokenKind::Identifier, "parameter name");
+		p.expect_with_name(TokenKind::Identifier, "expected parameter name");
 		p.expect(TokenKind::Colon);
 		ty(p);
 		m.complete(p, NodeKind::Parameter);
@@ -67,4 +66,59 @@ fn ty(p: &mut Parser<'_>) -> CompletedMarker {
 	let m = p.start();
 	p.expect(TokenKind::Identifier);
 	m.complete(p, NodeKind::Type)
+}
+
+fn statement(p: &mut Parser<'_>) -> Option<CompletedMarker> {
+	match p.current() {
+		TokenKind::Identifier => {
+			let m = p.start();
+			p.bump(TokenKind::Identifier);
+
+			p.expect(TokenKind::ColonEquals);
+			expression(p);
+
+			Some(m.complete(p, NodeKind::VariableDeclaration))
+		}
+
+		_ => p.advance_with_error("expected statement"),
+	}
+}
+
+fn expression(p: &mut Parser<'_>) -> Option<CompletedMarker> {
+	match p.current() {
+		TokenKind::Identifier => {
+			let m = p.start();
+			p.bump(TokenKind::Identifier);
+			Some(m.complete(p, NodeKind::PathExpression))
+		}
+
+		TokenKind::Number => {
+			let m = p.start();
+			p.bump(TokenKind::Number);
+			Some(m.complete(p, NodeKind::IntegerLiteral))
+		}
+
+		_ => p.advance_with_error("expected expression"),
+	}
+}
+
+fn block_expression_opt(p: &mut Parser<'_>) -> Option<CompletedMarker> {
+	if p.at(TokenKind::OpenBrace) {
+		return Some(block_expression(p));
+	}
+
+	p.advance_with_error("expected block")
+}
+
+fn block_expression(p: &mut Parser<'_>) -> CompletedMarker {
+	assert!(p.at(TokenKind::OpenBrace));
+	let m = p.start();
+	p.bump(TokenKind::OpenBrace);
+
+	while !p.at_eof() && !p.at(TokenKind::CloseBrace) {
+		statement(p);
+	}
+	p.expect(TokenKind::CloseBrace);
+
+	m.complete(p, NodeKind::BlockExpression)
 }

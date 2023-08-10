@@ -114,10 +114,12 @@ enum TokenKind {
 	Backtick,
 
 	Arrow,
+	ColonEquals,
 
 	#[regex("[ \n\t]+")]
 	Whitespace,
 	Error,
+	EndOfFile,
 
 	Last,
 }

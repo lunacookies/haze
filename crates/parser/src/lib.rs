@@ -48,25 +48,30 @@ impl Parser<'_> {
 		self.events
 	}
 
-	fn advance_with_error(&mut self, message: &str) {
+	fn advance_with_error(&mut self, message: &str) -> Option<CompletedMarker> {
+		if self.at_eof() {
+			let range = self.tokens.range(self.tokens.len() - 1);
+			self.diagnostics.add(message.to_string(), range);
+			return None;
+		}
+
 		let range = self.tokens.range(self.cursor);
+		self.diagnostics.add(message.to_string(), range);
 		let m = self.start();
 		self.bump_any();
-		m.complete(self, NodeKind::Error);
-		self.diagnostics.add(message.to_string(), range);
+		Some(m.complete(self, NodeKind::Error))
 	}
 
 	fn expect(&mut self, kind: TokenKind) {
-		self.expect_with_name(kind, &kind.to_string());
+		self.expect_with_name(kind, &format!("expected {kind}"));
 	}
 
 	fn expect_with_name(&mut self, kind: TokenKind, name: &str) {
-		if self.at(kind) {
-			self.bump_any();
+		if self.eat(kind) {
 			return;
 		}
 
-		self.advance_with_error(&format!("expected {name}"));
+		self.advance_with_error(name);
 	}
 
 	fn bump(&mut self, kind: TokenKind) {
@@ -80,6 +85,7 @@ impl Parser<'_> {
 
 		let token_count = match kind {
 			TokenKind::Arrow => 2,
+			TokenKind::ColonEquals => 2,
 			_ => 1,
 		};
 
@@ -91,6 +97,7 @@ impl Parser<'_> {
 	}
 
 	fn bump_any(&mut self) {
+		assert!(!self.at_eof());
 		self.events.push(Event::AddToken);
 		self.cursor += 1;
 	}
@@ -100,6 +107,7 @@ impl Parser<'_> {
 
 		let (first, second) = match kind {
 			TokenKind::Arrow => (TokenKind::Hyphen, TokenKind::Greater),
+			TokenKind::ColonEquals => (TokenKind::Colon, TokenKind::Equals),
 			_ => return self.current() == kind,
 		};
 
@@ -113,6 +121,11 @@ impl Parser<'_> {
 	fn nth(&mut self, n: usize) -> TokenKind {
 		assert!(n <= 1);
 		self.skip_trivia();
+
+		if self.at_eof_raw() {
+			return TokenKind::EndOfFile;
+		}
+
 		self.tokens.kind(self.cursor + n)
 	}
 

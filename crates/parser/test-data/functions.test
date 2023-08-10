@@ -18,9 +18,10 @@ SourceFile@0..124
       OpenParenthesis@17..18 "("
       CloseParenthesis@18..19 ")"
       Whitespace@19..20 " "
-    OpenBrace@20..21 "{"
-    CloseBrace@21..22 "}"
-    Whitespace@22..24 "\n\n"
+    BlockExpression@20..24
+      OpenBrace@20..21 "{"
+      CloseBrace@21..22 "}"
+      Whitespace@22..24 "\n\n"
   Function@24..66
     FuncKw@24..28 "func"
     Whitespace@28..29 " "
@@ -49,9 +50,10 @@ SourceFile@0..124
     Type@56..62
       Identifier@56..61 "Int32"
       Whitespace@61..62 " "
-    OpenBrace@62..63 "{"
-    CloseBrace@63..64 "}"
-    Whitespace@64..66 "\n\n"
+    BlockExpression@62..66
+      OpenBrace@62..63 "{"
+      CloseBrace@63..64 "}"
+      Whitespace@64..66 "\n\n"
   Function@66..124
     FuncKw@66..70 "func"
     Whitespace@70..71 " "
@@ -85,6 +87,7 @@ SourceFile@0..124
       Whitespace@118..119 "\n"
       CloseParenthesis@119..120 ")"
       Whitespace@120..121 " "
-    OpenBrace@121..122 "{"
-    CloseBrace@122..123 "}"
-    Whitespace@123..124 "\n"
+    BlockExpression@121..124
+      OpenBrace@121..122 "{"
+      CloseBrace@122..123 "}"
+      Whitespace@123..124 "\n"
