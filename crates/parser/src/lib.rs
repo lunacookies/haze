@@ -110,7 +110,14 @@ impl EventProcessor<'_> {
 	}
 
 	fn process_events(&mut self) {
-		for &event in self.events {
+		match self.events[0] {
+			Event::StartNode(node_kind) => self.builder.start_node(node_kind),
+			Event::AddToken | Event::FinishNode | Event::Placeholder => {
+				panic!("first event must be StartNode")
+			}
+		}
+
+		for &event in &self.events[1..self.events.len() - 1] {
 			self.skip_trivia();
 
 			match event {
@@ -122,6 +129,10 @@ impl EventProcessor<'_> {
 		}
 
 		self.skip_trivia();
+
+		let last_event = self.events[self.events.len() - 1];
+		assert!(matches!(last_event, Event::FinishNode));
+		self.builder.finish_node();
 	}
 
 	fn finish(self) -> SyntaxTree {
