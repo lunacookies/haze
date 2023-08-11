@@ -67,25 +67,33 @@ fn ty(p: &mut Parser<'_>) -> CompletedMarker {
 	m.complete(p, NodeKind::Type)
 }
 
-fn statement(p: &mut Parser<'_>) -> Option<CompletedMarker> {
+fn statement(p: &mut Parser<'_>) -> CompletedMarker {
 	match p.current() {
-		TokenKind::Identifier => {
+		TokenKind::Identifier if p.at_nth(1, TokenKind::ColonEquals) => {
 			let m = p.start();
 			p.bump(TokenKind::Identifier);
+			p.bump(TokenKind::ColonEquals);
 
-			p.expect(TokenKind::ColonEquals);
 			expression(p);
 
-			Some(m.complete(p, NodeKind::VariableDeclaration))
+			m.complete(p, NodeKind::VariableDeclaration)
 		}
 
-		_ => p.advance_with_error("expected statement"),
+		_ => {
+			let m = p.start();
+			expression(p);
+			m.complete(p, NodeKind::ExpressionStatement)
+		}
 	}
 }
 
 fn expression(p: &mut Parser<'_>) -> Option<CompletedMarker> {
 	match p.current() {
 		TokenKind::Identifier => {
+			if p.nth(1) == TokenKind::OpenParenthesis {
+				return Some(call(p));
+			}
+
 			let m = p.start();
 			p.bump(TokenKind::Identifier);
 			Some(m.complete(p, NodeKind::PathExpression))
@@ -99,6 +107,36 @@ fn expression(p: &mut Parser<'_>) -> Option<CompletedMarker> {
 
 		_ => p.advance_with_error("expected expression"),
 	}
+}
+
+fn call(p: &mut Parser<'_>) -> CompletedMarker {
+	assert!(p.at(TokenKind::Identifier));
+	let m = p.start();
+	p.bump(TokenKind::Identifier);
+	p.bump(TokenKind::OpenParenthesis);
+
+	while !p.at_eof() && !p.at(TokenKind::CloseParenthesis) {
+		let m = p.start();
+
+		if p.at(TokenKind::Identifier) && p.nth(1) == TokenKind::Colon {
+			let m = p.start();
+			p.bump(TokenKind::Identifier);
+			p.bump(TokenKind::Colon);
+			m.complete(p, NodeKind::ArgumentLabel);
+		}
+
+		expression(p);
+
+		if !p.at(TokenKind::CloseParenthesis) {
+			p.expect(TokenKind::Comma);
+		}
+
+		m.complete(p, NodeKind::Argument);
+	}
+
+	p.expect(TokenKind::CloseParenthesis);
+
+	m.complete(p, NodeKind::Call)
 }
 
 fn block_expression_opt(p: &mut Parser<'_>) -> Option<CompletedMarker> {

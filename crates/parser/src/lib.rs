@@ -103,15 +103,17 @@ impl Parser<'_> {
 	}
 
 	fn at(&mut self, kind: TokenKind) -> bool {
-		self.skip_trivia();
+		self.at_nth(0, kind)
+	}
 
+	fn at_nth(&mut self, n: usize, kind: TokenKind) -> bool {
 		let (first, second) = match kind {
 			TokenKind::Arrow => (TokenKind::Hyphen, TokenKind::Greater),
 			TokenKind::ColonEquals => (TokenKind::Colon, TokenKind::Equals),
 			_ => return self.current() == kind,
 		};
 
-		self.nth(0) == first && self.nth(1) == second
+		self.nth(n) == first && self.nth(n + 1) == second
 	}
 
 	fn current(&mut self) -> TokenKind {
@@ -119,14 +121,31 @@ impl Parser<'_> {
 	}
 
 	fn nth(&mut self, n: usize) -> TokenKind {
-		assert!(n <= 1);
+		assert!(n <= 2);
 		self.skip_trivia();
 
 		if self.at_eof_raw() {
 			return TokenKind::EndOfFile;
 		}
 
-		self.tokens.kind(self.cursor + n)
+		let mut cursor = self.cursor;
+		let mut non_trivia_tokens_found = 0;
+
+		while cursor < self.tokens.len() {
+			let kind = self.tokens.kind(cursor);
+			cursor += 1;
+			if kind.is_trivia() {
+				continue;
+			}
+
+			if non_trivia_tokens_found == n {
+				return kind;
+			}
+
+			non_trivia_tokens_found += 1;
+		}
+
+		TokenKind::EndOfFile
 	}
 
 	fn at_eof(&mut self) -> bool {
