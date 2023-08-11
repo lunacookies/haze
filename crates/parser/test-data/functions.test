@@ -1,93 +1,85 @@
-func NoParameters() {}
+func no_parameters() {}
 
-func Add(x: Int32, y: Int32) -> Int32 {}
+func add(x int32, y int32) int32 {}
 
-func TrailingComma(
-	a: Int32,
-	b: Int32,
-	c: Int32,
+func trailing_comma(
+	a int32,
+	b int32,
+	c int32,
 ) {}
 
 ======
-SourceFile@0..124
-  Function@0..24
+SourceFile@0..118
+  Function@0..25
     FuncKw@0..4 "func"
     Whitespace@4..5 " "
-    Identifier@5..17 "NoParameters"
-    ParameterList@17..20
-      OpenParenthesis@17..18 "("
-      CloseParenthesis@18..19 ")"
-      Whitespace@19..20 " "
-    BlockExpression@20..24
-      OpenBrace@20..21 "{"
-      CloseBrace@21..22 "}"
-      Whitespace@22..24 "\n\n"
-  Function@24..66
-    FuncKw@24..28 "func"
-    Whitespace@28..29 " "
-    Identifier@29..32 "Add"
-    ParameterList@32..53
-      OpenParenthesis@32..33 "("
-      Parameter@33..41
-        Identifier@33..34 "x"
-        Colon@34..35 ":"
+    Identifier@5..18 "no_parameters"
+    ParameterList@18..21
+      OpenParenthesis@18..19 "("
+      CloseParenthesis@19..20 ")"
+      Whitespace@20..21 " "
+    BlockExpression@21..25
+      OpenBrace@21..22 "{"
+      CloseBrace@22..23 "}"
+      Whitespace@23..25 "\n\n"
+  Function@25..62
+    FuncKw@25..29 "func"
+    Whitespace@29..30 " "
+    Identifier@30..33 "add"
+    ParameterList@33..52
+      OpenParenthesis@33..34 "("
+      Parameter@34..41
+        Identifier@34..35 "x"
         Whitespace@35..36 " "
         Type@36..41
-          Identifier@36..41 "Int32"
+          Identifier@36..41 "int32"
       Comma@41..42 ","
       Whitespace@42..43 " "
-      Parameter@43..51
+      Parameter@43..50
         Identifier@43..44 "y"
-        Colon@44..45 ":"
-        Whitespace@45..46 " "
-        Type@46..51
-          Identifier@46..51 "Int32"
-      CloseParenthesis@51..52 ")"
-      Whitespace@52..53 " "
-    Hyphen@53..54 "-"
-    Greater@54..55 ">"
-    Whitespace@55..56 " "
-    Type@56..62
-      Identifier@56..61 "Int32"
-      Whitespace@61..62 " "
-    BlockExpression@62..66
-      OpenBrace@62..63 "{"
-      CloseBrace@63..64 "}"
-      Whitespace@64..66 "\n\n"
-  Function@66..124
-    FuncKw@66..70 "func"
-    Whitespace@70..71 " "
-    Identifier@71..84 "TrailingComma"
-    ParameterList@84..121
-      OpenParenthesis@84..85 "("
-      Whitespace@85..87 "\n\t"
-      Parameter@87..95
-        Identifier@87..88 "a"
-        Colon@88..89 ":"
-        Whitespace@89..90 " "
-        Type@90..95
-          Identifier@90..95 "Int32"
-      Comma@95..96 ","
-      Whitespace@96..98 "\n\t"
-      Parameter@98..106
-        Identifier@98..99 "b"
-        Colon@99..100 ":"
-        Whitespace@100..101 " "
-        Type@101..106
-          Identifier@101..106 "Int32"
-      Comma@106..107 ","
-      Whitespace@107..109 "\n\t"
-      Parameter@109..117
-        Identifier@109..110 "c"
-        Colon@110..111 ":"
-        Whitespace@111..112 " "
-        Type@112..117
-          Identifier@112..117 "Int32"
-      Comma@117..118 ","
-      Whitespace@118..119 "\n"
-      CloseParenthesis@119..120 ")"
-      Whitespace@120..121 " "
-    BlockExpression@121..124
-      OpenBrace@121..122 "{"
-      CloseBrace@122..123 "}"
-      Whitespace@123..124 "\n"
+        Whitespace@44..45 " "
+        Type@45..50
+          Identifier@45..50 "int32"
+      CloseParenthesis@50..51 ")"
+      Whitespace@51..52 " "
+    Type@52..58
+      Identifier@52..57 "int32"
+      Whitespace@57..58 " "
+    BlockExpression@58..62
+      OpenBrace@58..59 "{"
+      CloseBrace@59..60 "}"
+      Whitespace@60..62 "\n\n"
+  Function@62..118
+    FuncKw@62..66 "func"
+    Whitespace@66..67 " "
+    Identifier@67..81 "trailing_comma"
+    ParameterList@81..115
+      OpenParenthesis@81..82 "("
+      Whitespace@82..84 "\n\t"
+      Parameter@84..91
+        Identifier@84..85 "a"
+        Whitespace@85..86 " "
+        Type@86..91
+          Identifier@86..91 "int32"
+      Comma@91..92 ","
+      Whitespace@92..94 "\n\t"
+      Parameter@94..101
+        Identifier@94..95 "b"
+        Whitespace@95..96 " "
+        Type@96..101
+          Identifier@96..101 "int32"
+      Comma@101..102 ","
+      Whitespace@102..104 "\n\t"
+      Parameter@104..111
+        Identifier@104..105 "c"
+        Whitespace@105..106 " "
+        Type@106..111
+          Identifier@106..111 "int32"
+      Comma@111..112 ","
+      Whitespace@112..113 "\n"
+      CloseParenthesis@113..114 ")"
+      Whitespace@114..115 " "
+    BlockExpression@115..118
+      OpenBrace@115..116 "{"
+      CloseBrace@116..117 "}"
+      Whitespace@117..118 "\n"

@@ -31,7 +31,7 @@ fn function(p: &mut Parser<'_>) -> CompletedMarker {
 		p.error("expected parameter list");
 	}
 
-	if p.eat(TokenKind::Arrow) {
+	if !p.at(TokenKind::OpenBrace) {
 		ty(p);
 	}
 
@@ -48,7 +48,6 @@ fn parameter_list(p: &mut Parser<'_>) -> CompletedMarker {
 	while !p.at_eof() && !p.at(TokenKind::CloseParenthesis) {
 		let m = p.start();
 		p.expect_with_name(TokenKind::Identifier, "expected parameter name");
-		p.expect(TokenKind::Colon);
 		ty(p);
 		m.complete(p, NodeKind::Parameter);
 
