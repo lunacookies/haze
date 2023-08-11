@@ -31,6 +31,10 @@ pub fn lex(input: &str) -> Tokens {
 enum TokenKind {
 	#[token("func")]
 	FuncKw,
+	#[token("if")]
+	IfKw,
+	#[token("else")]
+	ElseKw,
 
 	#[regex("_?[a-zA-Z][a-zA-Z0-9_]*")]
 	Identifier,

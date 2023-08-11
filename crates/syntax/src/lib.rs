@@ -17,6 +17,7 @@ pub enum NodeKind {
 	Argument,
 	ArgumentLabel,
 	PathExpression,
+	IfExpression,
 	IntegerLiteral,
 	Error,
 }
@@ -25,6 +26,8 @@ pub enum NodeKind {
 #[repr(u8)]
 pub enum TokenKind {
 	FuncKw,
+	IfKw,
+	ElseKw,
 	Identifier,
 	Underscore,
 	Number,
@@ -109,6 +112,8 @@ impl fmt::Display for TokenKind {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		let s = match self {
 			TokenKind::FuncKw => "“func”",
+			TokenKind::IfKw => "“if”",
+			TokenKind::ElseKw => "“else”",
 			TokenKind::Identifier => "identifier",
 			TokenKind::Underscore => "“_”",
 			TokenKind::Number => "number",

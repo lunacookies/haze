@@ -1,0 +1,75 @@
+func if_expressions() {
+	five := if foo {
+		5
+	} else {
+		20
+	}
+
+	if bar {
+		do_thing()
+	}
+}
+======
+SourceFile@0..92
+  Function@0..92
+    FuncKw@0..4 "func"
+    Whitespace@4..5 " "
+    Identifier@5..19 "if_expressions"
+    ParameterList@19..22
+      OpenParenthesis@19..20 "("
+      CloseParenthesis@20..21 ")"
+      Whitespace@21..22 " "
+    BlockExpression@22..92
+      OpenBrace@22..23 "{"
+      Whitespace@23..25 "\n\t"
+      VariableDeclaration@25..66
+        Identifier@25..29 "five"
+        Whitespace@29..30 " "
+        Colon@30..31 ":"
+        Equals@31..32 "="
+        Whitespace@32..33 " "
+        IfExpression@33..66
+          IfKw@33..35 "if"
+          Whitespace@35..36 " "
+          PathExpression@36..40
+            Identifier@36..39 "foo"
+            Whitespace@39..40 " "
+          BlockExpression@40..49
+            OpenBrace@40..41 "{"
+            Whitespace@41..44 "\n\t\t"
+            ExpressionStatement@44..47
+              IntegerLiteral@44..47
+                Number@44..45 "5"
+                Whitespace@45..47 "\n\t"
+            CloseBrace@47..48 "}"
+            Whitespace@48..49 " "
+          ElseKw@49..53 "else"
+          Whitespace@53..54 " "
+          BlockExpression@54..66
+            OpenBrace@54..55 "{"
+            Whitespace@55..58 "\n\t\t"
+            ExpressionStatement@58..62
+              IntegerLiteral@58..62
+                Number@58..60 "20"
+                Whitespace@60..62 "\n\t"
+            CloseBrace@62..63 "}"
+            Whitespace@63..66 "\n\n\t"
+      ExpressionStatement@66..91
+        IfExpression@66..91
+          IfKw@66..68 "if"
+          Whitespace@68..69 " "
+          PathExpression@69..73
+            Identifier@69..72 "bar"
+            Whitespace@72..73 " "
+          BlockExpression@73..91
+            OpenBrace@73..74 "{"
+            Whitespace@74..77 "\n\t\t"
+            ExpressionStatement@77..89
+              Call@77..89
+                Identifier@77..85 "do_thing"
+                OpenParenthesis@85..86 "("
+                CloseParenthesis@86..87 ")"
+                Whitespace@87..89 "\n\t"
+            CloseBrace@89..90 "}"
+            Whitespace@90..91 "\n"
+      CloseBrace@91..92 "}"

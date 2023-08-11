@@ -110,7 +110,7 @@ impl Parser<'_> {
 		let (first, second) = match kind {
 			TokenKind::Arrow => (TokenKind::Hyphen, TokenKind::Greater),
 			TokenKind::ColonEquals => (TokenKind::Colon, TokenKind::Equals),
-			_ => return self.current() == kind,
+			_ => return self.nth(n) == kind,
 		};
 
 		self.nth(n) == first && self.nth(n + 1) == second
