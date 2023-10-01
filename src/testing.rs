@@ -1,6 +1,6 @@
 use std::{fs, path::PathBuf};
 
-const DELIMITER: &str = "===\n";
+const DELIMITER: &str = "======\n";
 
 pub fn run_tests(path: &str, f: impl Fn(&str) -> String) {
 	let dir = PathBuf::from(path);
