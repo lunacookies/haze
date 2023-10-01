@@ -21,9 +21,10 @@ pub fn lex(text: &str, file: PathBuf) -> Vec<Token> {
 			continue;
 		}
 
+		let loc = Loc { line, column, file: file.clone() };
+
 		if bytes[i].is_ascii_alphabetic() || bytes[i] == b'_' {
 			let start = i;
-			let loc = Loc { line, column, file: file.clone() };
 
 			while bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_' {
 				i += 1;
@@ -35,7 +36,10 @@ pub fn lex(text: &str, file: PathBuf) -> Vec<Token> {
 				text: text[start..i].to_string(),
 				loc,
 			});
+			continue;
 		}
+
+		crate::error(loc, "invalid token".to_string());
 	}
 
 	tokens
