@@ -1,8 +1,9 @@
-[workspace]
-members = ["crates/*"]
-
-[workspace.package]
+[package]
+name = "haze"
+version = "0.1.0"
 edition = "2021"
 
-[profile.release]
-lto = "thin"
+[dependencies]
+
+[dev-dependencies]
+expect-test = "1.4.1"

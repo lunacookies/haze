@@ -1,7 +1,0 @@
-[package]
-edition.workspace = true
-name = "syntax"
-version = "0.0.0"
-
-[dependencies]
-eventree = {path = "../../../eventree"}

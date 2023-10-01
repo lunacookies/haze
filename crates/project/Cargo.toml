@@ -1,7 +1,0 @@
-[package]
-edition.workspace = true
-name = "project"
-version = "0.0.0"
-
-[dependencies]
-diagnostics = {path = "../diagnostics"}

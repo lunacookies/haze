@@ -1,4 +1,0 @@
-[package]
-edition.workspace = true
-name = "sizer"
-version = "0.0.0"

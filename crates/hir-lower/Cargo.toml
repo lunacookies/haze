@@ -1,4 +1,0 @@
-[package]
-edition.workspace = true
-name = "hir-lower"
-version = "0.0.0"
