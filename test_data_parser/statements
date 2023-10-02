@@ -3,6 +3,8 @@ proc statements()
 	var a int
 	var b int
 	c := 100
+	a = c
+	a /= b
 }
 ======
 proc statements()
@@ -10,4 +12,6 @@ proc statements()
 	var a int
 	var b int
 	c := 100
+	a = c
+	a = (a / b)
 }
