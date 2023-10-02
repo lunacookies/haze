@@ -7,25 +7,42 @@ pub fn parse(input: &str, file: PathBuf) -> Ast {
 	Parser::new(tokens).parse()
 }
 
+#[derive(Clone, PartialEq, Eq)]
 pub struct Ast {
-	definitions: Vec<Definition>,
+	pub definitions: Vec<Definition>,
 }
 
+#[derive(Clone, PartialEq, Eq)]
 pub enum Definition {
 	Procedure(Procedure),
 }
 
+#[derive(Clone, PartialEq, Eq)]
 pub struct Procedure {
 	pub name: String,
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
+	pub body: Statement,
 }
 
+#[derive(Clone, PartialEq, Eq)]
 pub struct Parameter {
-	name: String,
-	ty: Ty,
+	pub name: String,
+	pub ty: Ty,
 }
 
+#[derive(Clone, PartialEq, Eq)]
+pub enum Statement {
+	Expression(Expression),
+	Block(Vec<Statement>),
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub enum Expression {
+	Integer(u64),
+}
+
+#[derive(Clone, PartialEq, Eq)]
 pub enum Ty {
 	Int,
 }
@@ -90,10 +107,40 @@ impl Parser {
 			return_ty = Some(self.parse_ty());
 		}
 
-		self.expect(TokenKind::LBrace);
+		let body = self.parse_block();
+
+		Definition::Procedure(Procedure { name, parameters, return_ty, body })
+	}
+
+	fn parse_statement(&mut self) -> Statement {
+		match self.current() {
+			TokenKind::LBrace => self.parse_block(),
+			_ => Statement::Expression(self.parse_expression()),
+		}
+	}
+
+	fn parse_block(&mut self) -> Statement {
+		self.bump(TokenKind::LBrace);
+
+		let mut statements = Vec::new();
+		while !self.at_eof() && !self.at(TokenKind::RBrace) {
+			statements.push(self.parse_statement());
+		}
+
 		self.expect(TokenKind::RBrace);
 
-		Definition::Procedure(Procedure { name, parameters, return_ty })
+		Statement::Block(statements)
+	}
+
+	fn parse_expression(&mut self) -> Expression {
+		match self.current() {
+			TokenKind::Integer => {
+				let text = self.expect_text(TokenKind::Integer);
+				Expression::Integer(text.parse().unwrap())
+			}
+
+			_ => self.error("expected expression".to_string()),
+		}
 	}
 
 	fn parse_ty(&mut self) -> Ty {
@@ -171,7 +218,7 @@ impl Parser {
 
 impl Ast {
 	pub fn pretty_print(&self) -> String {
-		let mut ctx = PrettyPrintCtx { buf: String::new() };
+		let mut ctx = PrettyPrintCtx { buf: String::new(), indentation: 0 };
 		ctx.print_ast(self);
 		ctx.buf
 	}
@@ -179,6 +226,7 @@ impl Ast {
 
 struct PrettyPrintCtx {
 	buf: String,
+	indentation: usize,
 }
 
 impl PrettyPrintCtx {
@@ -205,14 +253,46 @@ impl PrettyPrintCtx {
 			self.print_ty(&parameter.ty);
 		}
 
-		self.s(")");
+		self.s(") ");
 
 		if let Some(return_ty) = &proc.return_ty {
-			self.s(" ");
 			self.print_ty(return_ty);
+			self.s(" ");
+		}
+
+		if proc.body == Statement::Block(Vec::new()) {
+			self.s("{}");
+		} else {
+			self.newline();
+			self.print_statement(&proc.body);
 		}
 
 		self.s("\n");
+	}
+
+	fn print_statement(&mut self, statement: &Statement) {
+		match statement {
+			Statement::Expression(e) => self.print_expression(e),
+			Statement::Block(statements) => {
+				self.s("{");
+				self.indentation += 1;
+
+				for statement in statements {
+					self.newline();
+					self.print_statement(statement);
+				}
+
+				self.indentation -= 1;
+				self.newline();
+				self.s("}");
+			}
+		}
+	}
+
+	fn print_expression(&mut self, expression: &Expression) {
+		match expression {
+			Expression::Integer(i) => self.s(&format!("{i}")),
+		}
 	}
 
 	fn print_ty(&mut self, ty: &Ty) {
@@ -223,6 +303,13 @@ impl PrettyPrintCtx {
 
 	fn s(&mut self, s: &str) {
 		self.buf.push_str(s);
+	}
+
+	fn newline(&mut self) {
+		self.buf.push('\n');
+		for _ in 0..self.indentation {
+			self.buf.push('\t');
+		}
 	}
 }
 

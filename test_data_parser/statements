@@ -1,0 +1,6 @@
+proc statements()
+{
+
+}
+======
+proc statements() {}
