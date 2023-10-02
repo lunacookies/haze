@@ -79,7 +79,7 @@ pub enum TokenKind {
 	Tilde,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Loc {
 	pub line: usize,
 	pub column: usize,
