@@ -42,6 +42,29 @@ pub enum Statement {
 #[derive(Clone, PartialEq, Eq)]
 pub enum Expression {
 	Integer(u64),
+	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum BinaryOperator {
+	Add,
+	Subtract,
+	Multiply,
+	Divide,
+	Modulo,
+	ShiftLeft,
+	ShiftRight,
+	BitAnd,
+	BitOr,
+	BitXor,
+	And,
+	Or,
+	Equal,
+	NotEqual,
+	Less,
+	Greater,
+	LessEqual,
+	GreaterEqual,
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -155,6 +178,37 @@ impl Parser {
 	}
 
 	fn parse_expression(&mut self) -> Expression {
+		self.parse_expression_bp(0)
+	}
+
+	fn parse_expression_bp(&mut self, bp: u8) -> Expression {
+		let mut lhs = self.parse_atom();
+
+		loop {
+			let operator_kind = self.current();
+			let operator = match token_kind_to_operator(operator_kind) {
+				Some(o) => o,
+				None => break,
+			};
+			let right_bp = operator_to_bp(operator);
+
+			if right_bp <= bp {
+				break;
+			}
+
+			self.bump(operator_kind);
+
+			lhs = Expression::Binary {
+				lhs: Box::new(lhs),
+				operator,
+				rhs: Box::new(self.parse_expression_bp(right_bp)),
+			};
+		}
+
+		lhs
+	}
+
+	fn parse_atom(&mut self) -> Expression {
 		match self.current() {
 			TokenKind::Integer => {
 				let text = self.expect_text(TokenKind::Integer);
@@ -235,6 +289,57 @@ impl Parser {
 		};
 
 		crate::error(loc, msg);
+	}
+}
+
+fn token_kind_to_operator(kind: TokenKind) -> Option<BinaryOperator> {
+	Some(match kind {
+		TokenKind::Plus => BinaryOperator::Add,
+		TokenKind::Minus => BinaryOperator::Subtract,
+		TokenKind::Star => BinaryOperator::Multiply,
+		TokenKind::Slash => BinaryOperator::Divide,
+		TokenKind::Percent => BinaryOperator::Modulo,
+		TokenKind::LessLess => BinaryOperator::ShiftLeft,
+		TokenKind::GreaterGreater => BinaryOperator::ShiftRight,
+		TokenKind::And => BinaryOperator::BitAnd,
+		TokenKind::Pipe => BinaryOperator::BitOr,
+		TokenKind::Caret => BinaryOperator::BitXor,
+		TokenKind::AndAnd => BinaryOperator::And,
+		TokenKind::PipePipe => BinaryOperator::Or,
+		TokenKind::EqualEqual => BinaryOperator::Equal,
+		TokenKind::BangEqual => BinaryOperator::NotEqual,
+		TokenKind::Less => BinaryOperator::Less,
+		TokenKind::Greater => BinaryOperator::Greater,
+		TokenKind::LessEqual => BinaryOperator::LessEqual,
+		TokenKind::GreaterEqual => BinaryOperator::GreaterEqual,
+		_ => return None,
+	})
+}
+
+fn operator_to_bp(operator: BinaryOperator) -> u8 {
+	match operator {
+		BinaryOperator::Multiply
+		| BinaryOperator::Divide
+		| BinaryOperator::Modulo
+		| BinaryOperator::ShiftLeft
+		| BinaryOperator::ShiftRight
+		| BinaryOperator::BitAnd => 5,
+
+		BinaryOperator::Add
+		| BinaryOperator::Subtract
+		| BinaryOperator::BitOr
+		| BinaryOperator::BitXor => 4,
+
+		BinaryOperator::Equal
+		| BinaryOperator::NotEqual
+		| BinaryOperator::Less
+		| BinaryOperator::Greater
+		| BinaryOperator::LessEqual
+		| BinaryOperator::GreaterEqual => 3,
+
+		BinaryOperator::And => 2,
+
+		BinaryOperator::Or => 1,
 	}
 }
 
@@ -332,6 +437,37 @@ impl PrettyPrintCtx {
 	fn print_expression(&mut self, expression: &Expression) {
 		match expression {
 			Expression::Integer(i) => self.s(&format!("{i}")),
+			Expression::Binary { lhs, operator, rhs } => {
+				self.s("(");
+				self.print_expression(lhs);
+				self.s(" ");
+
+				let op = match operator {
+					BinaryOperator::Add => "+",
+					BinaryOperator::Subtract => "-",
+					BinaryOperator::Multiply => "*",
+					BinaryOperator::Divide => "/",
+					BinaryOperator::Modulo => "%",
+					BinaryOperator::ShiftLeft => "<<",
+					BinaryOperator::ShiftRight => ">>",
+					BinaryOperator::BitAnd => "&",
+					BinaryOperator::BitOr => "|",
+					BinaryOperator::BitXor => "^",
+					BinaryOperator::And => "&&",
+					BinaryOperator::Or => "||",
+					BinaryOperator::Equal => "==",
+					BinaryOperator::NotEqual => "!=",
+					BinaryOperator::Less => "<",
+					BinaryOperator::Greater => ">",
+					BinaryOperator::LessEqual => "<=",
+					BinaryOperator::GreaterEqual => ">=",
+				};
+				self.s(op);
+
+				self.s(" ");
+				self.print_expression(rhs);
+				self.s(")");
+			}
 		}
 	}
 
