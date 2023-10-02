@@ -5,6 +5,8 @@ proc statements()
 	c := 100
 	a = c
 	a /= b
+	return
+	return foo
 }
 ======
 proc statements()
@@ -14,4 +16,6 @@ proc statements()
 	c := 100
 	a = c
 	a = (a / b)
+	return
+	return foo
 }
