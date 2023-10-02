@@ -21,6 +21,7 @@ pub enum TokenKind {
 	VarKw,
 	TrueKw,
 	FalseKw,
+	ReturnKw,
 
 	BangEqual,
 	Bang,
@@ -96,6 +97,7 @@ const KEYWORDS: &[(&str, TokenKind)] = &[
 	("var", TokenKind::VarKw),
 	("true", TokenKind::TrueKw),
 	("false", TokenKind::FalseKw),
+	("return", TokenKind::ReturnKw),
 ];
 
 struct Lexer<'a> {

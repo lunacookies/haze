@@ -1,6 +1,7 @@
-proc var true false
+proc var true false return
 ======
 ProcKw test:1:1 "proc"
 VarKw test:1:6 "var"
 TrueKw test:1:10 "true"
 FalseKw test:1:15 "false"
+ReturnKw test:1:21 "return"
