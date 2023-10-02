@@ -18,6 +18,7 @@ pub enum Definition {
 pub struct Procedure {
 	pub name: String,
 	pub parameters: Vec<Parameter>,
+	pub return_ty: Option<Ty>,
 }
 
 pub struct Parameter {
@@ -84,10 +85,15 @@ impl Parser {
 
 		self.expect(TokenKind::RParen);
 
+		let mut return_ty = None;
+		if !self.at(TokenKind::LBrace) {
+			return_ty = Some(self.parse_ty());
+		}
+
 		self.expect(TokenKind::LBrace);
 		self.expect(TokenKind::RBrace);
 
-		Definition::Procedure(Procedure { name, parameters })
+		Definition::Procedure(Procedure { name, parameters, return_ty })
 	}
 
 	fn parse_ty(&mut self) -> Ty {
@@ -199,7 +205,14 @@ impl PrettyPrintCtx {
 			self.print_ty(&parameter.ty);
 		}
 
-		self.s(")\n");
+		self.s(")");
+
+		if let Some(return_ty) = &proc.return_ty {
+			self.s(" ");
+			self.print_ty(return_ty);
+		}
+
+		self.s("\n");
 	}
 
 	fn print_ty(&mut self, ty: &Ty) {

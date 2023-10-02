@@ -2,8 +2,10 @@ proc no_params() {}
 proc one_param(a int) {}
 proc two_params(a int, b int) {}
 proc trailing_comma(a int,) {}
+proc with_return() int {}
 ======
 proc no_params()
 proc one_param(a int)
 proc two_params(a int, b int)
 proc trailing_comma(a int)
+proc with_return() int
