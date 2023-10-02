@@ -63,7 +63,7 @@ pub enum TokenKind {
 	PipePipe,
 	PipeEqual,
 	Pipe,
-	RBRace,
+	RBrace,
 	TildeEqual,
 	Tilde,
 }
@@ -194,7 +194,7 @@ impl Lexer<'_> {
 			(b"||", TokenKind::PipePipe),
 			(b"|=", TokenKind::PipeEqual),
 			(b"|", TokenKind::Pipe),
-			(b"}", TokenKind::RBRace),
+			(b"}", TokenKind::RBrace),
 			(b"~=", TokenKind::TildeEqual),
 			(b"~", TokenKind::Tilde),
 		]);
