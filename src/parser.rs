@@ -275,21 +275,25 @@ impl PrettyPrintCtx {
 			self.print_ty(&parameter.ty);
 		}
 
-		self.s(") ");
+		self.s(")");
 
 		if let Some(return_ty) = &proc.return_ty {
+			self.s(" ");
 			self.print_ty(return_ty);
 			self.s(" ");
 		}
 
 		if proc.body == Statement::Block(Vec::new()) {
+			if proc.return_ty.is_none() {
+				self.s(" ");
+			}
 			self.s("{}");
 		} else {
 			self.newline();
 			self.print_statement(&proc.body);
 		}
 
-		self.s("\n");
+		self.newline()
 	}
 
 	fn print_statement(&mut self, statement: &Statement) {

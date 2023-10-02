@@ -5,7 +5,7 @@ proc statements()
 	c := 100
 }
 ======
-proc statements() 
+proc statements()
 {
 	var a int
 	var b int
