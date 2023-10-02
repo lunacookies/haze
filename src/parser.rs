@@ -34,6 +34,7 @@ pub struct Parameter {
 #[derive(Clone, PartialEq, Eq)]
 pub enum Statement {
 	LocalDeclaration { name: String, ty: Ty },
+	LocalDefinition { name: String, value: Expression },
 	Block(Vec<Statement>),
 	Expression(Expression),
 }
@@ -117,6 +118,7 @@ impl Parser {
 		match self.current() {
 			TokenKind::VarKw => self.parse_local_declaration(),
 			TokenKind::LBrace => self.parse_block(),
+			_ if self.lookahead() == TokenKind::ColonEqual => self.parse_local_definition(),
 			_ => Statement::Expression(self.parse_expression()),
 		}
 	}
@@ -128,6 +130,15 @@ impl Parser {
 		let ty = self.parse_ty();
 
 		Statement::LocalDeclaration { name, ty }
+	}
+
+	fn parse_local_definition(&mut self) -> Statement {
+		let name = self.expect_text(TokenKind::Identifier);
+		self.bump(TokenKind::ColonEqual);
+
+		let value = self.parse_expression();
+
+		Statement::LocalDefinition { name, value }
 	}
 
 	fn parse_block(&mut self) -> Statement {
@@ -288,6 +299,12 @@ impl PrettyPrintCtx {
 				self.s(name);
 				self.s(" ");
 				self.print_ty(ty);
+			}
+
+			Statement::LocalDefinition { name, value } => {
+				self.s(name);
+				self.s(" := ");
+				self.print_expression(value);
 			}
 
 			Statement::Block(statements) => {

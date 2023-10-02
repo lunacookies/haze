@@ -2,10 +2,12 @@ proc statements()
 {
 	var a int
 	var b int
+	c := 100
 }
 ======
 proc statements() 
 {
 	var a int
 	var b int
+	c := 100
 }
