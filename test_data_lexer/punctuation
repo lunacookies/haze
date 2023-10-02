@@ -1,6 +1,7 @@
 ! # $ % & ( ) * + , - . / : ; < = > ? @ [ \ ] ^ ` { | } ~
 == != <= >= && || << >> ++ -- ..
 != %= &= *= += -= /= ^= |= ~= &&= ||= <<= >>=
+:=
 ======
 Bang test:1:1 "!"
 Hash test:1:3 "#"
@@ -56,3 +57,4 @@ AndAndEqual test:3:31 "&&="
 PipePipeEqual test:3:35 "||="
 LessLessEqual test:3:39 "<<="
 GreaterGreaterEqual test:3:43 ">>="
+ColonEqual test:4:1 ":="
