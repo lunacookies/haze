@@ -120,7 +120,7 @@ impl Lexer<'_> {
 		let start = self.i;
 
 		match self.bytes[self.i] {
-			b' ' => {
+			b' ' | b'\t' => {
 				self.i += 1;
 				self.loc.column += 1;
 				return;
