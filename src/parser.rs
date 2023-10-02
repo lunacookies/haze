@@ -44,6 +44,8 @@ pub enum Statement {
 pub enum Expression {
 	Integer(u64),
 	Variable(String),
+	True,
+	False,
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
 }
 
@@ -248,6 +250,16 @@ impl Parser {
 			TokenKind::Identifier => {
 				let text = self.expect_text(TokenKind::Identifier);
 				Expression::Variable(text)
+			}
+
+			TokenKind::TrueKw => {
+				self.bump(TokenKind::TrueKw);
+				Expression::True
+			}
+
+			TokenKind::FalseKw => {
+				self.bump(TokenKind::FalseKw);
+				Expression::False
 			}
 
 			_ => self.error("expected expression".to_string()),
@@ -504,6 +516,9 @@ impl PrettyPrintCtx {
 			Expression::Integer(i) => self.s(&format!("{i}")),
 
 			Expression::Variable(name) => self.s(name),
+
+			Expression::True => self.s("true"),
+			Expression::False => self.s("false"),
 
 			Expression::Binary { lhs, operator, rhs } => {
 				self.s("(");
