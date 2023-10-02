@@ -42,6 +42,7 @@ pub enum Statement {
 #[derive(Clone, PartialEq, Eq)]
 pub enum Expression {
 	Integer(u64),
+	Variable(String),
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
 }
 
@@ -213,6 +214,11 @@ impl Parser {
 			TokenKind::Integer => {
 				let text = self.expect_text(TokenKind::Integer);
 				Expression::Integer(text.parse().unwrap())
+			}
+
+			TokenKind::Identifier => {
+				let text = self.expect_text(TokenKind::Identifier);
+				Expression::Variable(text)
 			}
 
 			_ => self.error("expected expression".to_string()),
@@ -437,6 +443,9 @@ impl PrettyPrintCtx {
 	fn print_expression(&mut self, expression: &Expression) {
 		match expression {
 			Expression::Integer(i) => self.s(&format!("{i}")),
+
+			Expression::Variable(name) => self.s(name),
+
 			Expression::Binary { lhs, operator, rhs } => {
 				self.s("(");
 				self.print_expression(lhs);
