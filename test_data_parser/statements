@@ -1,6 +1,11 @@
 proc statements()
 {
-
+	var a int
+	var b int
 }
 ======
-proc statements() {}
+proc statements() 
+{
+	var a int
+	var b int
+}

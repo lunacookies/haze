@@ -33,8 +33,9 @@ pub struct Parameter {
 
 #[derive(Clone, PartialEq, Eq)]
 pub enum Statement {
-	Expression(Expression),
+	LocalDeclaration { name: String, ty: Ty },
 	Block(Vec<Statement>),
+	Expression(Expression),
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -114,9 +115,19 @@ impl Parser {
 
 	fn parse_statement(&mut self) -> Statement {
 		match self.current() {
+			TokenKind::VarKw => self.parse_local_declaration(),
 			TokenKind::LBrace => self.parse_block(),
 			_ => Statement::Expression(self.parse_expression()),
 		}
+	}
+
+	fn parse_local_declaration(&mut self) -> Statement {
+		self.bump(TokenKind::VarKw);
+
+		let name = self.expect_text(TokenKind::Identifier);
+		let ty = self.parse_ty();
+
+		Statement::LocalDeclaration { name, ty }
 	}
 
 	fn parse_block(&mut self) -> Statement {
@@ -272,7 +283,13 @@ impl PrettyPrintCtx {
 
 	fn print_statement(&mut self, statement: &Statement) {
 		match statement {
-			Statement::Expression(e) => self.print_expression(e),
+			Statement::LocalDeclaration { name, ty } => {
+				self.s("var ");
+				self.s(name);
+				self.s(" ");
+				self.print_ty(ty);
+			}
+
 			Statement::Block(statements) => {
 				self.s("{");
 				self.indentation += 1;
@@ -286,6 +303,8 @@ impl PrettyPrintCtx {
 				self.newline();
 				self.s("}");
 			}
+
+			Statement::Expression(e) => self.print_expression(e),
 		}
 	}
 
