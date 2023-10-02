@@ -10,10 +10,15 @@ pub fn run_tests(path: &str, f: impl Fn(&str) -> String + std::panic::RefUnwindS
 		let path = entry.path().canonicalize().unwrap();
 		let content = fs::read_to_string(&path).unwrap();
 
+		println!("=== RUNNING TEST: {}", path.display());
+
 		let (input, _expected_output) = content.split_once(DELIMITER).unwrap();
 		let actual_output = match std::panic::catch_unwind(|| f(input)) {
 			Ok(s) => s,
-			Err(e) => format!("{}", e.downcast::<String>().unwrap()),
+			Err(e) => {
+				println!("=== TEST PANICKED: {}", path.display());
+				format!("{}", e.downcast::<String>().unwrap())
+			}
 		};
 		let actual_content = format!("{input}{DELIMITER}{actual_output}");
 
