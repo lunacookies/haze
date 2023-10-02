@@ -18,6 +18,7 @@ pub enum TokenKind {
 	Integer,
 
 	ProcKw,
+	VarKw,
 
 	BangEqual,
 	Bang,
@@ -87,7 +88,7 @@ impl fmt::Debug for Loc {
 	}
 }
 
-const KEYWORDS: &[(&str, TokenKind)] = &[("proc", TokenKind::ProcKw)];
+const KEYWORDS: &[(&str, TokenKind)] = &[("proc", TokenKind::ProcKw), ("var", TokenKind::VarKw)];
 
 struct Lexer<'a> {
 	text: &'a str,

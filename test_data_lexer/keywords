@@ -1,3 +1,4 @@
-proc
+proc var
 ======
 ProcKw test:1:1 "proc"
+VarKw test:1:6 "var"
