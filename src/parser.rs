@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{cell::Cell, path::PathBuf};
 
 use crate::lexer::{lex, Token, TokenKind};
 
@@ -32,17 +32,20 @@ pub enum Ty {
 struct Parser {
 	tokens: Vec<Token>,
 	cursor: usize,
+	fuel: Cell<u8>,
 }
+
+const INITIAL_FUEL: u8 = 255;
 
 impl Parser {
 	fn new(tokens: Vec<Token>) -> Parser {
-		Parser { tokens, cursor: 0 }
+		Parser { tokens, cursor: 0, fuel: Cell::new(INITIAL_FUEL) }
 	}
 
 	fn parse(mut self) -> Ast {
 		let mut definitions = Vec::new();
 
-		while !self.at_end() {
+		while !self.at_eof() {
 			definitions.push(self.parse_definition());
 		}
 
@@ -58,24 +61,67 @@ impl Parser {
 
 	fn parse_procedure(&mut self) -> Definition {
 		self.bump(TokenKind::ProcKw);
-		let name = self.bump_text(TokenKind::Identifier);
-		self.bump(TokenKind::LParen);
-		self.bump(TokenKind::RParen);
-		self.bump(TokenKind::LBrace);
-		self.bump(TokenKind::RBrace);
+		let name = self.expect_text(TokenKind::Identifier);
 
-		Definition::Procedure(Procedure { name, parameters: Vec::new() })
+		self.expect(TokenKind::LParen);
+		let mut parameters = Vec::new();
+
+		while !self.at_eof() && !self.at(TokenKind::RParen) {
+			let parameter_name = self.expect_text(TokenKind::Identifier);
+			let parameter_ty = self.parse_ty();
+			parameters.push(Parameter { name: parameter_name, ty: parameter_ty });
+
+			match (self.current(), self.lookahead()) {
+				(TokenKind::RParen, _) => {}
+				(TokenKind::Comma, TokenKind::RParen) => self.bump(TokenKind::Comma),
+				_ => self.expect(TokenKind::Comma),
+			}
+
+			if self.at(TokenKind::RParen) {
+				self.eat(TokenKind::Comma);
+			}
+		}
+
+		self.expect(TokenKind::RParen);
+
+		self.expect(TokenKind::LBrace);
+		self.expect(TokenKind::RBrace);
+
+		Definition::Procedure(Procedure { name, parameters })
 	}
 
-	fn bump_text(&mut self, kind: TokenKind) -> String {
+	fn parse_ty(&mut self) -> Ty {
+		let text = self.expect_text(TokenKind::Identifier);
+		match text.as_str() {
+			"int" => Ty::Int,
+			_ => self.error("expected type".to_string()),
+		}
+	}
+
+	fn expect_text(&mut self, kind: TokenKind) -> String {
 		let text = self.tokens[self.cursor].text.clone();
-		self.bump(kind);
+		self.expect(kind);
 		text
+	}
+
+	fn expect(&mut self, kind: TokenKind) {
+		if !self.eat(kind) {
+			self.error(format!("expected {kind:?} but found {:?}", self.current()));
+		}
+	}
+
+	fn eat(&mut self, kind: TokenKind) -> bool {
+		if self.at(kind) {
+			self.bump(kind);
+			return true;
+		}
+		false
 	}
 
 	fn bump(&mut self, kind: TokenKind) {
 		assert!(self.at(kind));
 		self.cursor += 1;
+		self.fuel.set(INITIAL_FUEL);
 	}
 
 	fn at(&self, kind: TokenKind) -> bool {
@@ -83,15 +129,37 @@ impl Parser {
 	}
 
 	fn current(&self) -> TokenKind {
+		let remaining_fuel = self.fuel.get();
+		if remaining_fuel == 0 {
+			panic!("parser ran out of fuel");
+		}
+		self.fuel.set(remaining_fuel - 1);
+
+		if self.at_eof() {
+			return TokenKind::Eof;
+		}
 		self.tokens[self.cursor].kind
 	}
 
-	fn at_end(&self) -> bool {
+	fn lookahead(&self) -> TokenKind {
+		if self.cursor + 1 >= self.tokens.len() {
+			return TokenKind::Eof;
+		}
+		self.tokens[self.cursor + 1].kind
+	}
+
+	fn at_eof(&self) -> bool {
 		self.cursor >= self.tokens.len()
 	}
 
 	fn error(&self, msg: String) -> ! {
-		crate::error(self.tokens[self.cursor].loc.clone(), msg);
+		let loc = if self.at_eof() {
+			self.tokens[self.tokens.len() - 1].loc.clone()
+		} else {
+			self.tokens[self.cursor].loc.clone()
+		};
+
+		crate::error(loc, msg);
 	}
 }
 

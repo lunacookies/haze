@@ -1,3 +1,9 @@
-proc foo() {}
+proc no_params() {}
+proc one_param(a int) {}
+proc two_params(a int, b int) {}
+proc trailing_comma(a int,) {}
 ======
-proc foo()
+proc no_params()
+proc one_param(a int)
+proc two_params(a int, b int)
+proc trailing_comma(a int)

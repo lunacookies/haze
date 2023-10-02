@@ -1,0 +1,3 @@
+proc foo
+======
+test:1:6: error: expected LParen but found Eof
