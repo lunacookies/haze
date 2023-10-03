@@ -9,6 +9,7 @@ pub fn index(ast: &ast::Ast) -> Index {
 #[derive(Clone, PartialEq, Eq, Default)]
 pub struct Index {
 	pub procedures: HashMap<String, Procedure>,
+	pub tys: HashMap<String, TyDefinition>,
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -19,6 +20,22 @@ pub struct Procedure {
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct Parameter {
+	pub name: String,
+	pub ty: Ty,
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub enum TyDefinition {
+	Struct(Struct),
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct Struct {
+	pub fields: Vec<Field>,
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct Field {
 	pub name: String,
 	pub ty: Ty,
 }
@@ -48,7 +65,10 @@ impl Indexer {
 				let mut parameters = Vec::new();
 
 				for parameter in &proc.parameters {
-					parameters.push(Parameter { name: parameter.name.clone(), ty: Ty::Int });
+					parameters.push(Parameter {
+						name: parameter.name.clone(),
+						ty: self.index_ty(&parameter.ty),
+					});
 				}
 
 				let return_ty = proc.return_ty.as_ref().map(|t| self.index_ty(t));
@@ -56,6 +76,16 @@ impl Indexer {
 				self.index
 					.procedures
 					.insert(proc.name.clone(), Procedure { parameters, return_ty });
+			}
+
+			ast::Definition::Struct(strukt) => {
+				let mut fields = Vec::new();
+
+				for field in &strukt.fields {
+					fields.push(Field { name: field.name.clone(), ty: self.index_ty(&field.ty) });
+				}
+
+				self.index.tys.insert(strukt.name.clone(), TyDefinition::Struct(Struct { fields }));
 			}
 		}
 	}

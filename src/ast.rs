@@ -8,6 +8,7 @@ pub struct Ast {
 #[derive(Clone, PartialEq, Eq)]
 pub enum Definition {
 	Procedure(Procedure),
+	Struct(Struct),
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -20,6 +21,18 @@ pub struct Procedure {
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct Parameter {
+	pub name: String,
+	pub ty: Ty,
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct Struct {
+	pub name: String,
+	pub fields: Vec<Field>,
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct Field {
 	pub name: String,
 	pub ty: Ty,
 }
@@ -100,6 +113,7 @@ impl PrettyPrintCtx {
 		for definition in &ast.definitions {
 			match definition {
 				Definition::Procedure(proc) => self.print_procedure(proc),
+				Definition::Struct(strukt) => self.print_struct(strukt),
 			}
 		}
 	}
@@ -138,6 +152,26 @@ impl PrettyPrintCtx {
 		}
 
 		self.newline()
+	}
+
+	fn print_struct(&mut self, strukt: &Struct) {
+		self.s("struct ");
+		self.s(&strukt.name);
+		self.newline();
+		self.s("{");
+		self.indentation += 1;
+
+		for field in &strukt.fields {
+			self.newline();
+			self.s(&field.name);
+			self.s(" ");
+			self.print_ty(&field.ty);
+		}
+
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
+		self.newline();
 	}
 
 	fn print_statement(&mut self, statement: &Statement) {
