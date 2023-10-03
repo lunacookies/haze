@@ -1,0 +1,9 @@
+proc nothing() {}
+proc int_param(a int) {}
+proc int_params(a int, b int) {}
+proc int_return() int {}
+======
+proc int_param(a int)
+proc int_params(a int, b int)
+proc int_return() int
+proc nothing()
