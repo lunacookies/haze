@@ -1,92 +1,16 @@
 use std::{cell::Cell, path::PathBuf};
 
-use crate::lexer::{lex, Loc, Token, TokenKind};
+use crate::{
+	ast::{
+		Ast, BinaryOperator, Definition, Expression, ExpressionKind, Parameter, Procedure,
+		Statement, StatementKind, Ty,
+	},
+	lexer::{lex, Loc, Token, TokenKind},
+};
 
 pub fn parse(input: &str, file: PathBuf) -> Ast {
 	let tokens = lex(input, file);
 	Parser::new(tokens).parse()
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub struct Ast {
-	pub definitions: Vec<Definition>,
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub enum Definition {
-	Procedure(Procedure),
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub struct Procedure {
-	pub name: String,
-	pub parameters: Vec<Parameter>,
-	pub return_ty: Option<Ty>,
-	pub body: Statement,
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub struct Parameter {
-	pub name: String,
-	pub ty: Ty,
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub struct Statement {
-	kind: StatementKind,
-	loc: Loc,
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub enum StatementKind {
-	LocalDeclaration { name: String, ty: Ty },
-	LocalDefinition { name: String, value: Expression },
-	Return { value: Option<Expression> },
-	Block(Vec<Statement>),
-	Expression(Expression),
-	Assignment { lhs: Expression, rhs: Expression },
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub struct Expression {
-	kind: ExpressionKind,
-	loc: Loc,
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub enum ExpressionKind {
-	Integer(u64),
-	Variable(String),
-	True,
-	False,
-	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
-}
-
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub enum BinaryOperator {
-	Add,
-	Subtract,
-	Multiply,
-	Divide,
-	Modulo,
-	ShiftLeft,
-	ShiftRight,
-	BitAnd,
-	BitOr,
-	BitXor,
-	And,
-	Or,
-	Equal,
-	NotEqual,
-	Less,
-	Greater,
-	LessEqual,
-	GreaterEqual,
-}
-
-#[derive(Clone, PartialEq, Eq)]
-pub enum Ty {
-	Int,
 }
 
 struct Parser {
