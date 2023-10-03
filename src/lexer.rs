@@ -18,6 +18,7 @@ pub enum TokenKind {
 	Integer,
 
 	ProcKw,
+	StructKw,
 	VarKw,
 	TrueKw,
 	FalseKw,
@@ -94,6 +95,7 @@ impl fmt::Debug for Loc {
 
 const KEYWORDS: &[(&str, TokenKind)] = &[
 	("proc", TokenKind::ProcKw),
+	("struct", TokenKind::StructKw),
 	("var", TokenKind::VarKw),
 	("true", TokenKind::TrueKw),
 	("false", TokenKind::FalseKw),
