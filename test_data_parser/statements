@@ -15,6 +15,19 @@ proc statements()
 			single_nested = false
 		}
 	}
+
+	if true {
+		a += 10
+	}
+
+	condition := false
+	if condition {
+		a -= 4
+		return a
+	} else {
+		b = a - b
+		return b
+	}
 }
 ======
 proc statements()
@@ -32,5 +45,16 @@ proc statements()
 			double_nested := true
 			single_nested = false
 		}
+	}
+	if true {
+		a = (a + 10)
+	}
+	condition := false
+	if condition {
+		a = (a - 4)
+		return a
+	} else {
+		b = (a - b)
+		return b
 	}
 }

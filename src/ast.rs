@@ -49,6 +49,7 @@ pub struct Statement {
 pub enum StatementKind {
 	LocalDeclaration { name: String, ty: Ty },
 	LocalDefinition { name: String, value: Expression },
+	If { condition: Expression, true_branch: Box<Statement>, false_branch: Option<Box<Statement>> },
 	Return { value: Option<Expression> },
 	Block(Vec<Statement>),
 	Expression(Expression),
@@ -193,6 +194,17 @@ impl PrettyPrintCtx {
 				self.s(name);
 				self.s(" := ");
 				self.print_expression(value);
+			}
+
+			StatementKind::If { condition, true_branch, false_branch } => {
+				self.s("if ");
+				self.print_expression(condition);
+				self.s(" ");
+				self.print_statement(true_branch);
+				if let Some(false_branch) = false_branch {
+					self.s(" else ");
+					self.print_statement(false_branch);
+				}
 			}
 
 			StatementKind::Return { value } => {

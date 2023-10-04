@@ -94,6 +94,10 @@ impl SemaContext<'_> {
 				}
 			}
 
+			ast::StatementKind::If { condition, true_branch, false_branch } => {
+				todo!()
+			}
+
 			ast::StatementKind::Return { value } => {
 				let value = value.as_ref().map(|e| self.analyze_expression(e));
 				Statement::Return { value }

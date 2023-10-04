@@ -102,6 +102,7 @@ impl Parser {
 	fn parse_statement(&mut self) -> Statement {
 		match self.current() {
 			TokenKind::VarKw => self.parse_local_declaration(),
+			TokenKind::IfKw => self.parse_if(),
 			TokenKind::ReturnKw => self.parse_return(),
 			TokenKind::LBrace => self.parse_block(),
 
@@ -162,6 +163,25 @@ impl Parser {
 		let value = self.parse_expression();
 
 		Statement { kind: StatementKind::LocalDefinition { name, value }, loc }
+	}
+
+	fn parse_if(&mut self) -> Statement {
+		let loc = self.current_loc();
+		self.bump(TokenKind::IfKw);
+
+		let condition = self.parse_expression();
+		let true_branch = self.parse_block();
+		let false_branch =
+			if self.eat(TokenKind::ElseKw) { Some(self.parse_statement()) } else { None };
+
+		Statement {
+			kind: StatementKind::If {
+				condition,
+				true_branch: Box::new(true_branch),
+				false_branch: false_branch.map(Box::new),
+			},
+			loc,
+		}
 	}
 
 	fn parse_return(&mut self) -> Statement {
