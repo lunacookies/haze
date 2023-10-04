@@ -1,11 +1,21 @@
-struct Point
+struct V2
 {
 	x int
 	y int
 }
+
+struct Entity {
+	position V2
+	velocity V2
+}
 ======
-struct Point
+struct V2
 {
 	x int
 	y int
+}
+struct Entity
+{
+	position V2
+	velocity V2
 }

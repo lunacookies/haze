@@ -49,6 +49,7 @@ pub struct Ty {
 #[derive(Clone, PartialEq, Eq)]
 pub enum TyKind {
 	Int,
+	Named(String),
 }
 
 #[derive(Default)]
@@ -97,8 +98,10 @@ impl Indexer {
 	}
 
 	fn index_ty(&mut self, ty: &ast::Ty) -> Ty {
+		let loc = ty.loc.clone();
 		match &ty.kind {
-			ast::TyKind::Int => Ty { kind: TyKind::Int, loc: ty.loc.clone() },
+			ast::TyKind::Int => Ty { kind: TyKind::Int, loc },
+			ast::TyKind::Named(n) => Ty { kind: TyKind::Named(n.clone()), loc },
 		}
 	}
 }

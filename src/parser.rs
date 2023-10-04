@@ -264,7 +264,7 @@ impl Parser {
 
 		match text.as_str() {
 			"int" => Ty { kind: TyKind::Int, loc },
-			_ => self.error("expected type".to_string()),
+			_ => Ty { kind: TyKind::Named(text), loc },
 		}
 	}
 

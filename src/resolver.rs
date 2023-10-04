@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::indexer;
 
 pub fn resolve(index: &indexer::Index) -> Index {
-	Resolver::default().resolve(index)
+	Resolver::new(index).resolve()
 }
 
 #[derive(Clone, PartialEq, Eq, Default)]
@@ -43,21 +43,26 @@ pub struct Field {
 #[derive(Clone, PartialEq, Eq)]
 pub enum Ty {
 	Int,
+	Named(String),
 }
 
-#[derive(Default)]
-struct Resolver {
+struct Resolver<'a> {
+	index: &'a indexer::Index,
 	procedures: HashMap<String, Procedure>,
 	named_tys: HashMap<String, NamedTy>,
 }
 
-impl Resolver {
-	fn resolve(mut self, index: &indexer::Index) -> Index {
-		for (name, ty) in &index.tys {
+impl Resolver<'_> {
+	fn new(index: &indexer::Index) -> Resolver<'_> {
+		Resolver { index, procedures: HashMap::new(), named_tys: HashMap::new() }
+	}
+
+	fn resolve(mut self) -> Index {
+		for (name, ty) in &self.index.tys {
 			self.resolve_ty_definition(name, ty);
 		}
 
-		for (name, procedure) in &index.procedures {
+		for (name, procedure) in &self.index.procedures {
 			self.resolve_procedure(name, procedure);
 		}
 
@@ -96,6 +101,14 @@ impl Resolver {
 	fn resolve_ty(&mut self, ty: &indexer::Ty) -> Ty {
 		match &ty.kind {
 			indexer::TyKind::Int => Ty::Int,
+			indexer::TyKind::Named(n) => {
+				if !self.named_tys.contains_key(n) {
+					let definition = &self.index.tys[n];
+					self.resolve_ty_definition(n, definition);
+				}
+
+				Ty::Named(n.clone())
+			}
 		}
 	}
 }
@@ -161,6 +174,7 @@ impl Index {
 fn pretty_print_ty(ty: &Ty, s: &mut String) {
 	match ty {
 		Ty::Int => s.push_str("int"),
+		Ty::Named(n) => s.push_str(n),
 	}
 }
 
