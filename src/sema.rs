@@ -95,7 +95,29 @@ impl SemaContext<'_> {
 			}
 
 			ast::StatementKind::If { condition, true_branch, false_branch } => {
-				todo!()
+				let condition_idx = self.analyze_expression(condition);
+				let condition_ty = &self.expression_tys[condition_idx];
+
+				if condition_ty != &Ty::Bool {
+					crate::error(
+						condition.loc.clone(),
+						format!(
+							"can’t use value of type “{condition_ty}” as condition of if statement",
+						),
+					);
+				}
+
+				let empty_branch = self.alloc_statement(Statement::Block(Vec::new()));
+				let true_branch_idx = self.analyze_statement(true_branch).unwrap_or(empty_branch);
+				let false_branch_idx = false_branch
+					.as_ref()
+					.map(|s| self.analyze_statement(s).unwrap_or(empty_branch));
+
+				Statement::If {
+					condition: condition_idx,
+					true_branch: true_branch_idx,
+					false_branch: false_branch_idx,
+				}
 			}
 
 			ast::StatementKind::Return { value } => {

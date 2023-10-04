@@ -29,8 +29,18 @@ pub struct Variable {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Statement {
-	Assignment { lhs: Idx<Expression>, rhs: Idx<Expression> },
-	Return { value: Option<Idx<Expression>> },
+	Assignment {
+		lhs: Idx<Expression>,
+		rhs: Idx<Expression>,
+	},
+	If {
+		condition: Idx<Expression>,
+		true_branch: Idx<Statement>,
+		false_branch: Option<Idx<Statement>>,
+	},
+	Return {
+		value: Option<Idx<Expression>>,
+	},
 	Block(Vec<Idx<Statement>>),
 	Expression(Idx<Expression>),
 }
@@ -95,6 +105,17 @@ impl PrettyPrintCtx {
 				self.print_expression(*lhs, storage);
 				self.s(" = ");
 				self.print_expression(*rhs, storage);
+			}
+
+			Statement::If { condition, true_branch, false_branch } => {
+				self.s("if ");
+				self.print_expression(*condition, storage);
+				self.s(" ");
+				self.print_statement(*true_branch, storage);
+				if let Some(false_branch) = false_branch {
+					self.s(" else ");
+					self.print_statement(*false_branch, storage);
+				}
 			}
 
 			Statement::Return { value } => {

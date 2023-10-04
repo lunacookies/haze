@@ -13,6 +13,12 @@ proc statements()
 	{
 		b -= 1
 	}
+
+	if true {
+		a = b
+	} else {
+		b = a
+	}
 }
 ======
 proc statements
@@ -24,5 +30,10 @@ proc statements
 	b = a
 	{
 		b = (b - 1)
+	}
+	if true {
+		a = b
+	} else {
+		b = a
 	}
 }

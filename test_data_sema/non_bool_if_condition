@@ -1,0 +1,14 @@
+struct Color
+{
+	r int
+	g int
+	b int
+}
+
+proc non_bool_if_condition()
+{
+	var c Color
+	if c {}
+}
+======
+test:11:5: error: can’t use value of type “Color” as condition of if statement
