@@ -7,6 +7,14 @@ proc statements()
 	a /= b
 	return
 	return foo
+
+	{
+		single_nested := true
+		{
+			double_nested := true
+			single_nested = false
+		}
+	}
 }
 ======
 proc statements()
@@ -18,4 +26,11 @@ proc statements()
 	a = (a / b)
 	return
 	return foo
+	{
+		single_nested := true
+		{
+			double_nested := true
+			single_nested = false
+		}
+	}
 }
