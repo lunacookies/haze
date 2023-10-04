@@ -8,41 +8,41 @@ pub fn resolve(index: &indexer::Index) -> Index {
 	Resolver::new(index).resolve()
 }
 
-#[derive(Clone, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Index {
 	pub procedures: IndexMap<String, Procedure>,
 	pub named_tys: IndexMap<String, NamedTy>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Procedure {
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Parameter {
 	pub name: String,
 	pub ty: Ty,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NamedTy {
 	Struct(Struct),
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Struct {
 	pub fields: Vec<Field>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Field {
 	pub name: String,
 	pub ty: Ty,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Ty {
 	Int,
 	Bool,

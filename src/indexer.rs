@@ -6,47 +6,47 @@ pub fn index(ast: &ast::Ast) -> Index {
 	Indexer::default().index(ast)
 }
 
-#[derive(Clone, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Index {
 	pub procedures: IndexMap<String, Procedure>,
 	pub tys: IndexMap<String, TyDefinition>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Procedure {
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Parameter {
 	pub name: String,
 	pub ty: Ty,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TyDefinition {
 	Struct(Struct),
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Struct {
 	pub fields: Vec<Field>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Field {
 	pub name: String,
 	pub ty: Ty,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Ty {
 	pub kind: TyKind,
 	pub loc: Loc,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TyKind {
 	Int,
 	Bool,

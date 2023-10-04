@@ -2,18 +2,18 @@ use std::fmt;
 
 use crate::lexer::Loc;
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Ast {
 	pub definitions: Vec<Definition>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Definition {
 	Procedure(Procedure),
 	Struct(Struct),
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Procedure {
 	pub name: String,
 	pub parameters: Vec<Parameter>,
@@ -21,31 +21,31 @@ pub struct Procedure {
 	pub body: Statement,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Parameter {
 	pub name: String,
 	pub ty: Ty,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Struct {
 	pub name: String,
 	pub fields: Vec<Field>,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Field {
 	pub name: String,
 	pub ty: Ty,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Statement {
 	pub kind: StatementKind,
 	pub loc: Loc,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum StatementKind {
 	LocalDeclaration { name: String, ty: Ty },
 	LocalDefinition { name: String, value: Expression },
@@ -55,13 +55,13 @@ pub enum StatementKind {
 	Assignment { lhs: Expression, rhs: Expression },
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Expression {
 	pub kind: ExpressionKind,
 	pub loc: Loc,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ExpressionKind {
 	Integer(u64),
 	Variable(String),
@@ -70,7 +70,7 @@ pub enum ExpressionKind {
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BinaryOperator {
 	Add,
 	Subtract,
@@ -92,13 +92,13 @@ pub enum BinaryOperator {
 	GreaterEqual,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Ty {
 	pub kind: TyKind,
 	pub loc: Loc,
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TyKind {
 	Int,
 	Bool,
