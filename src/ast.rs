@@ -91,7 +91,13 @@ pub enum BinaryOperator {
 }
 
 #[derive(Clone, PartialEq, Eq)]
-pub enum Ty {
+pub struct Ty {
+	pub kind: TyKind,
+	pub loc: Loc,
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub enum TyKind {
 	Int,
 }
 
@@ -266,8 +272,8 @@ impl PrettyPrintCtx {
 	}
 
 	fn print_ty(&mut self, ty: &Ty) {
-		match ty {
-			Ty::Int => self.s("int"),
+		match &ty.kind {
+			TyKind::Int => self.s("int"),
 		}
 	}
 

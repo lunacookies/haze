@@ -3,7 +3,7 @@ use std::{cell::Cell, path::PathBuf};
 use crate::{
 	ast::{
 		Ast, BinaryOperator, Definition, Expression, ExpressionKind, Field, Parameter, Procedure,
-		Statement, StatementKind, Struct, Ty,
+		Statement, StatementKind, Struct, Ty, TyKind,
 	},
 	lexer::{lex, Loc, Token, TokenKind},
 };
@@ -259,9 +259,11 @@ impl Parser {
 	}
 
 	fn parse_ty(&mut self) -> Ty {
+		let loc = self.current_loc();
 		let text = self.expect_text(TokenKind::Identifier);
+
 		match text.as_str() {
-			"int" => Ty::Int,
+			"int" => Ty { kind: TyKind::Int, loc },
 			_ => self.error("expected type".to_string()),
 		}
 	}

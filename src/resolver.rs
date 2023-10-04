@@ -94,8 +94,8 @@ impl Resolver {
 	}
 
 	fn resolve_ty(&mut self, ty: &indexer::Ty) -> Ty {
-		match ty {
-			indexer::Ty::Int => Ty::Int,
+		match &ty.kind {
+			indexer::TyKind::Int => Ty::Int,
 		}
 	}
 }

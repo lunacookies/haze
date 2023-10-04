@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::ast;
+use crate::{ast, lexer::Loc};
 
 pub fn index(ast: &ast::Ast) -> Index {
 	Indexer::default().index(ast)
@@ -41,7 +41,13 @@ pub struct Field {
 }
 
 #[derive(Clone, PartialEq, Eq)]
-pub enum Ty {
+pub struct Ty {
+	pub kind: TyKind,
+	pub loc: Loc,
+}
+
+#[derive(Clone, PartialEq, Eq)]
+pub enum TyKind {
 	Int,
 }
 
@@ -91,8 +97,8 @@ impl Indexer {
 	}
 
 	fn index_ty(&mut self, ty: &ast::Ty) -> Ty {
-		match ty {
-			ast::Ty::Int => Ty::Int,
+		match &ty.kind {
+			ast::TyKind::Int => Ty { kind: TyKind::Int, loc: ty.loc.clone() },
 		}
 	}
 }
