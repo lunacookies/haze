@@ -17,10 +17,11 @@ pub fn run_tests(path: &str, f: impl Fn(&str) -> String + std::panic::RefUnwindS
 			Ok(s) => s,
 			Err(e) => {
 				println!("=== TEST PANICKED: {}", path.display());
-				format!("{}", e.downcast::<String>().unwrap())
+				format!("{}\n", e.downcast::<String>().unwrap())
 			}
 		};
 		let actual_content = format!("{input}{DELIMITER}{actual_output}");
+		assert!(actual_content.ends_with('\n'));
 
 		expect_test::expect_file![&path].assert_eq(&actual_content);
 	}
