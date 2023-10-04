@@ -1,8 +1,9 @@
-proc struct var true false return
+proc struct var if true false return
 ======
 ProcKw test:1:1 "proc"
 StructKw test:1:6 "struct"
 VarKw test:1:13 "var"
-TrueKw test:1:17 "true"
-FalseKw test:1:22 "false"
-ReturnKw test:1:28 "return"
+IfKw test:1:17 "if"
+TrueKw test:1:20 "true"
+FalseKw test:1:25 "false"
+ReturnKw test:1:31 "return"
