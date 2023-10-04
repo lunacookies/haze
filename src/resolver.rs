@@ -16,8 +16,8 @@ pub struct Index {
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct Procedure {
-	parameters: Vec<Parameter>,
-	return_ty: Option<Ty>,
+	pub parameters: Vec<Parameter>,
+	pub return_ty: Option<Ty>,
 }
 
 #[derive(Clone, PartialEq, Eq)]
