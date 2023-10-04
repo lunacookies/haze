@@ -223,7 +223,9 @@ impl Parser {
 	}
 
 	fn parse_atom(&mut self) -> Expression {
-		assert!(self.at_expression());
+		if !self.at_expression() {
+			self.error("expected expression".to_string());
+		}
 
 		match self.current() {
 			TokenKind::Integer => {
@@ -254,7 +256,7 @@ impl Parser {
 				Expression { kind: ExpressionKind::False, loc }
 			}
 
-			_ => self.error("expected expression".to_string()),
+			_ => unreachable!(),
 		}
 	}
 
