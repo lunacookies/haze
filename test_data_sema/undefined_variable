@@ -1,0 +1,6 @@
+proc undefined_variable()
+{
+	foo
+}
+======
+test:3:2: error: undefined variable “foo”

@@ -1,0 +1,7 @@
+proc mismatched_assignment()
+{
+	a := 0
+	a = false
+}
+======
+test:4:6: error: can’t assign value of type “bool” to value of type “int”

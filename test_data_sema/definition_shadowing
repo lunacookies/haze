@@ -1,0 +1,7 @@
+proc definition_shadowing()
+{
+	a := 10
+	a := 20
+}
+======
+test:4:2: error: cannot re-declare variable “a”

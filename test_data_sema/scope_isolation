@@ -1,0 +1,9 @@
+proc scope_isolation()
+{
+	{
+		a := 10
+	}
+	a
+}
+======
+test:6:2: error: undefined variable “a”

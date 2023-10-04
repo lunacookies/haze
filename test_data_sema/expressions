@@ -1,0 +1,21 @@
+proc expressions(parameter int)
+{
+	10
+	true
+	false
+	a := 92
+	a + 2 * 3 * 4 * 5
+	parameter
+}
+======
+proc expressions
+	var parameter int
+	var a int
+{
+	10
+	true
+	false
+	a = 92
+	(a + (((2 * 3) * 4) * 5))
+	parameter
+}

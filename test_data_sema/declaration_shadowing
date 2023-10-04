@@ -1,0 +1,7 @@
+proc declaration_shadowing()
+{
+	var a int
+	var a int
+}
+======
+test:4:2: error: cannot re-declare variable “a”

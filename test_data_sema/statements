@@ -1,0 +1,28 @@
+struct Wrapper {
+	value int
+}
+
+proc statements()
+{
+	var w Wrapper
+	var a int
+
+	a = 5
+	b := a
+
+	{
+		b -= 1
+	}
+}
+======
+proc statements
+	var w Wrapper
+	var a int
+	var b int
+{
+	a = 5
+	b = a
+	{
+		b = (b - 1)
+	}
+}

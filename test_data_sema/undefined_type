@@ -1,0 +1,7 @@
+proc undefined_type()
+{
+	var x int
+	var y Foo
+}
+======
+test:4:8: error: undefined type “Foo”

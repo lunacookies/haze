@@ -1,0 +1,7 @@
+proc non_int_arithmetic()
+{
+	x := true
+	1 + x
+}
+======
+test:4:6: error: cannot use operator “+” with value of type “bool”
