@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::lexer::Loc;
 
 #[derive(Clone, PartialEq, Eq)]
@@ -239,29 +241,7 @@ impl PrettyPrintCtx {
 				self.s("(");
 				self.print_expression(lhs);
 				self.s(" ");
-
-				let op = match operator {
-					BinaryOperator::Add => "+",
-					BinaryOperator::Subtract => "-",
-					BinaryOperator::Multiply => "*",
-					BinaryOperator::Divide => "/",
-					BinaryOperator::Modulo => "%",
-					BinaryOperator::ShiftLeft => "<<",
-					BinaryOperator::ShiftRight => ">>",
-					BinaryOperator::BitAnd => "&",
-					BinaryOperator::BitOr => "|",
-					BinaryOperator::BitXor => "^",
-					BinaryOperator::And => "&&",
-					BinaryOperator::Or => "||",
-					BinaryOperator::Equal => "==",
-					BinaryOperator::NotEqual => "!=",
-					BinaryOperator::Less => "<",
-					BinaryOperator::Greater => ">",
-					BinaryOperator::LessEqual => "<=",
-					BinaryOperator::GreaterEqual => ">=",
-				};
-				self.s(op);
-
+				self.s(&operator.to_string());
 				self.s(" ");
 				self.print_expression(rhs);
 				self.s(")");
@@ -286,5 +266,31 @@ impl PrettyPrintCtx {
 		for _ in 0..self.indentation {
 			self.buf.push('\t');
 		}
+	}
+}
+
+impl fmt::Display for BinaryOperator {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		let s = match self {
+			BinaryOperator::Add => "+",
+			BinaryOperator::Subtract => "-",
+			BinaryOperator::Multiply => "*",
+			BinaryOperator::Divide => "/",
+			BinaryOperator::Modulo => "%",
+			BinaryOperator::ShiftLeft => "<<",
+			BinaryOperator::ShiftRight => ">>",
+			BinaryOperator::BitAnd => "&",
+			BinaryOperator::BitOr => "|",
+			BinaryOperator::BitXor => "^",
+			BinaryOperator::And => "&&",
+			BinaryOperator::Or => "||",
+			BinaryOperator::Equal => "==",
+			BinaryOperator::NotEqual => "!=",
+			BinaryOperator::Less => "<",
+			BinaryOperator::Greater => ">",
+			BinaryOperator::LessEqual => "<=",
+			BinaryOperator::GreaterEqual => ">=",
+		};
+		write!(f, "{s}")
 	}
 }
