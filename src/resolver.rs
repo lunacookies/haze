@@ -50,11 +50,17 @@ struct Resolver<'a> {
 	index: &'a indexer::Index,
 	procedures: IndexMap<String, Procedure>,
 	named_tys: IndexMap<String, NamedTy>,
+	in_progress_tys: Vec<String>,
 }
 
 impl Resolver<'_> {
 	fn new(index: &indexer::Index) -> Resolver<'_> {
-		Resolver { index, procedures: IndexMap::new(), named_tys: IndexMap::new() }
+		Resolver {
+			index,
+			procedures: IndexMap::new(),
+			named_tys: IndexMap::new(),
+			in_progress_tys: Vec::new(),
+		}
 	}
 
 	fn resolve(mut self) -> Index {
@@ -102,15 +108,30 @@ impl Resolver<'_> {
 		match &ty.kind {
 			indexer::TyKind::Int => Ty::Int,
 			indexer::TyKind::Named(n) => {
-				if !self.named_tys.contains_key(n) {
-					let definition = match self.index.tys.get(n) {
+				let n = n.clone();
+
+				if !self.named_tys.contains_key(&n) {
+					if self.in_progress_tys.contains(&n) {
+						crate::error(
+							ty.loc.clone(),
+							"detected cycle in type definition".to_string(),
+						);
+					}
+
+					self.in_progress_tys.push(n.clone());
+					let in_progress_len = self.in_progress_tys.len();
+
+					let definition = match self.index.tys.get(&n) {
 						Some(d) => d,
 						None => crate::error(ty.loc.clone(), "undefined type".to_string()),
 					};
-					self.resolve_ty_definition(n, definition);
+					self.resolve_ty_definition(&n, definition);
+
+					assert_eq!(self.in_progress_tys.len(), in_progress_len);
+					self.in_progress_tys.pop();
 				}
 
-				Ty::Named(n.clone())
+				Ty::Named(n)
 			}
 		}
 	}

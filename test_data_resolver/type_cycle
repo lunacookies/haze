@@ -1,0 +1,4 @@
+struct A { b B }
+struct B { a A }
+======
+test:1:14: error: detected cycle in type definition
