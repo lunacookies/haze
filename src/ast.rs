@@ -117,7 +117,11 @@ struct PrettyPrintCtx {
 
 impl PrettyPrintCtx {
 	fn print_ast(&mut self, ast: &Ast) {
-		for definition in &ast.definitions {
+		for (i, definition) in ast.definitions.iter().enumerate() {
+			if i != 0 {
+				self.newline();
+			}
+
 			match definition {
 				Definition::Procedure(proc) => self.print_procedure(proc),
 				Definition::Struct(strukt) => self.print_struct(strukt),
@@ -148,16 +152,8 @@ impl PrettyPrintCtx {
 			self.s(" ");
 		}
 
-		if proc.body.kind == StatementKind::Block(Vec::new()) {
-			if proc.return_ty.is_none() {
-				self.s(" ");
-			}
-			self.s("{}");
-		} else {
-			self.newline();
-			self.print_statement(&proc.body);
-		}
-
+		self.newline();
+		self.print_statement(&proc.body);
 		self.newline()
 	}
 

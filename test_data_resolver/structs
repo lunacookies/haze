@@ -23,11 +23,13 @@ struct MorePoints
 	second Point
 	third Point
 }
+
 struct Point
 {
 	x int
 	y int
 }
+
 struct Points
 {
 	a Point

@@ -14,6 +14,7 @@ struct V2
 	x int
 	y int
 }
+
 struct Entity
 {
 	position V2
