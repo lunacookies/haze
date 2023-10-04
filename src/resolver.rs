@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use crate::indexer;
 
@@ -8,8 +8,8 @@ pub fn resolve(index: &indexer::Index) -> Index {
 
 #[derive(Clone, PartialEq, Eq, Default)]
 pub struct Index {
-	pub procedures: HashMap<String, Procedure>,
-	pub named_tys: HashMap<String, NamedTy>,
+	pub procedures: IndexMap<String, Procedure>,
+	pub named_tys: IndexMap<String, NamedTy>,
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -48,13 +48,13 @@ pub enum Ty {
 
 struct Resolver<'a> {
 	index: &'a indexer::Index,
-	procedures: HashMap<String, Procedure>,
-	named_tys: HashMap<String, NamedTy>,
+	procedures: IndexMap<String, Procedure>,
+	named_tys: IndexMap<String, NamedTy>,
 }
 
 impl Resolver<'_> {
 	fn new(index: &indexer::Index) -> Resolver<'_> {
-		Resolver { index, procedures: HashMap::new(), named_tys: HashMap::new() }
+		Resolver { index, procedures: IndexMap::new(), named_tys: IndexMap::new() }
 	}
 
 	fn resolve(mut self) -> Index {
@@ -117,10 +117,7 @@ impl Index {
 	pub fn pretty_print(&self) -> String {
 		let mut s = String::new();
 
-		let mut procedures: Vec<_> = self.procedures.iter().collect();
-		procedures.sort_by_key(|(name, _)| *name);
-
-		for (name, procedure) in procedures {
+		for (name, procedure) in &self.procedures {
 			if !s.is_empty() {
 				s.push('\n');
 			}
@@ -149,10 +146,7 @@ impl Index {
 			s.push('\n');
 		}
 
-		let mut named_tys: Vec<_> = self.named_tys.iter().collect();
-		named_tys.sort_by_key(|(name, _)| *name);
-
-		for (name, ty) in named_tys {
+		for (name, ty) in &self.named_tys {
 			if !s.is_empty() {
 				s.push('\n');
 			}

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use crate::{ast, lexer::Loc};
 
@@ -8,8 +8,8 @@ pub fn index(ast: &ast::Ast) -> Index {
 
 #[derive(Clone, PartialEq, Eq, Default)]
 pub struct Index {
-	pub procedures: HashMap<String, Procedure>,
-	pub tys: HashMap<String, TyDefinition>,
+	pub procedures: IndexMap<String, Procedure>,
+	pub tys: IndexMap<String, TyDefinition>,
 }
 
 #[derive(Clone, PartialEq, Eq)]

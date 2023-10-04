@@ -1,3 +1,9 @@
+struct DoublePoints
+{
+	points1 Points
+	points2 Points
+}
+
 struct Points
 {
 	a Point
@@ -17,13 +23,6 @@ struct MorePoints
 	third Point
 }
 ======
-struct MorePoints
-{
-	first Point
-	second Point
-	third Point
-}
-
 struct Point
 {
 	x int
@@ -34,4 +33,17 @@ struct Points
 {
 	a Point
 	b Point
+}
+
+struct DoublePoints
+{
+	points1 Points
+	points2 Points
+}
+
+struct MorePoints
+{
+	first Point
+	second Point
+	third Point
 }
