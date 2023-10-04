@@ -1,0 +1,6 @@
+struct Foo
+{
+	bar Bar
+}
+======
+test:3:6: error: undefined type

@@ -103,7 +103,10 @@ impl Resolver<'_> {
 			indexer::TyKind::Int => Ty::Int,
 			indexer::TyKind::Named(n) => {
 				if !self.named_tys.contains_key(n) {
-					let definition = &self.index.tys[n];
+					let definition = match self.index.tys.get(n) {
+						Some(d) => d,
+						None => crate::error(ty.loc.clone(), "undefined type".to_string()),
+					};
 					self.resolve_ty_definition(n, definition);
 				}
 
