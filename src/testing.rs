@@ -4,6 +4,7 @@ const DELIMITER: &str = "======\n";
 
 pub fn run_tests(path: &str, f: impl Fn(&str) -> String + std::panic::RefUnwindSafe) {
 	let dir = PathBuf::from(path);
+	let mut any_failed = false;
 
 	for entry in fs::read_dir(dir).unwrap() {
 		let entry = entry.unwrap();
@@ -23,6 +24,14 @@ pub fn run_tests(path: &str, f: impl Fn(&str) -> String + std::panic::RefUnwindS
 		let actual_content = format!("{input}{DELIMITER}{actual_output}");
 		assert!(actual_content.ends_with('\n'));
 
-		expect_test::expect_file![&path].assert_eq(&actual_content);
+		if std::panic::catch_unwind(|| expect_test::expect_file![&path].assert_eq(&actual_content))
+			.is_err()
+		{
+			any_failed = true;
+		}
+	}
+
+	if any_failed {
+		panic!("some tests failed");
 	}
 }
