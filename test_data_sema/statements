@@ -27,8 +27,12 @@ proc statements() Wrapper
 		b += 2
 	}
 
+	no_return_value(4)
+
 	return w
 }
+
+proc no_return_value(val int) {}
 ======
 proc statements
 	var w Wrapper
@@ -51,5 +55,11 @@ proc statements
 		}
 		b = (b + 2)
 	}
+	call no_return_value(4)
 	return w
+}
+
+proc no_return_value
+	var val int
+{
 }

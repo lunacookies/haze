@@ -6,11 +6,18 @@ proc expressions(parameter int)
 	a := 92
 	a + 2 * 3 * 4 * 5
 	parameter
+	b := add(9, 2)
+}
+
+proc add(x int, y int) int
+{
+	return x + y
 }
 ======
 proc expressions
 	var parameter int
 	var a int
+	var b int
 {
 	10
 	true
@@ -18,4 +25,12 @@ proc expressions
 	a = 92
 	(a + (((2 * 3) * 4) * 5))
 	parameter
+	b = add(9, 2)
+}
+
+proc add
+	var x int
+	var y int
+{
+	return (x + y)
 }

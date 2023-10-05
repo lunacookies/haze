@@ -1,0 +1,8 @@
+proc takes_three(x int, y int, z int) {}
+
+proc mismatched_argument_count()
+{
+	takes_three(1)
+}
+======
+test:5:2: error: “takes_three” expected 3 arguments but 1 were provided

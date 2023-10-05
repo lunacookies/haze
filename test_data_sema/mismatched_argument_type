@@ -1,0 +1,11 @@
+proc identity(n int) int
+{
+	return n
+}
+
+proc mismatched_argument_type()
+{
+	identity(true)
+}
+======
+test:8:11: error: “int” argument was expected but “bool” was provided
