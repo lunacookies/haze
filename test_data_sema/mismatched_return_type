@@ -1,0 +1,6 @@
+proc mismatched_return_type() int
+{
+	return true
+}
+======
+test:3:9: error: cannot return “bool” from procedure which returns “int”

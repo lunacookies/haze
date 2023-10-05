@@ -4,7 +4,7 @@ use la_arena::{ArenaMap, Idx};
 use crate::{
 	ast,
 	hir::{BodyStorage, Expression, Hir, Procedure, Statement, Variable},
-	resolver::{Index, Ty},
+	resolver::{self, Index, Ty},
 };
 
 pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
@@ -13,7 +13,7 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 	for definition in &ast.definitions {
 		match definition {
 			ast::Definition::Procedure(proc) => {
-				hir.procedures.insert(proc.name.clone(), SemaContext::new(index).analyze(proc));
+				hir.procedures.insert(proc.name.clone(), SemaContext::new(index, proc).analyze());
 			}
 			ast::Definition::Struct(_) => {}
 		}
@@ -24,6 +24,8 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 
 struct SemaContext<'a> {
 	index: &'a Index,
+	procedure: &'a resolver::Procedure,
+	procedure_body: &'a ast::Statement,
 	storage: BodyStorage,
 	scopes: Vec<IndexMap<String, Idx<Variable>>>,
 	expression_tys: ArenaMap<Idx<Expression>, Ty>,
@@ -31,9 +33,11 @@ struct SemaContext<'a> {
 }
 
 impl SemaContext<'_> {
-	fn new(index: &Index) -> SemaContext<'_> {
+	fn new<'a>(index: &'a Index, procedure: &'a ast::Procedure) -> SemaContext<'a> {
 		SemaContext {
 			index,
+			procedure: &index.procedures[&procedure.name],
+			procedure_body: &procedure.body,
 			storage: BodyStorage::default(),
 			scopes: Vec::new(),
 			expression_tys: ArenaMap::new(),
@@ -41,11 +45,10 @@ impl SemaContext<'_> {
 		}
 	}
 
-	fn analyze(mut self, procedure: &ast::Procedure) -> Procedure {
-		let indexed_procedure = &self.index.procedures[&procedure.name];
+	fn analyze(mut self) -> Procedure {
 		self.push_scope();
 
-		for parameter in &indexed_procedure.parameters {
+		for parameter in &self.procedure.parameters {
 			let variable = self
 				.storage
 				.variables
@@ -53,7 +56,7 @@ impl SemaContext<'_> {
 			self.insert_into_scopes(parameter.name.clone(), variable);
 		}
 
-		let body = self.analyze_statement(&procedure.body).unwrap();
+		let body = self.analyze_statement(self.procedure_body).unwrap();
 
 		Procedure { storage: self.storage, body }
 	}
@@ -141,10 +144,32 @@ impl SemaContext<'_> {
 				Statement::Break
 			}
 
-			ast::StatementKind::Return { value } => {
-				let value = value.as_ref().map(|e| self.analyze_expression(e));
-				Statement::Return { value }
-			}
+			ast::StatementKind::Return { value } => match (&self.procedure.return_ty, value) {
+				(Some(return_ty), Some(value)) => {
+					let value_idx = self.analyze_expression(value);
+					let value_ty = &self.expression_tys[value_idx];
+					if value_ty != return_ty {
+						crate::error(value.loc.clone(), format!("cannot return “{value_ty}” from procedure which returns “{return_ty}”"));
+					}
+
+					Statement::Return { value: Some(value_idx) }
+				}
+
+				(Some(return_ty), None) => crate::error(
+					statement.loc.clone(),
+					format!(
+						"cannot return without value from procedure which returns “{return_ty}”"
+					),
+				),
+
+				(None, Some(value)) => crate::error(
+					value.loc.clone(),
+					"cannot return with value from procedure which does not return value"
+						.to_string(),
+				),
+
+				(None, None) => Statement::Return { value: None },
+			},
 
 			ast::StatementKind::Block(statements) => {
 				let mut idxs = Vec::new();

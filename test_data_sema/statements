@@ -2,7 +2,7 @@ struct Wrapper {
 	value int
 }
 
-proc statements()
+proc statements() Wrapper
 {
 	var w Wrapper
 	var a int
@@ -26,6 +26,8 @@ proc statements()
 		}
 		b += 2
 	}
+
+	return w
 }
 ======
 proc statements
@@ -49,4 +51,5 @@ proc statements
 		}
 		b = (b + 2)
 	}
+	return w
 }

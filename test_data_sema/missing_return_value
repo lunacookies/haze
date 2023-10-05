@@ -1,0 +1,6 @@
+proc missing_return_value() bool
+{
+	return
+}
+======
+test:3:2: error: cannot return without value from procedure which returns “bool”
