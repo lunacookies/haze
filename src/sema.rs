@@ -120,6 +120,10 @@ impl SemaContext<'_> {
 				}
 			}
 
+			ast::StatementKind::Loop { body } => todo!(),
+
+			ast::StatementKind::Break => todo!(),
+
 			ast::StatementKind::Return { value } => {
 				let value = value.as_ref().map(|e| self.analyze_expression(e));
 				Statement::Return { value }

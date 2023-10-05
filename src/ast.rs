@@ -50,6 +50,8 @@ pub enum StatementKind {
 	LocalDeclaration { name: String, ty: Ty },
 	LocalDefinition { name: String, value: Expression },
 	If { condition: Expression, true_branch: Box<Statement>, false_branch: Option<Box<Statement>> },
+	Loop { body: Box<Statement> },
+	Break,
 	Return { value: Option<Expression> },
 	Block(Vec<Statement>),
 	Expression(Expression),
@@ -206,6 +208,13 @@ impl PrettyPrintCtx {
 					self.print_statement(false_branch);
 				}
 			}
+
+			StatementKind::Loop { body } => {
+				self.s("for ");
+				self.print_statement(body);
+			}
+
+			StatementKind::Break => self.s("break"),
 
 			StatementKind::Return { value } => {
 				self.s("return");

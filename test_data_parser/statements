@@ -28,6 +28,15 @@ proc statements()
 		b = a - b
 		return b
 	}
+
+	i := 0
+	for {
+		if i > 10 {
+			break
+		}
+
+		i += 1
+	}
 }
 ======
 proc statements()
@@ -56,5 +65,12 @@ proc statements()
 	} else {
 		b = (a - b)
 		return b
+	}
+	i := 0
+	for {
+		if (i > 10) {
+			break
+		}
+		i = (i + 1)
 	}
 }
