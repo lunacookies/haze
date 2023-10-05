@@ -213,7 +213,8 @@ impl Parser {
 
 	fn parse_block(&mut self) -> Statement {
 		let loc = self.current_loc();
-		self.bump(TokenKind::LBrace);
+
+		self.expect(TokenKind::LBrace);
 
 		let mut statements = Vec::new();
 		while !self.at_eof() && !self.at(TokenKind::RBrace) {
