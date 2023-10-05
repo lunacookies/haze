@@ -68,6 +68,7 @@ pub struct Expression {
 pub enum ExpressionKind {
 	Integer(u64),
 	Variable(String),
+	Call { name: String, arguments: Vec<Expression> },
 	True,
 	False,
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
@@ -254,6 +255,21 @@ impl PrettyPrintCtx {
 			ExpressionKind::Integer(i) => self.s(&format!("{i}")),
 
 			ExpressionKind::Variable(name) => self.s(name),
+
+			ExpressionKind::Call { name, arguments } => {
+				self.s(name);
+				self.s("(");
+
+				for (i, argument) in arguments.iter().enumerate() {
+					if i != 0 {
+						self.s(", ");
+					}
+
+					self.print_expression(argument);
+				}
+
+				self.s(")")
+			}
 
 			ExpressionKind::True => self.s("true"),
 			ExpressionKind::False => self.s("false"),

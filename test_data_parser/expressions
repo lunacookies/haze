@@ -12,6 +12,12 @@ proc expressions()
 	2 & 3 ^ 6 & 7
 	1 << 2 + 2
 	1 | 2 ^ 3 | 4 ^ 5
+
+	proc_name()
+	proc_name(a)
+	proc_name(a, b)
+	proc_name(1 + 1, 2 * 2)
+	proc_name(trailing, comma,)
 }
 ======
 proc expressions()
@@ -29,4 +35,9 @@ proc expressions()
 	((2 & 3) ^ (6 & 7))
 	((1 << 2) + 2)
 	((((1 | 2) ^ 3) | 4) ^ 5)
+	proc_name()
+	proc_name(a)
+	proc_name(a, b)
+	proc_name((1 + 1), (2 * 2))
+	proc_name(trailing, comma)
 }

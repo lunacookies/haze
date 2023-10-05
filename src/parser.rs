@@ -273,6 +273,32 @@ impl Parser {
 				Expression { kind: ExpressionKind::Integer(text.parse().unwrap()), loc }
 			}
 
+			TokenKind::Identifier if self.lookahead() == TokenKind::LParen => {
+				let loc = self.current_loc();
+				let name = self.expect_text(TokenKind::Identifier);
+				self.bump(TokenKind::LParen);
+
+				let mut arguments = Vec::new();
+
+				while !self.at_eof() && !self.at(TokenKind::RParen) {
+					arguments.push(self.parse_expression());
+
+					match (self.current(), self.lookahead()) {
+						(TokenKind::RParen, _) => {}
+						(TokenKind::Comma, TokenKind::RParen) => self.bump(TokenKind::Comma),
+						_ => self.expect(TokenKind::Comma),
+					}
+
+					if self.at(TokenKind::RParen) {
+						self.eat(TokenKind::Comma);
+					}
+				}
+
+				self.expect(TokenKind::RParen);
+
+				Expression { kind: ExpressionKind::Call { name, arguments }, loc }
+			}
+
 			TokenKind::Identifier => {
 				let loc = self.current_loc();
 				let text = self.expect_text(TokenKind::Identifier);

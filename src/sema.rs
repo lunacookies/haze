@@ -201,6 +201,8 @@ impl SemaContext<'_> {
 				}
 			},
 
+			ast::ExpressionKind::Call { name, arguments } => todo!(),
+
 			ast::ExpressionKind::True => (Expression::True, Ty::Bool),
 			ast::ExpressionKind::False => (Expression::False, Ty::Bool),
 
