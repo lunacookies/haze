@@ -19,6 +19,13 @@ proc statements()
 	} else {
 		b = a
 	}
+
+	for {
+		if b > a * 2 {
+			break
+		}
+		b += 2
+	}
 }
 ======
 proc statements
@@ -35,5 +42,11 @@ proc statements
 		a = b
 	} else {
 		b = a
+	}
+	for {
+		if (b > (a * 2)) {
+			break
+		}
+		b = (b + 2)
 	}
 }

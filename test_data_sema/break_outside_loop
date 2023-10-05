@@ -1,0 +1,8 @@
+proc break_outside_loop()
+{
+	for {}
+	break
+	for {}
+}
+======
+test:4:2: error: cannot break while not in a loop
