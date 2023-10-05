@@ -11,4 +11,4 @@ proc non_bool_if_condition()
 	if c {}
 }
 ======
-test:11:5: error: can’t use value of type “Color” as condition of if statement
+test:11:5: error: can’t use “Color” as condition of if statement

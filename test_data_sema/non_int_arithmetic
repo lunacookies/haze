@@ -4,4 +4,4 @@ proc non_int_arithmetic()
 	1 + x
 }
 ======
-test:4:6: error: cannot use operator “+” with value of type “bool”
+test:4:6: error: cannot use operator “+” with “bool”

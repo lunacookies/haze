@@ -4,4 +4,4 @@ proc mismatched_assignment()
 	a = false
 }
 ======
-test:4:6: error: can’t assign value of type “bool” to value of type “int”
+test:4:6: error: can’t assign “bool” to “int”
