@@ -50,10 +50,11 @@ impl SemaContext<'_> {
 		self.push_scope();
 
 		for parameter in &self.procedure.parameters {
-			let variable = self
-				.storage
-				.variables
-				.alloc(Variable { name: parameter.name.clone(), ty: parameter.ty.clone() });
+			let variable = self.storage.variables.alloc(Variable {
+				name: parameter.name.clone(),
+				ty: parameter.ty.clone(),
+				is_parameter: true,
+			});
 			self.insert_into_scopes(parameter.name.clone(), variable);
 		}
 
@@ -66,7 +67,8 @@ impl SemaContext<'_> {
 		let s = match &statement.kind {
 			ast::StatementKind::LocalDeclaration { name, ty } => {
 				let ty = self.resolve_ty(ty);
-				let variable = self.alloc_variable(Variable { name: name.clone(), ty });
+				let variable =
+					self.alloc_variable(Variable { name: name.clone(), ty, is_parameter: false });
 
 				if self.lookup_in_scopes(name).is_some() {
 					crate::error(
@@ -83,7 +85,8 @@ impl SemaContext<'_> {
 			ast::StatementKind::LocalDefinition { name, value } => {
 				let value = self.analyze_expression(value);
 				let ty = self.expression_tys[value].clone();
-				let variable = self.alloc_variable(Variable { name: name.clone(), ty });
+				let variable =
+					self.alloc_variable(Variable { name: name.clone(), ty, is_parameter: false });
 
 				if self.lookup_in_scopes(name).is_some() {
 					crate::error(

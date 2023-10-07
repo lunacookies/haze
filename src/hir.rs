@@ -25,6 +25,7 @@ pub struct BodyStorage {
 pub struct Variable {
 	pub name: String,
 	pub ty: Ty,
+	pub is_parameter: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -95,7 +96,13 @@ impl PrettyPrintCtx {
 
 		for (_, variable) in proc.storage.variables.iter() {
 			self.newline();
-			self.s("var ");
+
+			if variable.is_parameter {
+				self.s("param ");
+			} else {
+				self.s("var ");
+			}
+
 			self.s(&variable.name);
 			self.s(" ");
 			self.s(&variable.ty.to_string());

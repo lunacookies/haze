@@ -60,6 +60,6 @@ proc statements
 }
 
 proc no_return_value
-	var val int
+	param val int
 {
 }

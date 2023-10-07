@@ -15,7 +15,7 @@ proc add(x int, y int) int
 }
 ======
 proc expressions
-	var parameter int
+	param parameter int
 	var a int
 	var b int
 {
@@ -29,8 +29,8 @@ proc expressions
 }
 
 proc add
-	var x int
-	var y int
+	param x int
+	param y int
 {
 	return (x + y)
 }
