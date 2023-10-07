@@ -1,0 +1,6 @@
+proc main() int
+{
+	return 1 + 2 * 3
+}
+======
+exit status: 7
