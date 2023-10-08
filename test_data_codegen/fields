@@ -1,0 +1,27 @@
+struct Foo
+{
+	a int
+	b int
+	nested Nested
+}
+
+struct Nested
+{
+	c int
+	d int
+}
+
+proc main() int
+{
+	var f Foo
+	var n Nested
+
+	n.c = 10 + f.a + f.b
+	f.b = 2
+	f.nested = n
+	f.nested.d += 4
+
+	return 5 * n.c - f.b * f.nested.c + f.nested.d
+}
+======
+exit status: 34

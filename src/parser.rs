@@ -231,7 +231,7 @@ impl Parser {
 	}
 
 	fn parse_expression_bp(&mut self, bp: u8) -> Expression {
-		let mut lhs = self.parse_atom();
+		let mut lhs = self.parse_lhs();
 
 		loop {
 			let operator_kind = self.current();
@@ -256,6 +256,25 @@ impl Parser {
 				},
 				loc,
 			};
+		}
+
+		lhs
+	}
+
+	fn parse_lhs(&mut self) -> Expression {
+		let mut lhs = self.parse_atom();
+
+		loop {
+			if self.eat(TokenKind::Dot) {
+				let field = self.expect_text(TokenKind::Identifier);
+				let loc = lhs.loc.clone();
+				lhs = Expression {
+					kind: ExpressionKind::FieldAccess { lhs: Box::new(lhs), field },
+					loc,
+				};
+			} else {
+				break;
+			}
 		}
 
 		lhs

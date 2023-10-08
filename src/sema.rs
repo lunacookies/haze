@@ -275,6 +275,34 @@ impl SemaContext<'_> {
 					operator_return_ty(*operator, lhs_ty).clone(),
 				)
 			}
+
+			ast::ExpressionKind::FieldAccess { lhs, field } => {
+				let lhs_idx = self.analyze_expression(lhs);
+				let lhs_ty = &self.expression_tys[lhs_idx];
+
+				let ty = match lhs_ty {
+					Ty::Int | Ty::Bool => crate::error(
+						lhs.loc.clone(),
+						format!("“{lhs_ty}” is not a struct so it has no fields"),
+					),
+					Ty::Named(name) => match &self.index.named_tys[name] {
+						resolver::NamedTy::Struct(strukt) => 'blk: {
+							for f in &strukt.fields {
+								if &f.name == field {
+									break 'blk &f.ty;
+								}
+							}
+
+							crate::error(
+								lhs.loc.clone(),
+								format!("“{lhs_ty}” does not contain a field called “{field}”"),
+							)
+						}
+					},
+				};
+
+				(Expression::FieldAccess { lhs: lhs_idx, field: field.clone() }, ty.clone())
+			}
 		};
 
 		let idx = self.alloc_expression(e);

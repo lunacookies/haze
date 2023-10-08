@@ -72,6 +72,7 @@ pub enum ExpressionKind {
 	True,
 	False,
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
+	FieldAccess { lhs: Box<Expression>, field: String },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -281,6 +282,14 @@ impl PrettyPrintCtx {
 				self.s(&operator.to_string());
 				self.s(" ");
 				self.print_expression(rhs);
+				self.s(")");
+			}
+
+			ExpressionKind::FieldAccess { lhs, field } => {
+				self.s("(");
+				self.print_expression(lhs);
+				self.s(".");
+				self.s(field);
 				self.s(")");
 			}
 		}

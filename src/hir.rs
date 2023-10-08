@@ -62,6 +62,7 @@ pub enum Expression {
 	True,
 	False,
 	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, op: ast::BinaryOperator },
+	FieldAccess { lhs: Idx<Expression>, field: String },
 }
 
 impl Hir {
@@ -94,7 +95,7 @@ impl PrettyPrintCtx {
 
 		self.indentation += 1;
 
-		for (_, variable) in proc.storage.variables.iter() {
+		for variable in proc.storage.variables.values() {
 			self.newline();
 
 			if variable.is_parameter {
@@ -190,6 +191,14 @@ impl PrettyPrintCtx {
 				self.s(&op.to_string());
 				self.s(" ");
 				self.print_expression(*rhs, storage);
+				self.s(")");
+			}
+
+			Expression::FieldAccess { lhs, field } => {
+				self.s("(");
+				self.print_expression(*lhs, storage);
+				self.s(".");
+				self.s(field);
 				self.s(")");
 			}
 		}

@@ -18,6 +18,22 @@ proc expressions()
 	proc_name(a, b)
 	proc_name(1 + 1, 2 * 2)
 	proc_name(trailing, comma,)
+
+	var my_t MyType
+	my_t.a = 92
+	my_t.b.c = 29
+	my_t.a = b.c
+}
+
+struct MyType
+{
+	a int
+	b Nested
+}
+
+struct Nested
+{
+	c int
 }
 ======
 proc expressions()
@@ -40,4 +56,19 @@ proc expressions()
 	proc_name(a, b)
 	proc_name((1 + 1), (2 * 2))
 	proc_name(trailing, comma)
+	var my_t MyType
+	(my_t.a) = 92
+	((my_t.b).c) = 29
+	(my_t.a) = (b.c)
+}
+
+struct MyType
+{
+	a int
+	b Nested
+}
+
+struct Nested
+{
+	c int
 }

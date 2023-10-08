@@ -15,6 +15,11 @@ struct CodegenCtx<'a> {
 
 impl CodegenCtx<'_> {
 	fn gen(mut self) -> String {
+		for (name, ty) in &self.index.named_tys {
+			self.gen_ty(name, ty);
+			self.newline();
+		}
+
 		for (name, procedure) in &self.index.procedures {
 			self.gen_procedure_declaration(name, procedure);
 			self.s(";");
@@ -29,6 +34,28 @@ impl CodegenCtx<'_> {
 		}
 
 		self.buf
+	}
+
+	fn gen_ty(&mut self, name: &str, ty: &resolver::NamedTy) {
+		match ty {
+			resolver::NamedTy::Struct(strukt) => {
+				self.s("struct ");
+				self.s(name);
+				self.s(" {");
+				self.indentation += 1;
+
+				for field in &strukt.fields {
+					self.newline();
+					self.gen_declaration(&field.name, &field.ty);
+					self.s(";");
+				}
+
+				self.indentation -= 1;
+				self.newline();
+				self.s("};");
+				self.newline();
+			}
+		}
 	}
 
 	fn gen_procedure_declaration(&mut self, name: &str, procedure: &resolver::Procedure) {
@@ -211,6 +238,14 @@ impl CodegenCtx<'_> {
 				self.gen_expression(*rhs, storage);
 				self.s(")");
 			}
+
+			hir::Expression::FieldAccess { lhs, field } => {
+				self.s("(");
+				self.gen_expression(*lhs, storage);
+				self.s(".");
+				self.s(field);
+				self.s(")");
+			}
 		}
 	}
 
@@ -225,6 +260,10 @@ impl CodegenCtx<'_> {
 				self.s(name);
 			}
 			resolver::Ty::Named(n) => {
+				match &self.index.named_tys[n] {
+					resolver::NamedTy::Struct(_) => self.s("struct "),
+				}
+
 				self.s(n);
 				self.s(" ");
 				self.s(name);
