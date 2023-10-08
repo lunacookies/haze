@@ -1,0 +1,12 @@
+proc main() int
+{
+	x := 5
+	ptr_to_x := &x
+	{ TODO() }
+	*ptr_to_x = 4
+	return x + *ptr_to_x
+}
+
+proc TODO() {}
+======
+exit status: 8

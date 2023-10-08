@@ -281,10 +281,11 @@ impl SemaContext<'_> {
 				let lhs_ty = &self.expression_tys[lhs_idx];
 
 				let ty = match lhs_ty {
-					Ty::Int | Ty::Bool => crate::error(
+					Ty::Int | Ty::Bool | Ty::Pointer { .. } => crate::error(
 						lhs.loc.clone(),
 						format!("“{lhs_ty}” is not a struct so it has no fields"),
 					),
+
 					Ty::Named(name) => match &self.index.named_tys[name] {
 						resolver::NamedTy::Struct(strukt) => 'blk: {
 							for f in &strukt.fields {
@@ -302,6 +303,25 @@ impl SemaContext<'_> {
 				};
 
 				(Expression::FieldAccess { lhs: lhs_idx, field: field.clone() }, ty.clone())
+			}
+
+			ast::ExpressionKind::AddressOf(e) => {
+				let e = self.analyze_expression(e);
+				let ty = &self.expression_tys[e];
+
+				(Expression::AddressOf(e), Ty::Pointer { pointee: Box::new(ty.clone()) })
+			}
+
+			ast::ExpressionKind::Dereference(e) => {
+				let e_idx = self.analyze_expression(e);
+				let ty = &self.expression_tys[e_idx];
+
+				let result_ty = match ty {
+					Ty::Pointer { pointee } => &**pointee,
+					_ => crate::error(e.loc.clone(), format!("cannot dereference “{ty}”")),
+				};
+
+				(Expression::Dereference(e_idx), result_ty.clone())
 			}
 		};
 
@@ -364,6 +384,9 @@ impl SemaContext<'_> {
 				} else {
 					crate::error(ty.loc.clone(), format!("undefined type “{name}”"))
 				}
+			}
+			ast::TyKind::Pointer { pointee } => {
+				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 		}
 	}

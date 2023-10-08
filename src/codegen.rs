@@ -199,7 +199,7 @@ impl CodegenCtx<'_> {
 					self.gen_expression(*argument, storage);
 				}
 
-				self.s(")");
+				self.s(");");
 			}
 		}
 	}
@@ -246,27 +246,52 @@ impl CodegenCtx<'_> {
 				self.s(field);
 				self.s(")");
 			}
+
+			hir::Expression::AddressOf(e) => {
+				self.s("(&");
+				self.gen_expression(*e, storage);
+				self.s(")");
+			}
+
+			hir::Expression::Dereference(e) => {
+				self.s("(*");
+				self.gen_expression(*e, storage);
+				self.s(")");
+			}
 		}
 	}
 
 	fn gen_declaration(&mut self, name: &str, ty: &resolver::Ty) {
-		match ty {
-			resolver::Ty::Int => {
-				self.s("int ");
-				self.s(name);
-			}
-			resolver::Ty::Bool => {
-				self.s("bool ");
-				self.s(name);
-			}
-			resolver::Ty::Named(n) => {
-				match &self.index.named_tys[n] {
-					resolver::NamedTy::Struct(_) => self.s("struct "),
-				}
+		self.gen_base_ty(ty);
+		self.s(" ");
+		self.gen_ty_expression(name, ty);
+	}
 
-				self.s(n);
-				self.s(" ");
-				self.s(name);
+	fn gen_base_ty(&mut self, ty: &resolver::Ty) {
+		match ty {
+			resolver::Ty::Int => self.s("int"),
+
+			resolver::Ty::Bool => self.s("bool"),
+
+			resolver::Ty::Named(n) => match &self.index.named_tys[n] {
+				resolver::NamedTy::Struct(_) => {
+					self.s("struct ");
+					self.s(n);
+				}
+			},
+
+			resolver::Ty::Pointer { pointee } => self.gen_base_ty(pointee),
+		}
+	}
+
+	fn gen_ty_expression(&mut self, name: &str, ty: &resolver::Ty) {
+		match ty {
+			resolver::Ty::Int | resolver::Ty::Bool | resolver::Ty::Named(_) => self.s(name),
+			resolver::Ty::Pointer { pointee } => {
+				self.s("(");
+				self.s("*");
+				self.gen_ty_expression(name, pointee);
+				self.s(")");
 			}
 		}
 	}

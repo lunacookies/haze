@@ -7,6 +7,8 @@ proc expressions(parameter int)
 	a + 2 * 3 * 4 * 5
 	parameter
 	b := add(9, 2)
+	ptr := &b
+	ptr_value := *ptr
 }
 
 proc add(x int, y int) int
@@ -18,6 +20,8 @@ proc expressions
 	param parameter int
 	var a int
 	var b int
+	var ptr *int
+	var ptr_value int
 {
 	10
 	true
@@ -26,6 +30,8 @@ proc expressions
 	(a + (((2 * 3) * 4) * 5))
 	parameter
 	b = add(9, 2)
+	ptr = (&b)
+	ptr_value = (*ptr)
 }
 
 proc add

@@ -47,6 +47,7 @@ pub enum Ty {
 	Int,
 	Bool,
 	Named(String),
+	Pointer { pointee: Box<Ty> },
 }
 
 struct Resolver<'a> {
@@ -110,7 +111,9 @@ impl Resolver<'_> {
 	fn resolve_ty(&mut self, ty: &indexer::Ty) -> Ty {
 		match &ty.kind {
 			indexer::TyKind::Int => Ty::Int,
+
 			indexer::TyKind::Bool => Ty::Bool,
+
 			indexer::TyKind::Named(n) => {
 				let n = n.clone();
 
@@ -136,6 +139,10 @@ impl Resolver<'_> {
 				}
 
 				Ty::Named(n)
+			}
+
+			indexer::TyKind::Pointer { pointee } => {
+				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 		}
 	}
@@ -207,6 +214,7 @@ impl fmt::Display for Ty {
 			Ty::Int => write!(f, "int"),
 			Ty::Bool => write!(f, "bool"),
 			Ty::Named(name) => write!(f, "{name}"),
+			Ty::Pointer { pointee } => write!(f, "*{pointee}"),
 		}
 	}
 }

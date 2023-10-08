@@ -63,6 +63,8 @@ pub enum Expression {
 	False,
 	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, op: ast::BinaryOperator },
 	FieldAccess { lhs: Idx<Expression>, field: String },
+	AddressOf(Idx<Expression>),
+	Dereference(Idx<Expression>),
 }
 
 impl Hir {
@@ -199,6 +201,18 @@ impl PrettyPrintCtx {
 				self.print_expression(*lhs, storage);
 				self.s(".");
 				self.s(field);
+				self.s(")");
+			}
+
+			Expression::AddressOf(e) => {
+				self.s("(&");
+				self.print_expression(*e, storage);
+				self.s(")");
+			}
+
+			Expression::Dereference(e) => {
+				self.s("(*");
+				self.print_expression(*e, storage);
 				self.s(")");
 			}
 		}

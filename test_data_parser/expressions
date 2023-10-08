@@ -23,6 +23,13 @@ proc expressions()
 	my_t.a = 92
 	my_t.b.c = 29
 	my_t.a = b.c
+
+	x(&foo)
+	x(&foo.bar.baz)
+	x(*ptr)
+	x(*ptr.with.fields)
+	x(*a + 10)
+	x(&a + 10)
 }
 
 struct MyType
@@ -60,6 +67,12 @@ proc expressions()
 	(my_t.a) = 92
 	((my_t.b).c) = 29
 	(my_t.a) = (b.c)
+	x((&foo))
+	x((&((foo.bar).baz)))
+	x((*ptr))
+	x((*((ptr.with).fields)))
+	x(((*a) + 10))
+	x(((&a) + 10))
 }
 
 struct MyType

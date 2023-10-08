@@ -340,18 +340,47 @@ impl Parser {
 				Expression { kind: ExpressionKind::False, loc }
 			}
 
+			TokenKind::And => {
+				let loc = self.current_loc();
+				self.bump(TokenKind::And);
+				let operand = self.parse_lhs();
+
+				Expression { kind: ExpressionKind::AddressOf(Box::new(operand)), loc }
+			}
+
+			TokenKind::Star => {
+				let loc = self.current_loc();
+				self.bump(TokenKind::Star);
+				let operand = self.parse_lhs();
+
+				Expression { kind: ExpressionKind::Dereference(Box::new(operand)), loc }
+			}
+
 			_ => unreachable!(),
 		}
 	}
 
 	fn parse_ty(&mut self) -> Ty {
 		let loc = self.current_loc();
-		let text = self.expect_text(TokenKind::Identifier);
 
-		match text.as_str() {
-			"int" => Ty { kind: TyKind::Int, loc },
-			"bool" => Ty { kind: TyKind::Bool, loc },
-			_ => Ty { kind: TyKind::Named(text), loc },
+		match self.current() {
+			TokenKind::Star => {
+				self.bump(TokenKind::Star);
+				let pointee = self.parse_ty();
+				Ty { kind: TyKind::Pointer { pointee: Box::new(pointee) }, loc }
+			}
+
+			TokenKind::Identifier => {
+				let text = self.expect_text(TokenKind::Identifier);
+
+				match text.as_str() {
+					"int" => Ty { kind: TyKind::Int, loc },
+					"bool" => Ty { kind: TyKind::Bool, loc },
+					_ => Ty { kind: TyKind::Named(text), loc },
+				}
+			}
+
+			_ => self.error("expected type".to_string()),
 		}
 	}
 
@@ -384,7 +413,11 @@ impl Parser {
 	fn at_expression(&self) -> bool {
 		matches!(
 			self.current(),
-			TokenKind::Integer | TokenKind::Identifier | TokenKind::TrueKw | TokenKind::FalseKw
+			TokenKind::Integer
+				| TokenKind::Identifier
+				| TokenKind::TrueKw
+				| TokenKind::FalseKw
+				| TokenKind::And | TokenKind::Star
 		)
 	}
 

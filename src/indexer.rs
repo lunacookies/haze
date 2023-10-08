@@ -51,6 +51,7 @@ pub enum TyKind {
 	Int,
 	Bool,
 	Named(String),
+	Pointer { pointee: Box<Ty> },
 }
 
 #[derive(Default)]
@@ -75,11 +76,11 @@ impl Indexer {
 				for parameter in &proc.parameters {
 					parameters.push(Parameter {
 						name: parameter.name.clone(),
-						ty: self.index_ty(&parameter.ty),
+						ty: Self::index_ty(&parameter.ty),
 					});
 				}
 
-				let return_ty = proc.return_ty.as_ref().map(|t| self.index_ty(t));
+				let return_ty = proc.return_ty.as_ref().map(Self::index_ty);
 
 				self.index
 					.procedures
@@ -90,7 +91,7 @@ impl Indexer {
 				let mut fields = Vec::new();
 
 				for field in &strukt.fields {
-					fields.push(Field { name: field.name.clone(), ty: self.index_ty(&field.ty) });
+					fields.push(Field { name: field.name.clone(), ty: Self::index_ty(&field.ty) });
 				}
 
 				self.index.tys.insert(strukt.name.clone(), TyDefinition::Struct(Struct { fields }));
@@ -98,12 +99,15 @@ impl Indexer {
 		}
 	}
 
-	fn index_ty(&mut self, ty: &ast::Ty) -> Ty {
+	fn index_ty(ty: &ast::Ty) -> Ty {
 		let loc = ty.loc.clone();
 		match &ty.kind {
 			ast::TyKind::Int => Ty { kind: TyKind::Int, loc },
 			ast::TyKind::Bool => Ty { kind: TyKind::Bool, loc },
 			ast::TyKind::Named(n) => Ty { kind: TyKind::Named(n.clone()), loc },
+			ast::TyKind::Pointer { pointee } => {
+				Ty { kind: TyKind::Pointer { pointee: Box::new(Self::index_ty(pointee)) }, loc }
+			}
 		}
 	}
 }

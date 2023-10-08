@@ -1,0 +1,6 @@
+proc dereference_non_pointer()
+{
+	*10
+}
+======
+test:3:3: error: cannot dereference “int”

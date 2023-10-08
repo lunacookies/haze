@@ -73,6 +73,8 @@ pub enum ExpressionKind {
 	False,
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
 	FieldAccess { lhs: Box<Expression>, field: String },
+	AddressOf(Box<Expression>),
+	Dereference(Box<Expression>),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -108,6 +110,7 @@ pub enum TyKind {
 	Int,
 	Bool,
 	Named(String),
+	Pointer { pointee: Box<Ty> },
 }
 
 impl Ast {
@@ -292,6 +295,18 @@ impl PrettyPrintCtx {
 				self.s(field);
 				self.s(")");
 			}
+
+			ExpressionKind::AddressOf(e) => {
+				self.s("(&");
+				self.print_expression(e);
+				self.s(")");
+			}
+
+			ExpressionKind::Dereference(e) => {
+				self.s("(*");
+				self.print_expression(e);
+				self.s(")");
+			}
 		}
 	}
 
@@ -300,6 +315,10 @@ impl PrettyPrintCtx {
 			TyKind::Int => self.s("int"),
 			TyKind::Bool => self.s("bool"),
 			TyKind::Named(n) => self.s(n),
+			TyKind::Pointer { pointee } => {
+				self.s("*");
+				self.print_ty(pointee);
+			}
 		}
 	}
 
