@@ -1,7 +1,6 @@
-proc mismatched_assignment()
-{
+proc mismatched_assignment() {
 	a := 0
 	a = false
 }
 ======
-test:4:6: error: can’t assign “bool” to “int”
+test:3:6: error: can’t assign “bool” to “int”

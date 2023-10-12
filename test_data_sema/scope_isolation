@@ -1,9 +1,8 @@
-proc scope_isolation()
-{
+proc scope_isolation() {
 	{
 		a := 10
 	}
 	a
 }
 ======
-test:6:2: error: undefined variable “a”
+test:5:2: error: undefined variable “a”

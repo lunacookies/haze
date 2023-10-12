@@ -1,6 +1,5 @@
-struct Foo
-{
+struct Foo {
 	bar Bar
 }
 ======
-test:3:6: error: undefined type
+test:2:6: error: undefined type

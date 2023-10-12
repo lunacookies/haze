@@ -1,18 +1,15 @@
-struct Foo
-{
+struct Foo {
 	a int
 	b int
 	nested Nested
 }
 
-struct Nested
-{
+struct Nested {
 	c int
 	d int
 }
 
-proc main() int
-{
+proc main() int {
 	var f Foo
 	var n Nested
 

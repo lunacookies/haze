@@ -55,7 +55,7 @@ pub enum TokenKind {
 	Slash,
 	ColonEqual,
 	Colon,
-	Semi,
+	SemiOrNewline,
 	LessLessEqual,
 	LessLess,
 	LessEqual,
@@ -149,6 +149,16 @@ impl Lexer<'_> {
 			}
 
 			b'\n' => {
+				if let Some(last_added) = self.tokens.last() {
+					if last_added.kind.can_end_statement() {
+						self.tokens.push(Token {
+							kind: TokenKind::SemiOrNewline,
+							text: String::new(),
+							loc,
+						});
+					}
+				}
+
 				self.i += 1;
 				self.loc.line += 1;
 				self.loc.column = 1;
@@ -220,7 +230,7 @@ impl Lexer<'_> {
 			(b"/", TokenKind::Slash),
 			(b":=", TokenKind::ColonEqual),
 			(b":", TokenKind::Colon),
-			(b";", TokenKind::Semi),
+			(b";", TokenKind::SemiOrNewline),
 			(b"<<=", TokenKind::LessLessEqual),
 			(b"<<", TokenKind::LessLess),
 			(b"<=", TokenKind::LessEqual),
@@ -274,6 +284,23 @@ impl Lexer<'_> {
 		}
 
 		false
+	}
+}
+
+impl TokenKind {
+	pub fn can_end_statement(self) -> bool {
+		matches!(
+			self,
+			TokenKind::Identifier
+				| TokenKind::Integer
+				| TokenKind::BreakKw
+				| TokenKind::TrueKw
+				| TokenKind::FalseKw
+				| TokenKind::ReturnKw
+				| TokenKind::RParen
+				| TokenKind::RBracket
+				| TokenKind::RBrace
+		)
 	}
 }
 

@@ -1,14 +1,12 @@
-struct Color
-{
+struct Color {
 	r int
 	g int
 	b int
 }
 
-proc non_bool_if_condition()
-{
+proc non_bool_if_condition() {
 	var c Color
 	if c {}
 }
 ======
-test:11:5: error: can’t use “Color” as condition of if statement
+test:9:5: error: can’t use “Color” as condition of if statement

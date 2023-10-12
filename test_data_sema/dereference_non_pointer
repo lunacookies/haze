@@ -1,6 +1,5 @@
-proc dereference_non_pointer()
-{
+proc dereference_non_pointer() {
 	*10
 }
 ======
-test:3:3: error: cannot dereference “int”
+test:2:3: error: cannot dereference “int”

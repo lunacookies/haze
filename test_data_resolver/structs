@@ -1,23 +1,19 @@
-struct DoublePoints
-{
+struct DoublePoints {
 	points1 Points
 	points2 Points
 }
 
-struct Points
-{
+struct Points {
 	a Point
 	b Point
 }
 
-struct Point
-{
+struct Point {
 	x int
 	y int
 }
 
-struct MorePoints
-{
+struct MorePoints {
 	first Point
 	second Point
 	third Point

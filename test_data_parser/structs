@@ -1,5 +1,4 @@
-struct V2
-{
+struct V2 {
 	x int
 	y int
 }

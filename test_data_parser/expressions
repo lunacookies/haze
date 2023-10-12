@@ -1,8 +1,7 @@
-proc expressions()
-{
-	10 20
+proc expressions() {
+	10; 20
 	abc
-	true false
+	true; false
 
 	a + b
 	1 + 2 + 3 + 4
@@ -32,14 +31,12 @@ proc expressions()
 	x(&a + 10)
 }
 
-struct MyType
-{
+struct MyType {
 	a int
 	b Nested
 }
 
-struct Nested
-{
+struct Nested {
 	c int
 }
 ======

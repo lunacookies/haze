@@ -1,6 +1,5 @@
-proc call_undefined_procedure()
-{
+proc call_undefined_procedure() {
 	foo()
 }
 ======
-test:3:2: error: undefined procedure “foo”
+test:2:2: error: undefined procedure “foo”

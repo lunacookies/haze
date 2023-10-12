@@ -1,5 +1,4 @@
-proc expressions(parameter int)
-{
+proc expressions(parameter int) {
 	10
 	true
 	false
@@ -11,8 +10,7 @@ proc expressions(parameter int)
 	ptr_value := *ptr
 }
 
-proc add(x int, y int) int
-{
+proc add(x int, y int) int {
 	return x + y
 }
 ======

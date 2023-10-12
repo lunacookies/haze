@@ -2,8 +2,7 @@ struct Wrapper {
 	value int
 }
 
-proc statements() Wrapper
-{
+proc statements() Wrapper {
 	var w Wrapper
 	var a int
 

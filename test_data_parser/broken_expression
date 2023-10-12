@@ -1,6 +1,5 @@
-proc broken_expression()
-{
+proc broken_expression() {
 	1 + var
 }
 ======
-test:3:6: error: expected expression
+test:2:6: error: expected expression

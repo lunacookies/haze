@@ -1,8 +1,7 @@
 proc no_return_value() {}
 
-proc no_return_value_procedure_expression()
-{
+proc no_return_value_procedure_expression() {
 	v := no_return_value()
 }
 ======
-test:5:7: error: cannot call procedure “no_return_value” in expression since it does not return a value
+test:4:7: error: cannot call procedure “no_return_value” in expression since it does not return a value

@@ -1,8 +1,7 @@
-proc main() int
-{
+proc main() int {
 	x := 5
 	ptr_to_x := &x
-	{ TODO() }
+	{ TODO(); }
 	*ptr_to_x = 4
 	return x + *ptr_to_x
 }

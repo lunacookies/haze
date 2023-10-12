@@ -1,6 +1,5 @@
-proc undefined_variable()
-{
+proc undefined_variable() {
 	foo
 }
 ======
-test:3:2: error: undefined variable “foo”
+test:2:2: error: undefined variable “foo”

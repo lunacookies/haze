@@ -31,6 +31,7 @@ impl Parser {
 
 		while !self.at_eof() {
 			definitions.push(self.parse_definition());
+			self.expect(TokenKind::SemiOrNewline);
 		}
 
 		Ast { definitions }
@@ -91,6 +92,7 @@ impl Parser {
 		while !self.at_eof() && !self.at(TokenKind::RBrace) {
 			let field_name = self.expect_text(TokenKind::Identifier);
 			let field_ty = self.parse_ty();
+			self.expect(TokenKind::SemiOrNewline);
 			fields.push(Field { name: field_name, ty: field_ty });
 		}
 
@@ -100,50 +102,59 @@ impl Parser {
 	}
 
 	fn parse_statement(&mut self) -> Statement {
-		match self.current() {
+		let s = match self.current() {
 			TokenKind::VarKw => self.parse_local_declaration(),
 			TokenKind::IfKw => self.parse_if(),
 			TokenKind::ForKw => self.parse_loop(),
 			TokenKind::BreakKw => self.parse_break(),
 			TokenKind::ReturnKw => self.parse_return(),
 			TokenKind::LBrace => self.parse_block(),
+			_ => self.parse_complex_statement(),
+		};
 
-			_ => {
-				if self.lookahead() == TokenKind::ColonEqual {
-					return self.parse_local_definition();
-				}
+		assert!(
+			self.tokens[self.cursor - 1].kind.can_end_statement(),
+			"{:?} cannot end a statement",
+			self.tokens[self.cursor - 1].kind
+		);
 
-				let loc = self.current_loc();
-				let lhs = self.parse_expression();
+		s
+	}
 
-				let operator_kind = self.current();
-				let operator = match assignment_token_kind_to_operator(operator_kind) {
-					Some(operator) => operator,
-					None => return Statement { kind: StatementKind::Expression(lhs), loc },
-				};
-				self.bump(operator_kind);
+	fn parse_complex_statement(&mut self) -> Statement {
+		if self.lookahead() == TokenKind::ColonEqual {
+			return self.parse_local_definition();
+		}
 
-				let rhs = self.parse_expression();
+		let loc = self.current_loc();
+		let lhs = self.parse_expression();
 
-				match operator {
-					Some(operator) => Statement {
-						kind: StatementKind::Assignment {
-							lhs: lhs.clone(),
-							rhs: Expression {
-								kind: ExpressionKind::Binary {
-									lhs: Box::new(lhs),
-									operator,
-									rhs: Box::new(rhs),
-								},
-								loc: loc.clone(),
-							},
+		let operator_kind = self.current();
+		let operator = match assignment_token_kind_to_operator(operator_kind) {
+			Some(operator) => operator,
+			None => return Statement { kind: StatementKind::Expression(lhs), loc },
+		};
+		self.bump(operator_kind);
+
+		let rhs = self.parse_expression();
+
+		match operator {
+			Some(operator) => Statement {
+				kind: StatementKind::Assignment {
+					lhs: lhs.clone(),
+					rhs: Expression {
+						kind: ExpressionKind::Binary {
+							lhs: Box::new(lhs),
+							operator,
+							rhs: Box::new(rhs),
 						},
-						loc,
+						loc: loc.clone(),
 					},
+				},
+				loc,
+			},
 
-					None => Statement { kind: StatementKind::Assignment { lhs, rhs }, loc },
-				}
-			}
+			None => Statement { kind: StatementKind::Assignment { lhs, rhs }, loc },
 		}
 	}
 
@@ -219,6 +230,7 @@ impl Parser {
 		let mut statements = Vec::new();
 		while !self.at_eof() && !self.at(TokenKind::RBrace) {
 			statements.push(self.parse_statement());
+			self.expect(TokenKind::SemiOrNewline);
 		}
 
 		self.expect(TokenKind::RBrace);
