@@ -1,0 +1,3 @@
+proc invalid_procedure_directive() #foo
+======
+test:1:37: error: invalid procedure directive “#foo”

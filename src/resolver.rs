@@ -18,6 +18,7 @@ pub struct Index {
 pub struct Procedure {
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
+	pub is_extern: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -91,7 +92,10 @@ impl Resolver<'_> {
 
 		let return_ty = procedure.return_ty.as_ref().map(|t| self.resolve_ty(t));
 
-		self.procedures.insert(name.to_string(), Procedure { parameters, return_ty });
+		self.procedures.insert(
+			name.to_string(),
+			Procedure { parameters, return_ty, is_extern: procedure.is_extern },
+		);
 	}
 
 	fn resolve_ty_definition(&mut self, name: &str, ty_definition: &indexer::TyDefinition) {
@@ -175,7 +179,11 @@ impl Index {
 
 			if let Some(return_ty) = &procedure.return_ty {
 				s.push(' ');
-				s.push_str(&return_ty.to_string())
+				s.push_str(&return_ty.to_string());
+			}
+
+			if procedure.is_extern {
+				s.push_str(" #extern");
 			}
 
 			s.push('\n');

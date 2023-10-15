@@ -302,6 +302,21 @@ impl TokenKind {
 				| TokenKind::RBrace
 		)
 	}
+
+	pub fn can_start_expression(self) -> bool {
+		matches!(
+			self,
+			TokenKind::Integer
+				| TokenKind::Identifier
+				| TokenKind::TrueKw
+				| TokenKind::FalseKw
+				| TokenKind::And | TokenKind::Star
+		)
+	}
+
+	pub fn can_start_ty(self) -> bool {
+		matches!(self, TokenKind::Identifier | TokenKind::Star)
+	}
 }
 
 #[cfg(test)]

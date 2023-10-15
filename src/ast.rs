@@ -18,7 +18,8 @@ pub struct Procedure {
 	pub name: String,
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
-	pub body: Statement,
+	pub body: Option<Statement>,
+	pub is_extern: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -160,11 +161,17 @@ impl PrettyPrintCtx {
 		if let Some(return_ty) = &proc.return_ty {
 			self.s(" ");
 			self.print_ty(return_ty);
-			self.s(" ");
 		}
 
-		self.newline();
-		self.print_statement(&proc.body);
+		if proc.is_extern {
+			self.s(" #extern");
+		}
+
+		if let Some(body) = &proc.body {
+			self.newline();
+			self.print_statement(body);
+		}
+
 		self.newline()
 	}
 
@@ -323,6 +330,7 @@ impl PrettyPrintCtx {
 	}
 
 	fn s(&mut self, s: &str) {
+		assert!(!s.contains('\n'));
 		self.buf.push_str(s);
 	}
 

@@ -16,6 +16,7 @@ pub struct Index {
 pub struct Procedure {
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
+	pub is_extern: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,9 +83,10 @@ impl Indexer {
 
 				let return_ty = proc.return_ty.as_ref().map(Self::index_ty);
 
-				self.index
-					.procedures
-					.insert(proc.name.clone(), Procedure { parameters, return_ty });
+				self.index.procedures.insert(
+					proc.name.clone(),
+					Procedure { parameters, return_ty, is_extern: proc.is_extern },
+				);
 			}
 
 			ast::Definition::Struct(strukt) => {

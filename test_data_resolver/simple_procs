@@ -3,6 +3,8 @@ proc int_param(a int) {}
 proc int_params(a int, b int) {}
 proc int_return() int {}
 proc bool_return() bool {}
+proc extern_with_return() int #extern
+proc extern_without_return() #extern
 ======
 proc nothing()
 
@@ -13,3 +15,7 @@ proc int_params(a int, b int)
 proc int_return() int
 
 proc bool_return() bool
+
+proc extern_with_return() int #extern
+
+proc extern_without_return() #extern

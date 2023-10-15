@@ -3,6 +3,8 @@ proc one_param(a int) {}
 proc two_params(a int, b int) {}
 proc trailing_comma(a int,) {}
 proc with_return() int {}
+proc without_body()
+proc extern() #extern
 ======
 proc no_params()
 {
@@ -20,6 +22,10 @@ proc trailing_comma(a int)
 {
 }
 
-proc with_return() int 
+proc with_return() int
 {
 }
+
+proc without_body()
+
+proc extern() #extern

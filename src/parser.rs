@@ -72,13 +72,23 @@ impl Parser {
 		self.expect(TokenKind::RParen);
 
 		let mut return_ty = None;
-		if !self.at(TokenKind::LBrace) {
+		if self.current().can_start_ty() {
 			return_ty = Some(self.parse_ty());
 		}
 
-		let body = self.parse_block();
+		let mut is_extern = false;
+		if self.eat(TokenKind::Hash) {
+			let loc = self.current_loc();
+			let directive = self.expect_text(TokenKind::Identifier);
+			match directive.as_str() {
+				"extern" => is_extern = true,
+				_ => crate::error(loc, format!("invalid procedure directive “#{directive}”")),
+			}
+		}
 
-		Definition::Procedure(Procedure { name, parameters, return_ty, body })
+		let body = if self.at(TokenKind::LBrace) { Some(self.parse_block()) } else { None };
+
+		Definition::Procedure(Procedure { name, parameters, return_ty, body, is_extern })
 	}
 
 	fn parse_struct(&mut self) -> Definition {
@@ -217,7 +227,11 @@ impl Parser {
 		let loc = self.current_loc();
 		self.bump(TokenKind::ReturnKw);
 
-		let value = if self.at_expression() { Some(self.parse_expression()) } else { None };
+		let value = if self.current().can_start_expression() {
+			Some(self.parse_expression())
+		} else {
+			None
+		};
 
 		Statement { kind: StatementKind::Return { value }, loc }
 	}
@@ -293,7 +307,7 @@ impl Parser {
 	}
 
 	fn parse_atom(&mut self) -> Expression {
-		if !self.at_expression() {
+		if !self.current().can_start_expression() {
 			self.error("expected expression".to_string());
 		}
 
@@ -373,6 +387,10 @@ impl Parser {
 	}
 
 	fn parse_ty(&mut self) -> Ty {
+		if !self.current().can_start_ty() {
+			self.error("expected type".to_string())
+		}
+
 		let loc = self.current_loc();
 
 		match self.current() {
@@ -392,7 +410,7 @@ impl Parser {
 				}
 			}
 
-			_ => self.error("expected type".to_string()),
+			_ => unreachable!(),
 		}
 	}
 
@@ -420,17 +438,6 @@ impl Parser {
 		assert!(self.at(kind));
 		self.cursor += 1;
 		self.fuel.set(INITIAL_FUEL);
-	}
-
-	fn at_expression(&self) -> bool {
-		matches!(
-			self.current(),
-			TokenKind::Integer
-				| TokenKind::Identifier
-				| TokenKind::TrueKw
-				| TokenKind::FalseKw
-				| TokenKind::And | TokenKind::Star
-		)
 	}
 
 	fn at(&self, kind: TokenKind) -> bool {

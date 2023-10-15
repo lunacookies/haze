@@ -13,9 +13,20 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 
 	for definition in &ast.definitions {
 		match definition {
-			ast::Definition::Procedure(proc) => {
-				hir.procedures.insert(proc.name.clone(), SemaContext::new(index, proc).analyze());
-			}
+			ast::Definition::Procedure(proc) => match (&proc.body, proc.is_extern) {
+				(Some(body), true) => {
+					crate::error(body.loc.clone(), "body provided for extern procedure".to_string())
+				}
+
+				(Some(body), false) => {
+					let ctx = SemaContext::new(index, &proc.name, body);
+					hir.procedures.insert(proc.name.clone(), ctx.analyze());
+				}
+
+				(None, true) => {}
+
+				(None, false) => todo!(),
+			},
 			ast::Definition::Struct(_) => {}
 		}
 	}
@@ -34,11 +45,15 @@ struct SemaContext<'a> {
 }
 
 impl SemaContext<'_> {
-	fn new<'a>(index: &'a Index, procedure: &'a ast::Procedure) -> SemaContext<'a> {
+	fn new<'a>(
+		index: &'a Index,
+		procedure_name: &str,
+		procedure_body: &'a ast::Statement,
+	) -> SemaContext<'a> {
 		SemaContext {
 			index,
-			procedure: &index.procedures[&procedure.name],
-			procedure_body: &procedure.body,
+			procedure: &index.procedures[procedure_name],
+			procedure_body,
 			storage: BodyStorage::default(),
 			scopes: Vec::new(),
 			expression_tys: ArenaMap::new(),
