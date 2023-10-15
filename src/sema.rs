@@ -25,7 +25,10 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 
 				(None, true) => {}
 
-				(None, false) => todo!(),
+				(None, false) => crate::error(
+					definition.loc.clone(),
+					"non-extern procedure has no body".to_string(),
+				),
 			},
 			ast::DefinitionKind::Struct(_) => {}
 		}

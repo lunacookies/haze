@@ -1,0 +1,3 @@
+proc procedure_without_body()
+======
+test:1:1: error: non-extern procedure has no body
