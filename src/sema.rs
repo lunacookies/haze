@@ -12,8 +12,8 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 	let mut hir = Hir::default();
 
 	for definition in &ast.definitions {
-		match definition {
-			ast::Definition::Procedure(proc) => match (&proc.body, proc.is_extern) {
+		match &definition.kind {
+			ast::DefinitionKind::Procedure(proc) => match (&proc.body, proc.is_extern) {
 				(Some(body), true) => {
 					crate::error(body.loc.clone(), "body provided for extern procedure".to_string())
 				}
@@ -27,7 +27,7 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 
 				(None, false) => todo!(),
 			},
-			ast::Definition::Struct(_) => {}
+			ast::DefinitionKind::Struct(_) => {}
 		}
 	}
 

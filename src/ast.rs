@@ -8,7 +8,13 @@ pub struct Ast {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Definition {
+pub struct Definition {
+	pub kind: DefinitionKind,
+	pub loc: Loc,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DefinitionKind {
 	Procedure(Procedure),
 	Struct(Struct),
 }
@@ -134,9 +140,9 @@ impl PrettyPrintCtx {
 				self.newline();
 			}
 
-			match definition {
-				Definition::Procedure(proc) => self.print_procedure(proc),
-				Definition::Struct(strukt) => self.print_struct(strukt),
+			match &definition.kind {
+				DefinitionKind::Procedure(proc) => self.print_procedure(proc),
+				DefinitionKind::Struct(strukt) => self.print_struct(strukt),
 			}
 		}
 	}

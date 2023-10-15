@@ -2,8 +2,8 @@ use std::{cell::Cell, path::PathBuf};
 
 use crate::{
 	ast::{
-		Ast, BinaryOperator, Definition, Expression, ExpressionKind, Field, Parameter, Procedure,
-		Statement, StatementKind, Struct, Ty, TyKind,
+		Ast, BinaryOperator, Definition, DefinitionKind, Expression, ExpressionKind, Field,
+		Parameter, Procedure, Statement, StatementKind, Struct, Ty, TyKind,
 	},
 	lexer::{lex, Loc, Token, TokenKind},
 };
@@ -46,6 +46,7 @@ impl Parser {
 	}
 
 	fn parse_procedure(&mut self) -> Definition {
+		let loc = self.current_loc();
 		self.bump(TokenKind::ProcKw);
 
 		let name = self.expect_text(TokenKind::Identifier);
@@ -88,10 +89,20 @@ impl Parser {
 
 		let body = if self.at(TokenKind::LBrace) { Some(self.parse_block()) } else { None };
 
-		Definition::Procedure(Procedure { name, parameters, return_ty, body, is_extern })
+		Definition {
+			kind: DefinitionKind::Procedure(Procedure {
+				name,
+				parameters,
+				return_ty,
+				body,
+				is_extern,
+			}),
+			loc,
+		}
 	}
 
 	fn parse_struct(&mut self) -> Definition {
+		let loc = self.current_loc();
 		self.bump(TokenKind::StructKw);
 
 		let name = self.expect_text(TokenKind::Identifier);
@@ -108,7 +119,7 @@ impl Parser {
 
 		self.expect(TokenKind::RBrace);
 
-		Definition::Struct(Struct { name, fields })
+		Definition { kind: DefinitionKind::Struct(Struct { name, fields }), loc }
 	}
 
 	fn parse_statement(&mut self) -> Statement {

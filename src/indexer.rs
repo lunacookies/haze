@@ -70,8 +70,8 @@ impl Indexer {
 	}
 
 	fn index_definition(&mut self, definition: &ast::Definition) {
-		match definition {
-			ast::Definition::Procedure(proc) => {
+		match &definition.kind {
+			ast::DefinitionKind::Procedure(proc) => {
 				let mut parameters = Vec::new();
 
 				for parameter in &proc.parameters {
@@ -89,7 +89,7 @@ impl Indexer {
 				);
 			}
 
-			ast::Definition::Struct(strukt) => {
+			ast::DefinitionKind::Struct(strukt) => {
 				let mut fields = Vec::new();
 
 				for field in &strukt.fields {
