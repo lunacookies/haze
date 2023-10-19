@@ -1,0 +1,5 @@
+proc explicit_int_literal() {
+	cast(int) 10
+}
+======
+test:2:2: error: “int” is the default integer type so this cast has no effect

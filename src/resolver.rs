@@ -46,6 +46,7 @@ pub struct Field {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Ty {
 	Int,
+	Byte,
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
@@ -115,6 +116,8 @@ impl Resolver<'_> {
 	fn resolve_ty(&mut self, ty: &indexer::Ty) -> Ty {
 		match &ty.kind {
 			indexer::TyKind::Int => Ty::Int,
+
+			indexer::TyKind::Byte => Ty::Byte,
 
 			indexer::TyKind::Bool => Ty::Bool,
 
@@ -220,6 +223,7 @@ impl fmt::Display for Ty {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		match self {
 			Ty::Int => write!(f, "int"),
+			Ty::Byte => write!(f, "byte"),
 			Ty::Bool => write!(f, "bool"),
 			Ty::Named(name) => write!(f, "{name}"),
 			Ty::Pointer { pointee } => write!(f, "*{pointee}"),

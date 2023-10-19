@@ -1,0 +1,34 @@
+proc numbers() byte {
+	default := 0
+	var i int
+	i = 5
+	1
+	cast(byte) 1
+	var b byte
+	b = 5
+	b = b + b
+	take_byte(50)
+	return 4
+}
+
+proc take_byte(b byte) {}
+======
+proc numbers
+	var default int
+	var i int
+	var b byte
+{
+	default = 0
+	i = 5
+	1
+	1_byte
+	b = 5_byte
+	b = (b + b)
+	call take_byte(50_byte)
+	return 4_byte
+}
+
+proc take_byte
+	param b byte
+{
+}

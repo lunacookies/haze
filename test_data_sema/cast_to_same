@@ -1,0 +1,6 @@
+proc cast_to_same() {
+	b := cast(byte) 1
+	cast(byte) b
+}
+======
+test:3:2: error: useless cast from “byte” to “byte”

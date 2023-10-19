@@ -1,15 +1,21 @@
 proc casts() {
-	b := true
-	i := cast(int) b
+	i := 0
+	by := cast(byte) i
+	i = cast(int) by
+	i = cast(int) true
+	by = cast(byte) true
 	bptr := cast(*bool) &i
 }
 ======
 proc casts
-	var b bool
 	var i int
+	var by byte
 	var bptr *bool
 {
-	b = true
-	i = cast(int, b)
+	i = 0
+	by = cast(byte, i)
+	i = cast(int, by)
+	i = cast(int, true)
+	by = cast(byte, true)
 	bptr = cast(*bool, (&i))
 }

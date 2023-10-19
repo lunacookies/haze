@@ -101,7 +101,7 @@ impl SemaContext<'_> {
 			}
 
 			ast::StatementKind::LocalDefinition { name, value } => {
-				let value = self.analyze_expression(value);
+				let value = self.analyze_expression(value, None);
 				let ty = self.expression_tys[value].clone();
 				let variable =
 					self.alloc_variable(Variable { name: name.clone(), ty, is_parameter: false });
@@ -122,7 +122,7 @@ impl SemaContext<'_> {
 			}
 
 			ast::StatementKind::If { condition, true_branch, false_branch } => {
-				let condition_idx = self.analyze_expression(condition);
+				let condition_idx = self.analyze_expression(condition, Some(&Ty::Bool));
 				let condition_ty = &self.expression_tys[condition_idx];
 
 				if condition_ty != &Ty::Bool {
@@ -168,7 +168,7 @@ impl SemaContext<'_> {
 
 			ast::StatementKind::Return { value } => match (&self.procedure.return_ty, value) {
 				(Some(return_ty), Some(value)) => {
-					let value_idx = self.analyze_expression(value);
+					let value_idx = self.analyze_expression(value, Some(return_ty));
 					let value_ty = &self.expression_tys[value_idx];
 					if value_ty != return_ty {
 						crate::error(value.loc.clone(), format!("cannot return “{value_ty}” from procedure which returns “{return_ty}”"));
@@ -212,16 +212,16 @@ impl SemaContext<'_> {
 					let (arguments, _return_ty) = self.analyze_call(name, arguments, &e.loc);
 					Statement::Call { name: name.clone(), arguments }
 				}
-				_ => Statement::Expression(self.analyze_expression(e)),
+				_ => Statement::Expression(self.analyze_expression(e, None)),
 			},
 
 			ast::StatementKind::Assignment { lhs, rhs } => {
-				let lhs_idx = self.analyze_expression(lhs);
-				let rhs_idx = self.analyze_expression(rhs);
-				let lhs_ty = &self.expression_tys[lhs_idx];
+				let lhs_idx = self.analyze_expression(lhs, None);
+				let lhs_ty = self.expression_tys[lhs_idx].clone();
+				let rhs_idx = self.analyze_expression(rhs, Some(&lhs_ty));
 				let rhs_ty = &self.expression_tys[rhs_idx];
 
-				if lhs_ty != rhs_ty {
+				if &lhs_ty != rhs_ty {
 					crate::error(
 						rhs.loc.clone(),
 						format!("can’t assign “{}” to “{}”", rhs_ty, lhs_ty),
@@ -235,9 +235,16 @@ impl SemaContext<'_> {
 		Some(self.alloc_statement(s))
 	}
 
-	fn analyze_expression(&mut self, expression: &ast::Expression) -> Idx<Expression> {
+	fn analyze_expression(
+		&mut self,
+		expression: &ast::Expression,
+		requested_ty: Option<&Ty>,
+	) -> Idx<Expression> {
 		let (e, ty) = match &expression.kind {
-			ast::ExpressionKind::Integer(i) => (Expression::Integer(*i), Ty::Int),
+			ast::ExpressionKind::Integer(i) => match requested_ty {
+				Some(Ty::Byte) => (Expression::Byte(*i as u8), Ty::Byte),
+				_ => (Expression::Integer(*i), Ty::Int),
+			},
 
 			ast::ExpressionKind::Variable(name) => match self.lookup_in_scopes(name) {
 				Some(variable) => {
@@ -265,14 +272,14 @@ impl SemaContext<'_> {
 			ast::ExpressionKind::False => (Expression::False, Ty::Bool),
 
 			ast::ExpressionKind::Binary { lhs, operator, rhs } => {
-				let lhs_idx = self.analyze_expression(lhs);
-				let rhs_idx = self.analyze_expression(rhs);
-				let lhs_ty = &self.expression_tys[lhs_idx];
+				let lhs_idx = self.analyze_expression(lhs, None);
+				let lhs_ty = self.expression_tys[lhs_idx].clone();
+				let rhs_idx = self.analyze_expression(rhs, Some(&lhs_ty));
 				let rhs_ty = &self.expression_tys[rhs_idx];
 
 				let acceptable_tys = acceptable_tys_for_operator(*operator);
 
-				if !acceptable_tys.contains(lhs_ty) {
+				if !acceptable_tys.contains(&lhs_ty) {
 					crate::error(
 						lhs.loc.clone(),
 						format!("cannot use operator “{operator}” with “{lhs_ty}”"),
@@ -286,20 +293,20 @@ impl SemaContext<'_> {
 					);
 				}
 
-				assert_eq!(lhs_ty, rhs_ty);
+				assert_eq!(&lhs_ty, rhs_ty);
 
 				(
 					Expression::Binary { lhs: lhs_idx, rhs: rhs_idx, op: *operator },
-					operator_return_ty(*operator, lhs_ty).clone(),
+					operator_return_ty(*operator, &lhs_ty).clone(),
 				)
 			}
 
 			ast::ExpressionKind::FieldAccess { lhs, field } => {
-				let lhs_idx = self.analyze_expression(lhs);
+				let lhs_idx = self.analyze_expression(lhs, None);
 				let lhs_ty = &self.expression_tys[lhs_idx];
 
 				let ty = match lhs_ty {
-					Ty::Int | Ty::Bool | Ty::Pointer { .. } => crate::error(
+					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } => crate::error(
 						lhs.loc.clone(),
 						format!("“{lhs_ty}” is not a struct so it has no fields"),
 					),
@@ -324,14 +331,14 @@ impl SemaContext<'_> {
 			}
 
 			ast::ExpressionKind::AddressOf(e) => {
-				let e = self.analyze_expression(e);
+				let e = self.analyze_expression(e, None);
 				let ty = &self.expression_tys[e];
 
 				(Expression::AddressOf(e), Ty::Pointer { pointee: Box::new(ty.clone()) })
 			}
 
 			ast::ExpressionKind::Dereference(e) => {
-				let e_idx = self.analyze_expression(e);
+				let e_idx = self.analyze_expression(e, None);
 				let ty = &self.expression_tys[e_idx];
 
 				let result_ty = match ty {
@@ -342,13 +349,38 @@ impl SemaContext<'_> {
 				(Expression::Dereference(e_idx), result_ty.clone())
 			}
 
-			ast::ExpressionKind::Cast { ty, operand } => {
-				let operand_idx = self.analyze_expression(operand);
+			ast::ExpressionKind::Cast { ty, operand } => 'cast: {
 				let ty = self.resolve_ty(ty);
+				let operand_idx = self.analyze_expression(operand, Some(&ty));
 				let operand_ty = &self.expression_tys[operand_idx];
 
+				let lowered_operand = &self.storage.expressions[operand_idx];
+				if matches!(lowered_operand, Expression::Integer(_) | Expression::Byte(_))
+					&& operand_ty == &ty
+				{
+					if ty == Ty::Int {
+						crate::error(
+							expression.loc.clone(),
+							"“int” is the default integer type so this cast has no effect"
+								.to_string(),
+						);
+					}
+
+					break 'cast (lowered_operand.clone(), ty);
+				}
+
+				if operand_ty == &ty {
+					crate::error(
+						expression.loc.clone(),
+						format!("useless cast from “{operand_ty}” to “{ty}”"),
+					);
+				}
+
 				match (operand_ty, &ty) {
+					(Ty::Int, Ty::Byte) => {}
+					(Ty::Byte, Ty::Int) => {}
 					(Ty::Bool, Ty::Int) => {}
+					(Ty::Bool, Ty::Byte) => {}
 					(Ty::Pointer { .. }, Ty::Pointer { .. }) => {}
 
 					_ => crate::error(
@@ -391,7 +423,7 @@ impl SemaContext<'_> {
 		let mut argument_idxs = Vec::new();
 
 		for (argument, parameter) in arguments.iter().zip(&procedure.parameters) {
-			let idx = self.analyze_expression(argument);
+			let idx = self.analyze_expression(argument, Some(&parameter.ty));
 			let argument_ty = &self.expression_tys[idx];
 
 			if argument_ty != &parameter.ty {
@@ -413,6 +445,7 @@ impl SemaContext<'_> {
 	fn resolve_ty(&mut self, ty: &ast::Ty) -> Ty {
 		match &ty.kind {
 			ast::TyKind::Int => Ty::Int,
+			ast::TyKind::Byte => Ty::Byte,
 			ast::TyKind::Bool => Ty::Bool,
 			ast::TyKind::Named(name) => {
 				if self.index.named_tys.contains_key(name) {
@@ -478,10 +511,10 @@ fn acceptable_tys_for_operator(operator: ast::BinaryOperator) -> &'static [Ty] {
 		| ast::BinaryOperator::LessEqual
 		| ast::BinaryOperator::GreaterEqual
 		| ast::BinaryOperator::Equal
-		| ast::BinaryOperator::NotEqual => &[Ty::Int],
+		| ast::BinaryOperator::NotEqual => &[Ty::Int, Ty::Byte],
 
 		ast::BinaryOperator::BitAnd | ast::BinaryOperator::BitOr | ast::BinaryOperator::BitXor => {
-			&[Ty::Int, Ty::Bool]
+			&[Ty::Int, Ty::Byte, Ty::Bool]
 		}
 
 		ast::BinaryOperator::And | ast::BinaryOperator::Or => &[Ty::Bool],

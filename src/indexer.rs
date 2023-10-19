@@ -50,6 +50,7 @@ pub struct Ty {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TyKind {
 	Int,
+	Byte,
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
@@ -105,6 +106,7 @@ impl Indexer {
 		let loc = ty.loc.clone();
 		match &ty.kind {
 			ast::TyKind::Int => Ty { kind: TyKind::Int, loc },
+			ast::TyKind::Byte => Ty { kind: TyKind::Byte, loc },
 			ast::TyKind::Bool => Ty { kind: TyKind::Bool, loc },
 			ast::TyKind::Named(n) => Ty { kind: TyKind::Named(n.clone()), loc },
 			ast::TyKind::Pointer { pointee } => {

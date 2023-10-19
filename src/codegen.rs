@@ -17,6 +17,8 @@ impl CodegenCtx<'_> {
 	fn gen(mut self) -> String {
 		self.s("#include <stdbool.h>");
 		self.newline();
+		self.s("#include <stdint.h>");
+		self.newline();
 
 		for (name, ty) in &self.index.named_tys {
 			self.gen_ty(name, ty);
@@ -211,6 +213,8 @@ impl CodegenCtx<'_> {
 		match &storage.expressions[expression] {
 			hir::Expression::Integer(i) => self.s(&i.to_string()),
 
+			hir::Expression::Byte(i) => self.s(&i.to_string()),
+
 			hir::Expression::Variable(variable) => self.s(&storage.variables[*variable].name),
 
 			hir::Expression::Call { name, arguments } => {
@@ -281,6 +285,8 @@ impl CodegenCtx<'_> {
 		match ty {
 			resolver::Ty::Int => self.s("int"),
 
+			resolver::Ty::Byte => self.s("uint8_t"),
+
 			resolver::Ty::Bool => self.s("bool"),
 
 			resolver::Ty::Named(n) => match &self.index.named_tys[n] {
@@ -296,7 +302,10 @@ impl CodegenCtx<'_> {
 
 	fn gen_ty_expression(&mut self, name: &str, ty: &resolver::Ty) {
 		match ty {
-			resolver::Ty::Int | resolver::Ty::Bool | resolver::Ty::Named(_) => self.s(name),
+			resolver::Ty::Int
+			| resolver::Ty::Byte
+			| resolver::Ty::Bool
+			| resolver::Ty::Named(_) => self.s(name),
 			resolver::Ty::Pointer { pointee } => {
 				self.s("(");
 				self.s("*");

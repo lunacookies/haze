@@ -428,6 +428,7 @@ impl Parser {
 
 				match text.as_str() {
 					"int" => Ty { kind: TyKind::Int, loc },
+					"byte" => Ty { kind: TyKind::Byte, loc },
 					"bool" => Ty { kind: TyKind::Bool, loc },
 					_ => Ty { kind: TyKind::Named(text), loc },
 				}

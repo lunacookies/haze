@@ -1,5 +1,11 @@
 proc main() int {
-	return cast(int) true + 1 + cast(int) false
+	two := cast(int) true + 1 + cast(int) false
+
+	big_int := 259
+	three := cast(byte) big_int
+	still_three := cast(int) three
+
+	return two * still_three + two + still_three
 }
 ======
-exit status: 2
+exit status: 11

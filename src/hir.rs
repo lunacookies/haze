@@ -57,6 +57,7 @@ pub enum Statement {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Expression {
 	Integer(u64),
+	Byte(u8),
 	Variable(Idx<Variable>),
 	Call { name: String, arguments: Vec<Idx<Expression>> },
 	True,
@@ -179,6 +180,10 @@ impl PrettyPrintCtx {
 	fn print_expression(&mut self, expression: Idx<Expression>, storage: &BodyStorage) {
 		match &storage.expressions[expression] {
 			Expression::Integer(i) => self.s(&i.to_string()),
+			Expression::Byte(i) => {
+				self.s(&i.to_string());
+				self.s("_byte");
+			}
 
 			Expression::Variable(v) => self.s(&storage.variables[*v].name),
 

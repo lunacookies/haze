@@ -1,0 +1,7 @@
+proc main() int {
+	b := cast(byte) 255
+	b += 1
+	return cast(int) b
+}
+======
+exit status: 0

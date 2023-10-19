@@ -116,6 +116,7 @@ pub struct Ty {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TyKind {
 	Int,
+	Byte,
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
@@ -335,6 +336,7 @@ impl PrettyPrintCtx {
 	fn print_ty(&mut self, ty: &Ty) {
 		match &ty.kind {
 			TyKind::Int => self.s("int"),
+			TyKind::Byte => self.s("byte"),
 			TyKind::Bool => self.s("bool"),
 			TyKind::Named(n) => self.s(n),
 			TyKind::Pointer { pointee } => {
