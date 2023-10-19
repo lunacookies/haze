@@ -26,6 +26,7 @@ pub enum TokenKind {
 	BreakKw,
 	TrueKw,
 	FalseKw,
+	CastKw,
 	ReturnKw,
 
 	BangEqual,
@@ -107,6 +108,7 @@ const KEYWORDS: &[(&str, TokenKind)] = &[
 	("break", TokenKind::BreakKw),
 	("true", TokenKind::TrueKw),
 	("false", TokenKind::FalseKw),
+	("cast", TokenKind::CastKw),
 	("return", TokenKind::ReturnKw),
 ];
 
@@ -311,6 +313,7 @@ impl TokenKind {
 				| TokenKind::TrueKw
 				| TokenKind::FalseKw
 				| TokenKind::And | TokenKind::Star
+				| TokenKind::CastKw
 		)
 	}
 

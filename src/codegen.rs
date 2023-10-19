@@ -15,6 +15,9 @@ struct CodegenCtx<'a> {
 
 impl CodegenCtx<'_> {
 	fn gen(mut self) -> String {
+		self.s("#include <stdbool.h>");
+		self.newline();
+
 		for (name, ty) in &self.index.named_tys {
 			self.gen_ty(name, ty);
 			self.newline();
@@ -257,6 +260,13 @@ impl CodegenCtx<'_> {
 				self.s("(*");
 				self.gen_expression(*e, storage);
 				self.s(")");
+			}
+
+			hir::Expression::Cast { ty, operand } => {
+				self.s("(");
+				self.gen_declaration("", ty);
+				self.s(")");
+				self.gen_expression(*operand, storage);
 			}
 		}
 	}

@@ -341,6 +341,24 @@ impl SemaContext<'_> {
 
 				(Expression::Dereference(e_idx), result_ty.clone())
 			}
+
+			ast::ExpressionKind::Cast { ty, operand } => {
+				let operand_idx = self.analyze_expression(operand);
+				let ty = self.resolve_ty(ty);
+				let operand_ty = &self.expression_tys[operand_idx];
+
+				match (operand_ty, &ty) {
+					(Ty::Bool, Ty::Int) => {}
+					(Ty::Pointer { .. }, Ty::Pointer { .. }) => {}
+
+					_ => crate::error(
+						expression.loc.clone(),
+						format!("invalid cast from “{operand_ty}” to “{ty}”"),
+					),
+				}
+
+				(Expression::Cast { ty: ty.clone(), operand: operand_idx }, ty.clone())
+			}
 		};
 
 		let idx = self.alloc_expression(e);

@@ -1,0 +1,5 @@
+proc main() int {
+	return cast(int) true + 1 + cast(int) false
+}
+======
+exit status: 2

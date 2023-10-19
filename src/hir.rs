@@ -65,6 +65,7 @@ pub enum Expression {
 	FieldAccess { lhs: Idx<Expression>, field: String },
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
+	Cast { ty: Ty, operand: Idx<Expression> },
 }
 
 impl Hir {
@@ -213,6 +214,14 @@ impl PrettyPrintCtx {
 			Expression::Dereference(e) => {
 				self.s("(*");
 				self.print_expression(*e, storage);
+				self.s(")");
+			}
+
+			Expression::Cast { ty, operand } => {
+				self.s("cast(");
+				self.s(&ty.to_string());
+				self.s(", ");
+				self.print_expression(*operand, storage);
 				self.s(")");
 			}
 		}

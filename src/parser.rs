@@ -393,6 +393,18 @@ impl Parser {
 				Expression { kind: ExpressionKind::Dereference(Box::new(operand)), loc }
 			}
 
+			TokenKind::CastKw => {
+				let loc = self.current_loc();
+				self.bump(TokenKind::CastKw);
+
+				self.expect(TokenKind::LParen);
+				let ty = self.parse_ty();
+				self.expect(TokenKind::RParen);
+				let operand = self.parse_lhs();
+
+				Expression { kind: ExpressionKind::Cast { ty, operand: Box::new(operand) }, loc }
+			}
+
 			_ => unreachable!(),
 		}
 	}

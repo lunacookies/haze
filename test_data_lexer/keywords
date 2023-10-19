@@ -1,4 +1,4 @@
-proc struct var if else for break true false return
+proc struct var if else for break true false cast return
 ======
 ProcKw test:1:1 "proc"
 StructKw test:1:6 "struct"
@@ -9,5 +9,6 @@ ForKw test:1:25 "for"
 BreakKw test:1:29 "break"
 TrueKw test:1:35 "true"
 FalseKw test:1:40 "false"
-ReturnKw test:1:46 "return"
-SemiOrNewline test:1:52 ""
+CastKw test:1:46 "cast"
+ReturnKw test:1:51 "return"
+SemiOrNewline test:1:57 ""

@@ -29,6 +29,9 @@ proc expressions() {
 	x(*ptr.with.fields)
 	x(*a + 10)
 	x(&a + 10)
+
+	cast(int) true
+	cast(int) a + 10
 }
 
 struct MyType {
@@ -70,6 +73,8 @@ proc expressions()
 	x((*((ptr.with).fields)))
 	x(((*a) + 10))
 	x(((&a) + 10))
+	cast(int, true)
+	(cast(int, a) + 10)
 }
 
 struct MyType

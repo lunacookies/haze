@@ -82,6 +82,7 @@ pub enum ExpressionKind {
 	FieldAccess { lhs: Box<Expression>, field: String },
 	AddressOf(Box<Expression>),
 	Dereference(Box<Expression>),
+	Cast { ty: Ty, operand: Box<Expression> },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -318,6 +319,14 @@ impl PrettyPrintCtx {
 			ExpressionKind::Dereference(e) => {
 				self.s("(*");
 				self.print_expression(e);
+				self.s(")");
+			}
+
+			ExpressionKind::Cast { ty, operand } => {
+				self.s("cast(");
+				self.print_ty(ty);
+				self.s(", ");
+				self.print_expression(operand);
 				self.s(")");
 			}
 		}

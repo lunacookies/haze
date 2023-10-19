@@ -1,0 +1,5 @@
+proc invalid_cast() {
+	cast(*int) 10
+}
+======
+test:2:2: error: invalid cast from “int” to “*int”
