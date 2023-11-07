@@ -1,0 +1,11 @@
+proc main() int {
+	i := 1
+
+	for i < 20 {
+		i *= 2
+	}
+
+	return i
+}
+======
+exit status: 32

@@ -40,6 +40,7 @@ pub enum Statement {
 		false_branch: Option<Idx<Statement>>,
 	},
 	Loop {
+		condition: Option<Idx<Expression>>,
 		body: Idx<Statement>,
 	},
 	Break,
@@ -141,8 +142,14 @@ impl PrettyPrintCtx {
 				}
 			}
 
-			Statement::Loop { body } => {
+			Statement::Loop { condition, body } => {
 				self.s("for ");
+
+				if let Some(c) = condition {
+					self.print_expression(*c, storage);
+					self.s(" ");
+				}
+
 				self.print_statement(*body, storage);
 			}
 

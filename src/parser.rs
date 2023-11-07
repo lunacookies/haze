@@ -72,10 +72,7 @@ impl Parser {
 
 		self.expect(TokenKind::RParen);
 
-		let mut return_ty = None;
-		if self.current().can_start_ty() {
-			return_ty = Some(self.parse_ty());
-		}
+		let return_ty = if self.current().can_start_ty() { Some(self.parse_ty()) } else { None };
 
 		let mut is_extern = false;
 		if self.eat(TokenKind::Hash) {
@@ -222,9 +219,12 @@ impl Parser {
 		let loc = self.current_loc();
 		self.bump(TokenKind::ForKw);
 
+		let condition =
+			if self.at(TokenKind::LBrace) { None } else { Some(self.parse_expression()) };
+
 		let body = self.parse_block();
 
-		Statement { kind: StatementKind::Loop { body: Box::new(body) }, loc }
+		Statement { kind: StatementKind::Loop { condition, body: Box::new(body) }, loc }
 	}
 
 	fn parse_break(&mut self) -> Statement {

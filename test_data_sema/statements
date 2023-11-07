@@ -25,6 +25,9 @@ proc statements() Wrapper {
 		}
 		b += 2
 	}
+	for b <= a * 2 {
+		b += 2
+	}
 
 	no_return_value(4)
 
@@ -52,6 +55,9 @@ proc statements
 		if (b > (a * 2)) {
 			break
 		}
+		b = (b + 2)
+	}
+	for (b <= (a * 2)) {
 		b = (b + 2)
 	}
 	call no_return_value(4)

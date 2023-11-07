@@ -155,8 +155,17 @@ impl CodegenCtx<'_> {
 				}
 			}
 
-			hir::Statement::Loop { body } => {
-				self.s("for (;;) ");
+			hir::Statement::Loop { condition, body } => {
+				match condition {
+					Some(c) => {
+						self.s("while (");
+						self.gen_expression(*c, storage);
+						self.s(")");
+					}
+					None => self.s("for (;;)"),
+				}
+
+				self.s(" ");
 				self.gen_statement(*body, storage);
 			}
 

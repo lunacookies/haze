@@ -1,0 +1,5 @@
+proc non_bool_loop_condition() {
+	for 1 {}
+}
+======
+test:2:6: error: can’t use “int” as condition of loop

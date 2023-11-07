@@ -145,14 +145,28 @@ impl SemaContext<'_> {
 				}
 			}
 
-			ast::StatementKind::Loop { body } => {
+			ast::StatementKind::Loop { condition, body } => {
 				self.loop_nesting_level += 1;
+
+				let condition_idx = condition.as_ref().map(|c| {
+					let idx = self.analyze_expression(c, Some(&Ty::Bool));
+					let ty = &self.expression_tys[idx];
+
+					if ty != &Ty::Bool {
+						crate::error(
+							c.loc.clone(),
+							format!("can’t use “{ty}” as condition of loop"),
+						);
+					}
+
+					idx
+				});
 
 				let empty_body = self.alloc_statement(Statement::Block(Vec::new()));
 				let body = self.analyze_statement(body).unwrap_or(empty_body);
 
 				self.loop_nesting_level -= 1;
-				Statement::Loop { body }
+				Statement::Loop { condition: condition_idx, body }
 			}
 
 			ast::StatementKind::Break => {
