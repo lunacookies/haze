@@ -1,0 +1,7 @@
+proc nested_loop_variable_shadowing() {
+	for i := 0; i < 10; i++ {
+		for i := 0; i < 10; i++ {}
+	}
+}
+======
+test:3:7: error: cannot re-declare variable “i”

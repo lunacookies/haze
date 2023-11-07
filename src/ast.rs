@@ -54,15 +54,35 @@ pub struct Statement {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum StatementKind {
-	LocalDeclaration { name: String, ty: Ty },
-	LocalDefinition { name: String, value: Expression },
-	If { condition: Expression, true_branch: Box<Statement>, false_branch: Option<Box<Statement>> },
-	Loop { condition: Option<Expression>, body: Box<Statement> },
+	LocalDeclaration {
+		name: String,
+		ty: Ty,
+	},
+	LocalDefinition {
+		name: String,
+		value: Expression,
+	},
+	If {
+		condition: Expression,
+		true_branch: Box<Statement>,
+		false_branch: Option<Box<Statement>>,
+	},
+	Loop {
+		initializer: Option<Box<Statement>>,
+		condition: Option<Expression>,
+		post: Option<Box<Statement>>,
+		body: Box<Statement>,
+	},
 	Break,
-	Return { value: Option<Expression> },
+	Return {
+		value: Option<Expression>,
+	},
 	Block(Vec<Statement>),
 	Expression(Expression),
-	Assignment { lhs: Expression, rhs: Expression },
+	Assignment {
+		lhs: Expression,
+		rhs: Expression,
+	},
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -231,11 +251,24 @@ impl PrettyPrintCtx {
 				}
 			}
 
-			StatementKind::Loop { condition, body } => {
+			StatementKind::Loop { initializer, condition, post, body } => {
 				self.s("for ");
+
+				if let Some(i) = initializer {
+					self.print_statement(i);
+					self.s("; ");
+				}
 
 				if let Some(c) = condition {
 					self.print_expression(c);
+					if post.is_none() {
+						self.s(" ");
+					}
+				}
+
+				if let Some(p) = post {
+					self.s("; ");
+					self.print_statement(p);
 					self.s(" ");
 				}
 

@@ -244,12 +244,33 @@ impl Parser {
 		let loc = self.current_loc();
 		self.bump(TokenKind::ForKw);
 
-		let condition =
-			if self.at(TokenKind::LBrace) { None } else { Some(self.parse_expression()) };
+		let mut initializer = None;
+		let mut condition = None;
+		let mut post = None;
+
+		if self.lookahead() == TokenKind::ColonEqual {
+			initializer = Some(self.parse_local_definition());
+			self.expect(TokenKind::SemiOrNewline);
+
+			condition = Some(self.parse_expression());
+			self.expect(TokenKind::SemiOrNewline);
+
+			post = Some(self.parse_statement())
+		} else if !self.at(TokenKind::LBrace) {
+			condition = Some(self.parse_expression());
+		}
 
 		let body = self.parse_block();
 
-		Statement { kind: StatementKind::Loop { condition, body: Box::new(body) }, loc }
+		Statement {
+			kind: StatementKind::Loop {
+				initializer: initializer.map(Box::new),
+				condition,
+				post: post.map(Box::new),
+				body: Box::new(body),
+			},
+			loc,
+		}
 	}
 
 	fn parse_break(&mut self) -> Statement {

@@ -1,0 +1,6 @@
+proc loop_variable_scope() {
+	for i := 0; i < 5; i++ {}
+	i
+}
+======
+test:3:2: error: undefined variable “i”

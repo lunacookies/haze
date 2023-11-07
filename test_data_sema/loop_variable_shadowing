@@ -1,0 +1,6 @@
+proc loop_variable_redeclaration() {
+	i := 0
+	for i := 0; i < 10; i++ {}
+}
+======
+test:3:6: error: cannot re-declare variable “i”

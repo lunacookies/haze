@@ -135,12 +135,24 @@ impl CodegenCtx<'_> {
 	}
 
 	fn gen_statement(&mut self, statement: Idx<hir::Statement>, storage: &hir::BodyStorage) {
+		self.gen_statement_semi(statement, storage, true);
+	}
+
+	fn gen_statement_semi(
+		&mut self,
+		statement: Idx<hir::Statement>,
+		storage: &hir::BodyStorage,
+		semi: bool,
+	) {
 		match &storage.statements[statement] {
 			hir::Statement::Assignment { lhs, rhs } => {
 				self.gen_expression(*lhs, storage);
 				self.s(" = ");
 				self.gen_expression(*rhs, storage);
-				self.s(";");
+
+				if semi {
+					self.s(";");
+				}
 			}
 
 			hir::Statement::If { condition, true_branch, false_branch } => {
@@ -155,21 +167,35 @@ impl CodegenCtx<'_> {
 				}
 			}
 
-			hir::Statement::Loop { condition, body } => {
-				match condition {
-					Some(c) => {
-						self.s("while (");
-						self.gen_expression(*c, storage);
-						self.s(")");
-					}
-					None => self.s("for (;;)"),
+			hir::Statement::Loop { initializer, condition, post, body } => {
+				self.s("for (");
+
+				if let Some(i) = initializer {
+					self.gen_statement_semi(*i, storage, false);
 				}
 
-				self.s(" ");
+				self.s(";");
+
+				if let Some(c) = condition {
+					self.gen_expression(*c, storage);
+				}
+
+				self.s(";");
+
+				if let Some(p) = post {
+					self.gen_statement_semi(*p, storage, false);
+				}
+
+				self.s(") ");
 				self.gen_statement(*body, storage);
 			}
 
-			hir::Statement::Break => self.s("break;"),
+			hir::Statement::Break => {
+				self.s("break");
+				if semi {
+					self.s(";")
+				}
+			}
 
 			hir::Statement::Return { value } => {
 				self.s("return");
@@ -179,7 +205,9 @@ impl CodegenCtx<'_> {
 					self.gen_expression(*value, storage);
 				}
 
-				self.s(";");
+				if semi {
+					self.s(";");
+				}
 			}
 
 			hir::Statement::Block(body) => {
@@ -198,7 +226,10 @@ impl CodegenCtx<'_> {
 
 			hir::Statement::Expression(e) => {
 				self.gen_expression(*e, storage);
-				self.s(";");
+
+				if semi {
+					self.s(";");
+				}
 			}
 
 			hir::Statement::Call { name, arguments } => {
@@ -213,7 +244,11 @@ impl CodegenCtx<'_> {
 					self.gen_expression(*argument, storage);
 				}
 
-				self.s(");");
+				self.s(")");
+
+				if semi {
+					self.s(";");
+				}
 			}
 		}
 	}

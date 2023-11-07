@@ -1,5 +1,7 @@
+use std::collections::HashSet;
+
 use indexmap::IndexMap;
-use la_arena::{Arena, Idx};
+use la_arena::{Arena, ArenaMap, Idx};
 
 use crate::{ast, resolver::Ty};
 
@@ -40,7 +42,9 @@ pub enum Statement {
 		false_branch: Option<Idx<Statement>>,
 	},
 	Loop {
+		initializer: Option<Idx<Statement>>,
 		condition: Option<Idx<Expression>>,
+		post: Option<Idx<Statement>>,
 		body: Idx<Statement>,
 	},
 	Break,
@@ -74,7 +78,12 @@ pub enum Expression {
 
 impl Hir {
 	pub fn pretty_print(&self) -> String {
-		let mut ctx = PrettyPrintCtx { buf: String::new(), indentation: 0 };
+		let mut ctx = PrettyPrintCtx {
+			buf: String::new(),
+			indentation: 0,
+			disambiguated_variable_names: ArenaMap::new(),
+		};
+
 		ctx.print_ast(self);
 		ctx.buf
 	}
@@ -83,6 +92,7 @@ impl Hir {
 struct PrettyPrintCtx {
 	buf: String,
 	indentation: usize,
+	disambiguated_variable_names: ArenaMap<Idx<Variable>, String>,
 }
 
 impl PrettyPrintCtx {
@@ -102,7 +112,10 @@ impl PrettyPrintCtx {
 
 		self.indentation += 1;
 
-		for variable in proc.storage.variables.values() {
+		self.disambiguated_variable_names.clear();
+		let mut seen_variable_names = HashSet::new();
+
+		for (variable_idx, variable) in proc.storage.variables.iter() {
 			self.newline();
 
 			if variable.is_parameter {
@@ -111,7 +124,17 @@ impl PrettyPrintCtx {
 				self.s("var ");
 			}
 
-			self.s(&variable.name);
+			let mut name = variable.name.clone();
+			let mut disambiguation_number = 1;
+			while seen_variable_names.contains(&name) {
+				disambiguation_number += 1;
+				name = format!("{name}{disambiguation_number}");
+			}
+
+			self.s(&name);
+			assert!(self.disambiguated_variable_names.insert(variable_idx, name.clone()).is_none());
+			seen_variable_names.insert(name);
+
 			self.s(" ");
 			self.s(&variable.ty.to_string());
 		}
@@ -142,11 +165,24 @@ impl PrettyPrintCtx {
 				}
 			}
 
-			Statement::Loop { condition, body } => {
+			Statement::Loop { initializer, condition, post, body } => {
 				self.s("for ");
+
+				if let Some(i) = initializer {
+					self.print_statement(*i, storage);
+					self.s("; ");
+				}
 
 				if let Some(c) = condition {
 					self.print_expression(*c, storage);
+					if post.is_none() {
+						self.s(" ");
+					}
+				}
+
+				if let Some(p) = post {
+					self.s("; ");
+					self.print_statement(*p, storage);
 					self.s(" ");
 				}
 
@@ -196,7 +232,11 @@ impl PrettyPrintCtx {
 
 			Expression::String(s) => self.s(&format!("{s:?}")),
 
-			Expression::Variable(v) => self.s(&storage.variables[*v].name),
+			Expression::Variable(v) => {
+				// clone to appease the borrow checker
+				let name = self.disambiguated_variable_names[*v].clone();
+				self.s(&name);
+			}
 
 			Expression::Call { name, arguments } => self.print_call(name, arguments, storage),
 

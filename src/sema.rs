@@ -145,8 +145,14 @@ impl SemaContext<'_> {
 				}
 			}
 
-			ast::StatementKind::Loop { condition, body } => {
+			ast::StatementKind::Loop { initializer, condition, post, body } => {
 				self.loop_nesting_level += 1;
+				self.push_scope();
+
+				let initializer = initializer.as_ref().map(|initializer| {
+					// the initializer can never be a `var` statement
+					self.analyze_statement(initializer).unwrap()
+				});
 
 				let condition_idx = condition.as_ref().map(|c| {
 					let idx = self.analyze_expression(c, Some(&Ty::Bool));
@@ -162,11 +168,14 @@ impl SemaContext<'_> {
 					idx
 				});
 
+				let post = post.as_ref().and_then(|post| self.analyze_statement(post));
+
 				let empty_body = self.alloc_statement(Statement::Block(Vec::new()));
 				let body = self.analyze_statement(body).unwrap_or(empty_body);
 
+				self.pop_scope();
 				self.loop_nesting_level -= 1;
-				Statement::Loop { condition: condition_idx, body }
+				Statement::Loop { initializer, condition: condition_idx, post, body }
 			}
 
 			ast::StatementKind::Break => {
