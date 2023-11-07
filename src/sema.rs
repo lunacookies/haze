@@ -297,7 +297,9 @@ impl SemaContext<'_> {
 					);
 				}
 
-				assert_eq!(&lhs_ty, rhs_ty);
+				if &lhs_ty != rhs_ty {
+					crate::error(rhs.loc.clone(), format!("operands must be of the same type, but “{rhs_ty}” is not the same as “{lhs_ty}”"));
+				}
 
 				(
 					Expression::Binary { lhs: lhs_idx, rhs: rhs_idx, op: *operator },

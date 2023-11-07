@@ -1,0 +1,5 @@
+proc mismatched_arithmetic_types() {
+	10 + cast(byte) 20
+}
+======
+test:2:7: error: operands must be of the same type, but “byte” is not the same as “int”
