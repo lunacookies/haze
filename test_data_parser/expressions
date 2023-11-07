@@ -33,6 +33,11 @@ proc expressions() {
 
 	cast(int) true
 	cast(int) a + 10
+
+	foo[bar]
+	1 + 2[3]
+	a[b][c]
+	a[b[c]]
 }
 
 struct MyType {
@@ -77,6 +82,10 @@ proc expressions()
 	x(((&a) + 10))
 	cast(int, true)
 	(cast(int, a) + 10)
+	(foo[bar])
+	(1 + (2[3]))
+	((a[b])[c])
+	(a[(b[c])])
 }
 
 struct MyType

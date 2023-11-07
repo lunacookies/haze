@@ -9,6 +9,7 @@ proc expressions(parameter int) {
 	b := add(9, 2)
 	ptr := &b
 	ptr_value := *ptr
+	also_ptr_value := ptr[0]
 	s := "a string"
 }
 
@@ -22,6 +23,7 @@ proc expressions
 	var b int
 	var ptr *int
 	var ptr_value int
+	var also_ptr_value int
 	var s *byte
 {
 	10
@@ -34,6 +36,7 @@ proc expressions
 	b = add(9, 2)
 	ptr = (&b)
 	ptr_value = (*ptr)
+	also_ptr_value = (ptr[0])
 	s = "a string"
 }
 

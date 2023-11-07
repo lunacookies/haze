@@ -268,6 +268,14 @@ impl CodegenCtx<'_> {
 				self.s(")");
 			}
 
+			hir::Expression::Indexing { lhs, index } => {
+				self.s("(");
+				self.gen_expression(*lhs, storage);
+				self.s("[");
+				self.gen_expression(*index, storage);
+				self.s("])");
+			}
+
 			hir::Expression::AddressOf(e) => {
 				self.s("(&");
 				self.gen_expression(*e, storage);

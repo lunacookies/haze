@@ -81,6 +81,7 @@ pub enum ExpressionKind {
 	False,
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
 	FieldAccess { lhs: Box<Expression>, field: String },
+	Indexing { lhs: Box<Expression>, index: Box<Expression> },
 	AddressOf(Box<Expression>),
 	Dereference(Box<Expression>),
 	Cast { ty: Ty, operand: Box<Expression> },
@@ -312,6 +313,14 @@ impl PrettyPrintCtx {
 				self.s(".");
 				self.s(field);
 				self.s(")");
+			}
+
+			ExpressionKind::Indexing { lhs, index } => {
+				self.s("(");
+				self.print_expression(lhs);
+				self.s("[");
+				self.print_expression(index);
+				self.s("])");
 			}
 
 			ExpressionKind::AddressOf(e) => {

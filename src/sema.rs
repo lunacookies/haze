@@ -336,6 +336,24 @@ impl SemaContext<'_> {
 				(Expression::FieldAccess { lhs: lhs_idx, field: field.clone() }, ty.clone())
 			}
 
+			ast::ExpressionKind::Indexing { lhs, index } => {
+				let lhs_idx = self.analyze_expression(lhs, None);
+				let index_idx = self.analyze_expression(index, Some(&Ty::Int));
+
+				let lhs_ty = &self.expression_tys[lhs_idx];
+				let ty = match lhs_ty {
+					Ty::Pointer { pointee } => pointee,
+					_ => crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”")),
+				};
+
+				let index_ty = &self.expression_tys[index_idx];
+				if index_ty != &Ty::Int {
+					crate::error(index.loc.clone(), format!("cannot use “{index_ty}” as an index"));
+				}
+
+				(Expression::Indexing { lhs: lhs_idx, index: index_idx }, (**ty).clone())
+			}
+
 			ast::ExpressionKind::AddressOf(e) => {
 				let e = self.analyze_expression(e, None);
 				let ty = &self.expression_tys[e];

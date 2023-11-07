@@ -1,0 +1,17 @@
+proc main() int {
+	a := 1
+	p := &a
+	one := p[0]
+
+	s := "hello"
+	s_sum :=
+		cast(int) s[0] +
+		cast(int) s[1] +
+		cast(int) s[2] +
+		cast(int) s[3] +
+		cast(int) s[4]
+
+	return s_sum % 100 + one
+}
+======
+exit status: 33

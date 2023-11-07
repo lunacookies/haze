@@ -1,0 +1,7 @@
+proc index_using_non_int() {
+	b := cast(byte) 0
+	p := &b
+	p[b]
+}
+======
+test:4:4: error: cannot use “byte” as an index

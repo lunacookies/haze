@@ -302,15 +302,35 @@ impl Parser {
 		let mut lhs = self.parse_atom();
 
 		loop {
-			if self.eat(TokenKind::Dot) {
-				let field = self.expect_text(TokenKind::Identifier);
-				let loc = lhs.loc.clone();
-				lhs = Expression {
-					kind: ExpressionKind::FieldAccess { lhs: Box::new(lhs), field },
-					loc,
-				};
-			} else {
-				break;
+			match self.current() {
+				TokenKind::Dot => {
+					self.bump(TokenKind::Dot);
+
+					let field = self.expect_text(TokenKind::Identifier);
+					let loc = lhs.loc.clone();
+					lhs = Expression {
+						kind: ExpressionKind::FieldAccess { lhs: Box::new(lhs), field },
+						loc,
+					};
+				}
+
+				TokenKind::LBracket => {
+					self.bump(TokenKind::LBracket);
+
+					let index = self.parse_expression();
+					self.expect(TokenKind::RBracket);
+
+					let loc = lhs.loc.clone();
+					lhs = Expression {
+						kind: ExpressionKind::Indexing {
+							lhs: Box::new(lhs),
+							index: Box::new(index),
+						},
+						loc,
+					};
+				}
+
+				_ => break,
 			}
 		}
 

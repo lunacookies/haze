@@ -65,6 +65,7 @@ pub enum Expression {
 	False,
 	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, op: ast::BinaryOperator },
 	FieldAccess { lhs: Idx<Expression>, field: String },
+	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
 	Cast { ty: Ty, operand: Idx<Expression> },
@@ -211,6 +212,14 @@ impl PrettyPrintCtx {
 				self.s(".");
 				self.s(field);
 				self.s(")");
+			}
+
+			Expression::Indexing { lhs, index } => {
+				self.s("(");
+				self.print_expression(*lhs, storage);
+				self.s("[");
+				self.print_expression(*index, storage);
+				self.s("])");
 			}
 
 			Expression::AddressOf(e) => {
