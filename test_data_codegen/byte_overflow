@@ -1,6 +1,6 @@
 proc main() int {
 	b := cast(byte) 255
-	b += 1
+	b++
 	return cast(int) b
 }
 ======

@@ -147,32 +147,57 @@ impl Parser {
 		let loc = self.current_loc();
 		let lhs = self.parse_expression();
 
+		let operator_loc = self.current_loc();
 		let operator_kind = self.current();
-		let operator = match assignment_token_kind_to_operator(operator_kind) {
-			Some(operator) => operator,
+		let assignment_operator = match assignment_token_kind_to_operator(operator_kind) {
+			Some(o) => o,
 			None => return Statement { kind: StatementKind::Expression(lhs), loc },
 		};
 		self.bump(operator_kind);
 
-		let rhs = self.parse_expression();
+		match assignment_operator {
+			AssignmentOperator::Assignment => {
+				let rhs = self.parse_expression();
+				Statement { kind: StatementKind::Assignment { lhs, rhs }, loc }
+			}
 
-		match operator {
-			Some(operator) => Statement {
-				kind: StatementKind::Assignment {
-					lhs: lhs.clone(),
-					rhs: Expression {
-						kind: ExpressionKind::Binary {
-							lhs: Box::new(lhs),
-							operator,
-							rhs: Box::new(rhs),
+			AssignmentOperator::CompoundAssignment(operator) => {
+				let rhs = self.parse_expression();
+
+				Statement {
+					kind: StatementKind::Assignment {
+						lhs: lhs.clone(),
+						rhs: Expression {
+							kind: ExpressionKind::Binary {
+								lhs: Box::new(lhs),
+								operator,
+								rhs: Box::new(rhs),
+							},
+							loc: loc.clone(),
 						},
-						loc: loc.clone(),
 					},
-				},
-				loc,
-			},
+					loc,
+				}
+			}
 
-			None => Statement { kind: StatementKind::Assignment { lhs, rhs }, loc },
+			AssignmentOperator::IncDecrement(operator) => {
+				let rhs = Expression { kind: ExpressionKind::Integer(1), loc: operator_loc };
+
+				Statement {
+					kind: StatementKind::Assignment {
+						lhs: lhs.clone(),
+						rhs: Expression {
+							kind: ExpressionKind::Binary {
+								lhs: Box::new(lhs),
+								operator,
+								rhs: Box::new(rhs),
+							},
+							loc: loc.clone(),
+						},
+					},
+					loc,
+				}
+			}
 		}
 	}
 
@@ -561,12 +586,23 @@ fn token_kind_to_operator(kind: TokenKind) -> Option<BinaryOperator> {
 	})
 }
 
-fn assignment_token_kind_to_operator(kind: TokenKind) -> Option<Option<BinaryOperator>> {
+enum AssignmentOperator {
+	Assignment,
+	CompoundAssignment(BinaryOperator),
+	IncDecrement(BinaryOperator),
+}
+
+fn assignment_token_kind_to_operator(kind: TokenKind) -> Option<AssignmentOperator> {
 	if kind == TokenKind::Equal {
-		return Some(None);
+		return Some(AssignmentOperator::Assignment);
 	}
 
 	let operator = match kind {
+		TokenKind::PlusPlus => return Some(AssignmentOperator::IncDecrement(BinaryOperator::Add)),
+		TokenKind::MinusMinus => {
+			return Some(AssignmentOperator::IncDecrement(BinaryOperator::Subtract))
+		}
+
 		TokenKind::PlusEqual => BinaryOperator::Add,
 		TokenKind::MinusEqual => BinaryOperator::Subtract,
 		TokenKind::StarEqual => BinaryOperator::Multiply,
@@ -582,7 +618,7 @@ fn assignment_token_kind_to_operator(kind: TokenKind) -> Option<Option<BinaryOpe
 		_ => return None,
 	};
 
-	Some(Some(operator))
+	Some(AssignmentOperator::CompoundAssignment(operator))
 }
 
 fn operator_to_bp(operator: BinaryOperator) -> u8 {

@@ -10,7 +10,7 @@ proc statements() Wrapper {
 	b := a
 
 	{
-		b -= 1
+		b--
 	}
 
 	if true {

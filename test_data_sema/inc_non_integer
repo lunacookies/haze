@@ -1,0 +1,8 @@
+struct Empty {}
+
+proc inc_non_integer() {
+	var x Empty
+	x++
+}
+======
+test:5:2: error: cannot use operator “+” with “Empty”

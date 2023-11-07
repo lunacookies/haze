@@ -4,6 +4,8 @@ proc statements() {
 	c := 100
 	a = c
 	a /= b
+	a++
+	a--
 	return
 	return foo
 
@@ -34,10 +36,10 @@ proc statements() {
 			break
 		}
 
-		i += 1
+		i++
 	}
 	for i <= 10 {
-		i += 1
+		i++
 	}
 }
 ======
@@ -48,6 +50,8 @@ proc statements()
 	c := 100
 	a = c
 	a = (a / b)
+	a = (a + 1)
+	a = (a - 1)
 	return
 	return foo
 	{

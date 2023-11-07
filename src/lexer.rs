@@ -321,6 +321,8 @@ impl TokenKind {
 			TokenKind::Identifier
 				| TokenKind::QuotedString
 				| TokenKind::Integer
+				| TokenKind::PlusPlus
+				| TokenKind::MinusMinus
 				| TokenKind::BreakKw
 				| TokenKind::TrueKw
 				| TokenKind::FalseKw
