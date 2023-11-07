@@ -1,0 +1,4 @@
+"foo
+bar"
+======
+test:1:5: error: unterminated string literal

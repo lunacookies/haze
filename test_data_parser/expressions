@@ -2,6 +2,7 @@ proc expressions() {
 	10; 20
 	abc
 	true; false
+	"hello"
 
 	a + b
 	1 + 2 + 3 + 4
@@ -50,6 +51,7 @@ proc expressions()
 	abc
 	true
 	false
+	"hello"
 	(a + b)
 	(((1 + 2) + 3) + 4)
 	(1 + (2 * 3))

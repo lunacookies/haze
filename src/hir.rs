@@ -58,6 +58,7 @@ pub enum Statement {
 pub enum Expression {
 	Integer(u64),
 	Byte(u8),
+	String(String),
 	Variable(Idx<Variable>),
 	Call { name: String, arguments: Vec<Idx<Expression>> },
 	True,
@@ -184,6 +185,8 @@ impl PrettyPrintCtx {
 				self.s(&i.to_string());
 				self.s("_byte");
 			}
+
+			Expression::String(s) => self.s(&format!("{s:?}")),
 
 			Expression::Variable(v) => self.s(&storage.variables[*v].name),
 

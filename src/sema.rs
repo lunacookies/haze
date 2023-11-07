@@ -246,6 +246,10 @@ impl SemaContext<'_> {
 				_ => (Expression::Integer(*i), Ty::Int),
 			},
 
+			ast::ExpressionKind::String(s) => {
+				(Expression::String(s.clone()), Ty::Pointer { pointee: Box::new(Ty::Byte) })
+			}
+
 			ast::ExpressionKind::Variable(name) => match self.lookup_in_scopes(name) {
 				Some(variable) => {
 					let ty = self.storage.variables[variable].ty.clone();

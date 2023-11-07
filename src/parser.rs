@@ -330,6 +330,16 @@ impl Parser {
 				Expression { kind: ExpressionKind::Integer(text.parse().unwrap()), loc }
 			}
 
+			TokenKind::QuotedString => {
+				let loc = self.current_loc();
+				let text = self.expect_text(TokenKind::QuotedString);
+
+				Expression {
+					kind: ExpressionKind::String(text[1..text.len() - 1].to_string()),
+					loc,
+				}
+			}
+
 			TokenKind::Identifier if self.lookahead() == TokenKind::LParen => {
 				let loc = self.current_loc();
 				let name = self.expect_text(TokenKind::Identifier);

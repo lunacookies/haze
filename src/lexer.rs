@@ -16,6 +16,7 @@ pub enum TokenKind {
 
 	Identifier,
 	Integer,
+	QuotedString,
 
 	ProcKw,
 	StructKw,
@@ -167,6 +168,30 @@ impl Lexer<'_> {
 				return;
 			}
 
+			b'"' => {
+				self.i += 1;
+				self.loc.column += 1;
+
+				while self.bytes[self.i] != b'"' {
+					if self.bytes[self.i] == b'\n' {
+						crate::error(self.loc.clone(), "unterminated string literal".to_string());
+					}
+
+					self.i += 1;
+					self.loc.column += 1;
+				}
+
+				self.i += 1;
+				self.loc.column += 1;
+
+				self.tokens.push(Token {
+					kind: TokenKind::QuotedString,
+					text: self.text[start..self.i].to_string(),
+					loc,
+				});
+				return;
+			}
+
 			b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
 				while self.bytes[self.i].is_ascii_alphanumeric() || self.bytes[self.i] == b'_' {
 					self.i += 1;
@@ -294,6 +319,7 @@ impl TokenKind {
 		matches!(
 			self,
 			TokenKind::Identifier
+				| TokenKind::QuotedString
 				| TokenKind::Integer
 				| TokenKind::BreakKw
 				| TokenKind::TrueKw
@@ -309,6 +335,7 @@ impl TokenKind {
 		matches!(
 			self,
 			TokenKind::Integer
+				| TokenKind::QuotedString
 				| TokenKind::Identifier
 				| TokenKind::TrueKw
 				| TokenKind::FalseKw

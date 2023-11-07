@@ -215,6 +215,20 @@ impl CodegenCtx<'_> {
 
 			hir::Expression::Byte(i) => self.s(&i.to_string()),
 
+			hir::Expression::String(s) => {
+				self.s("(uint8_t[]){ ");
+
+				for (i, b) in s.as_bytes().iter().enumerate() {
+					if i != 0 {
+						self.s(", ");
+					}
+
+					self.s(&b.to_string());
+				}
+
+				self.s(" }");
+			}
+
 			hir::Expression::Variable(variable) => self.s(&storage.variables[*variable].name),
 
 			hir::Expression::Call { name, arguments } => {

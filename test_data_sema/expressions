@@ -2,12 +2,14 @@ proc expressions(parameter int) {
 	10
 	true
 	false
+	"hello"
 	a := 92
 	a + 2 * 3 * 4 * 5
 	parameter
 	b := add(9, 2)
 	ptr := &b
 	ptr_value := *ptr
+	s := "a string"
 }
 
 proc add(x int, y int) int {
@@ -20,16 +22,19 @@ proc expressions
 	var b int
 	var ptr *int
 	var ptr_value int
+	var s *byte
 {
 	10
 	true
 	false
+	"hello"
 	a = 92
 	(a + (((2 * 3) * 4) * 5))
 	parameter
 	b = add(9, 2)
 	ptr = (&b)
 	ptr_value = (*ptr)
+	s = "a string"
 }
 
 proc add

@@ -74,6 +74,7 @@ pub struct Expression {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ExpressionKind {
 	Integer(u64),
+	String(String),
 	Variable(String),
 	Call { name: String, arguments: Vec<Expression> },
 	True,
@@ -272,6 +273,8 @@ impl PrettyPrintCtx {
 	fn print_expression(&mut self, expression: &Expression) {
 		match &expression.kind {
 			ExpressionKind::Integer(i) => self.s(&format!("{i}")),
+
+			ExpressionKind::String(s) => self.s(&format!("{s:?}")),
 
 			ExpressionKind::Variable(name) => self.s(name),
 
