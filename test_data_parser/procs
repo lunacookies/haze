@@ -5,6 +5,7 @@ proc trailing_comma(a int,) {}
 proc with_return() int {}
 proc without_body()
 proc extern() #extern
+proc extern_with_return() int #extern
 ======
 proc no_params()
 {
@@ -29,3 +30,5 @@ proc with_return() int
 proc without_body()
 
 proc extern() #extern
+
+proc extern_with_return() int #extern
