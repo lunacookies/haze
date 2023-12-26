@@ -409,6 +409,7 @@ fn tests() {
 		Command::new("clang")
 			.arg("-ftrivial-auto-var-init=zero")
 			.arg("-fwrapv")
+			.arg("-Wno-incompatible-library-redeclaration")
 			.arg("-o")
 			.arg("test_tmp_out")
 			.arg("test_tmp_code.c")
