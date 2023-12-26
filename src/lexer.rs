@@ -343,6 +343,7 @@ impl TokenKind {
 				| TokenKind::FalseKw
 				| TokenKind::And | TokenKind::Star
 				| TokenKind::Bang
+				| TokenKind::Tilde
 				| TokenKind::CastKw
 		)
 	}

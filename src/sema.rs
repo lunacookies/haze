@@ -617,12 +617,14 @@ fn binary_operator_return_ty(operator: ast::BinaryOperator, operand_ty: &Ty) -> 
 fn acceptable_tys_for_unary_operator(operator: ast::UnaryOperator) -> &'static [Ty] {
 	match operator {
 		ast::UnaryOperator::Not => &[Ty::Bool],
+		ast::UnaryOperator::BitNot => &[Ty::Int, Ty::Byte],
 	}
 }
 
-fn unary_operator_return_ty(operator: ast::UnaryOperator, _operand_ty: &Ty) -> &Ty {
+fn unary_operator_return_ty(operator: ast::UnaryOperator, operand_ty: &Ty) -> &Ty {
 	match operator {
 		ast::UnaryOperator::Not => &Ty::Bool,
+		ast::UnaryOperator::BitNot => operand_ty,
 	}
 }
 

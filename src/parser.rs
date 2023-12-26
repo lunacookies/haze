@@ -483,6 +483,20 @@ impl Parser {
 				}
 			}
 
+			TokenKind::Tilde => {
+				let loc = self.current_loc();
+				self.bump(TokenKind::Tilde);
+				let operand = self.parse_lhs();
+
+				Expression {
+					kind: ExpressionKind::Unary {
+						operand: Box::new(operand),
+						operator: UnaryOperator::BitNot,
+					},
+					loc,
+				}
+			}
+
 			TokenKind::CastKw => {
 				let loc = self.current_loc();
 				self.bump(TokenKind::CastKw);
