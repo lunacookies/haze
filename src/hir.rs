@@ -68,7 +68,7 @@ pub enum Expression {
 	Call { name: String, arguments: Vec<Idx<Expression>> },
 	True,
 	False,
-	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, op: ast::BinaryOperator },
+	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, operator: ast::BinaryOperator },
 	Unary { operand: Idx<Expression>, operator: ast::UnaryOperator },
 	FieldAccess { lhs: Idx<Expression>, field: String },
 	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
@@ -244,11 +244,11 @@ impl PrettyPrintCtx {
 			Expression::True => self.s("true"),
 			Expression::False => self.s("false"),
 
-			Expression::Binary { lhs, rhs, op } => {
+			Expression::Binary { lhs, rhs, operator } => {
 				self.s("(");
 				self.print_expression(*lhs, storage);
 				self.s(" ");
-				self.s(&op.to_string());
+				self.s(&operator.to_string());
 				self.s(" ");
 				self.print_expression(*rhs, storage);
 				self.s(")");

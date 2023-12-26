@@ -325,7 +325,7 @@ impl SemaContext<'_> {
 				}
 
 				(
-					Expression::Binary { lhs: lhs_idx, rhs: rhs_idx, op: *operator },
+					Expression::Binary { lhs: lhs_idx, rhs: rhs_idx, operator: *operator },
 					binary_operator_return_ty(*operator, &lhs_ty).clone(),
 				)
 			}

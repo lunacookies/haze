@@ -294,11 +294,11 @@ impl CodegenCtx<'_> {
 
 			hir::Expression::False => self.s("false"),
 
-			hir::Expression::Binary { lhs, rhs, op } => {
+			hir::Expression::Binary { lhs, rhs, operator } => {
 				self.s("(");
 				self.gen_expression(*lhs, storage);
 				self.s(" ");
-				self.s(&op.to_string());
+				self.s(&operator.to_string());
 				self.s(" ");
 				self.gen_expression(*rhs, storage);
 				self.s(")");
