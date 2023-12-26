@@ -469,6 +469,14 @@ impl Parser {
 				Expression { kind: ExpressionKind::Dereference(Box::new(operand)), loc }
 			}
 
+			TokenKind::Bang => {
+				let loc = self.current_loc();
+				self.bump(TokenKind::Bang);
+				let operand = self.parse_lhs();
+
+				Expression { kind: ExpressionKind::Not(Box::new(operand)), loc }
+			}
+
 			TokenKind::CastKw => {
 				let loc = self.current_loc();
 				self.bump(TokenKind::CastKw);

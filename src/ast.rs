@@ -104,6 +104,7 @@ pub enum ExpressionKind {
 	Indexing { lhs: Box<Expression>, index: Box<Expression> },
 	AddressOf(Box<Expression>),
 	Dereference(Box<Expression>),
+	Not(Box<Expression>),
 	Cast { ty: Ty, operand: Box<Expression> },
 }
 
@@ -370,6 +371,12 @@ impl PrettyPrintCtx {
 
 			ExpressionKind::Dereference(e) => {
 				self.s("(*");
+				self.print_expression(e);
+				self.s(")");
+			}
+
+			ExpressionKind::Not(e) => {
+				self.s("(!");
 				self.print_expression(e);
 				self.s(")");
 			}

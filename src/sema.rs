@@ -396,6 +396,17 @@ impl SemaContext<'_> {
 				(Expression::Dereference(e_idx), result_ty.clone())
 			}
 
+			ast::ExpressionKind::Not(e) => {
+				let e_idx = self.analyze_expression(e, None);
+				let ty = &self.expression_tys[e_idx];
+
+				if ty != &Ty::Bool {
+					crate::error(e.loc.clone(), format!("cannot use operator “!” with “{ty}”"));
+				}
+
+				(Expression::Not(e_idx), Ty::Bool)
+			}
+
 			ast::ExpressionKind::Cast { ty, operand } => 'cast: {
 				let ty = self.resolve_ty(ty);
 				let operand_idx = self.analyze_expression(operand, Some(&ty));

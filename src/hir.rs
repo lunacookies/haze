@@ -73,6 +73,7 @@ pub enum Expression {
 	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
+	Not(Idx<Expression>),
 	Cast { ty: Ty, operand: Idx<Expression> },
 }
 
@@ -277,6 +278,12 @@ impl PrettyPrintCtx {
 
 			Expression::Dereference(e) => {
 				self.s("(*");
+				self.print_expression(*e, storage);
+				self.s(")");
+			}
+
+			Expression::Not(e) => {
+				self.s("(!");
 				self.print_expression(*e, storage);
 				self.s(")");
 			}

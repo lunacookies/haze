@@ -1,0 +1,5 @@
+proc not_non_bool() {
+	!10
+}
+======
+test:2:3: error: cannot use operator “!” with “int”

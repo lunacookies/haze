@@ -12,6 +12,7 @@ proc expressions() {
 	2 & 3 ^ 6 & 7
 	1 << 2 + 2
 	1 | 2 ^ 3 | 4 ^ 5
+	!true && false
 
 	proc_name()
 	proc_name(a)
@@ -65,6 +66,7 @@ proc expressions()
 	((2 & 3) ^ (6 & 7))
 	((1 << 2) + 2)
 	((((1 | 2) ^ 3) | 4) ^ 5)
+	((!true) && false)
 	proc_name()
 	proc_name(a)
 	proc_name(a, b)

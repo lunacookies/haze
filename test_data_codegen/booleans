@@ -1,0 +1,6 @@
+proc main() int {
+	b := !false || !true && true
+	return cast(int) b
+}
+======
+exit status: 1

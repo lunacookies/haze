@@ -5,6 +5,7 @@ proc expressions(parameter int) {
 	"hello"
 	a := 92
 	a + 2 * 3 * 4 * 5
+	!true && false
 	parameter
 	b := add(9, 2)
 	ptr := &b
@@ -32,6 +33,7 @@ proc expressions
 	"hello"
 	a = 92
 	(a + (((2 * 3) * 4) * 5))
+	((!true) && false)
 	parameter
 	b = add(9, 2)
 	ptr = (&b)

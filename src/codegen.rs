@@ -332,6 +332,12 @@ impl CodegenCtx<'_> {
 				self.s(")");
 			}
 
+			hir::Expression::Not(e) => {
+				self.s("(!");
+				self.gen_expression(*e, storage);
+				self.s(")");
+			}
+
 			hir::Expression::Cast { ty, operand } => {
 				self.s("(");
 				self.gen_declaration("", ty);

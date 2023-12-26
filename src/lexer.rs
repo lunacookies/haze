@@ -342,6 +342,7 @@ impl TokenKind {
 				| TokenKind::TrueKw
 				| TokenKind::FalseKw
 				| TokenKind::And | TokenKind::Star
+				| TokenKind::Bang
 				| TokenKind::CastKw
 		)
 	}
