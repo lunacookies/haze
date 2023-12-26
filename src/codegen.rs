@@ -304,6 +304,13 @@ impl CodegenCtx<'_> {
 				self.s(")");
 			}
 
+			hir::Expression::Unary { operand, operator } => {
+				self.s("(");
+				self.s(&operator.to_string());
+				self.gen_expression(*operand, storage);
+				self.s(")");
+			}
+
 			hir::Expression::FieldAccess { lhs, field } => {
 				self.s("(");
 				self.gen_expression(*lhs, storage);
@@ -328,12 +335,6 @@ impl CodegenCtx<'_> {
 
 			hir::Expression::Dereference(e) => {
 				self.s("(*");
-				self.gen_expression(*e, storage);
-				self.s(")");
-			}
-
-			hir::Expression::Not(e) => {
-				self.s("(!");
 				self.gen_expression(*e, storage);
 				self.s(")");
 			}

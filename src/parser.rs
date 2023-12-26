@@ -3,7 +3,7 @@ use std::{cell::Cell, path::PathBuf};
 use crate::{
 	ast::{
 		Ast, BinaryOperator, Definition, DefinitionKind, Expression, ExpressionKind, Field,
-		Parameter, Procedure, Statement, StatementKind, Struct, Ty, TyKind,
+		Parameter, Procedure, Statement, StatementKind, Struct, Ty, TyKind, UnaryOperator,
 	},
 	lexer::{lex, Loc, Token, TokenKind},
 };
@@ -474,7 +474,13 @@ impl Parser {
 				self.bump(TokenKind::Bang);
 				let operand = self.parse_lhs();
 
-				Expression { kind: ExpressionKind::Not(Box::new(operand)), loc }
+				Expression {
+					kind: ExpressionKind::Unary {
+						operand: Box::new(operand),
+						operator: UnaryOperator::Not,
+					},
+					loc,
+				}
 			}
 
 			TokenKind::CastKw => {

@@ -304,7 +304,7 @@ impl SemaContext<'_> {
 				let rhs_idx = self.analyze_expression(rhs, Some(&lhs_ty));
 				let rhs_ty = &self.expression_tys[rhs_idx];
 
-				let acceptable_tys = acceptable_tys_for_operator(*operator);
+				let acceptable_tys = acceptable_tys_for_binary_operator(*operator);
 
 				if !acceptable_tys.contains(&lhs_ty) {
 					crate::error(
@@ -326,7 +326,26 @@ impl SemaContext<'_> {
 
 				(
 					Expression::Binary { lhs: lhs_idx, rhs: rhs_idx, op: *operator },
-					operator_return_ty(*operator, &lhs_ty).clone(),
+					binary_operator_return_ty(*operator, &lhs_ty).clone(),
+				)
+			}
+
+			ast::ExpressionKind::Unary { operand, operator } => {
+				let operand_idx = self.analyze_expression(operand, None);
+				let operand_ty = self.expression_tys[operand_idx].clone();
+
+				let acceptable_tys = acceptable_tys_for_unary_operator(*operator);
+
+				if !acceptable_tys.contains(&operand_ty) {
+					crate::error(
+						operand.loc.clone(),
+						format!("cannot use operator “{operator}” with “{operand_ty}”"),
+					);
+				}
+
+				(
+					Expression::Unary { operand: operand_idx, operator: *operator },
+					unary_operator_return_ty(*operator, &operand_ty).clone(),
 				)
 			}
 
@@ -394,17 +413,6 @@ impl SemaContext<'_> {
 				};
 
 				(Expression::Dereference(e_idx), result_ty.clone())
-			}
-
-			ast::ExpressionKind::Not(e) => {
-				let e_idx = self.analyze_expression(e, None);
-				let ty = &self.expression_tys[e_idx];
-
-				if ty != &Ty::Bool {
-					crate::error(e.loc.clone(), format!("cannot use operator “!” with “{ty}”"));
-				}
-
-				(Expression::Not(e_idx), Ty::Bool)
 			}
 
 			ast::ExpressionKind::Cast { ty, operand } => 'cast: {
@@ -555,7 +563,7 @@ impl SemaContext<'_> {
 	}
 }
 
-fn acceptable_tys_for_operator(operator: ast::BinaryOperator) -> &'static [Ty] {
+fn acceptable_tys_for_binary_operator(operator: ast::BinaryOperator) -> &'static [Ty] {
 	match operator {
 		ast::BinaryOperator::Add
 		| ast::BinaryOperator::Subtract
@@ -579,7 +587,7 @@ fn acceptable_tys_for_operator(operator: ast::BinaryOperator) -> &'static [Ty] {
 	}
 }
 
-fn operator_return_ty(operator: ast::BinaryOperator, operand_ty: &Ty) -> &Ty {
+fn binary_operator_return_ty(operator: ast::BinaryOperator, operand_ty: &Ty) -> &Ty {
 	match operator {
 		ast::BinaryOperator::Add
 		| ast::BinaryOperator::Subtract
@@ -603,6 +611,18 @@ fn operator_return_ty(operator: ast::BinaryOperator, operand_ty: &Ty) -> &Ty {
 		| ast::BinaryOperator::Greater
 		| ast::BinaryOperator::LessEqual
 		| ast::BinaryOperator::GreaterEqual => &Ty::Bool,
+	}
+}
+
+fn acceptable_tys_for_unary_operator(operator: ast::UnaryOperator) -> &'static [Ty] {
+	match operator {
+		ast::UnaryOperator::Not => &[Ty::Bool],
+	}
+}
+
+fn unary_operator_return_ty(operator: ast::UnaryOperator, _operand_ty: &Ty) -> &Ty {
+	match operator {
+		ast::UnaryOperator::Not => &Ty::Bool,
 	}
 }
 

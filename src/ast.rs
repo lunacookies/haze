@@ -100,11 +100,11 @@ pub enum ExpressionKind {
 	True,
 	False,
 	Binary { lhs: Box<Expression>, operator: BinaryOperator, rhs: Box<Expression> },
+	Unary { operand: Box<Expression>, operator: UnaryOperator },
 	FieldAccess { lhs: Box<Expression>, field: String },
 	Indexing { lhs: Box<Expression>, index: Box<Expression> },
 	AddressOf(Box<Expression>),
 	Dereference(Box<Expression>),
-	Not(Box<Expression>),
 	Cast { ty: Ty, operand: Box<Expression> },
 }
 
@@ -128,6 +128,11 @@ pub enum BinaryOperator {
 	Greater,
 	LessEqual,
 	GreaterEqual,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum UnaryOperator {
+	Not,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -347,6 +352,13 @@ impl PrettyPrintCtx {
 				self.s(")");
 			}
 
+			ExpressionKind::Unary { operand, operator } => {
+				self.s("(");
+				self.s(&operator.to_string());
+				self.print_expression(operand);
+				self.s(")");
+			}
+
 			ExpressionKind::FieldAccess { lhs, field } => {
 				self.s("(");
 				self.print_expression(lhs);
@@ -371,12 +383,6 @@ impl PrettyPrintCtx {
 
 			ExpressionKind::Dereference(e) => {
 				self.s("(*");
-				self.print_expression(e);
-				self.s(")");
-			}
-
-			ExpressionKind::Not(e) => {
-				self.s("(!");
 				self.print_expression(e);
 				self.s(")");
 			}
@@ -438,6 +444,15 @@ impl fmt::Display for BinaryOperator {
 			BinaryOperator::Greater => ">",
 			BinaryOperator::LessEqual => "<=",
 			BinaryOperator::GreaterEqual => ">=",
+		};
+		write!(f, "{s}")
+	}
+}
+
+impl fmt::Display for UnaryOperator {
+	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		let s = match self {
+			UnaryOperator::Not => "!",
 		};
 		write!(f, "{s}")
 	}

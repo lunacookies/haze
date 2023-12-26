@@ -69,11 +69,11 @@ pub enum Expression {
 	True,
 	False,
 	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, op: ast::BinaryOperator },
+	Unary { operand: Idx<Expression>, operator: ast::UnaryOperator },
 	FieldAccess { lhs: Idx<Expression>, field: String },
 	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
-	Not(Idx<Expression>),
 	Cast { ty: Ty, operand: Idx<Expression> },
 }
 
@@ -254,6 +254,13 @@ impl PrettyPrintCtx {
 				self.s(")");
 			}
 
+			Expression::Unary { operand, operator } => {
+				self.s("(");
+				self.s(&operator.to_string());
+				self.print_expression(*operand, storage);
+				self.s(")");
+			}
+
 			Expression::FieldAccess { lhs, field } => {
 				self.s("(");
 				self.print_expression(*lhs, storage);
@@ -278,12 +285,6 @@ impl PrettyPrintCtx {
 
 			Expression::Dereference(e) => {
 				self.s("(*");
-				self.print_expression(*e, storage);
-				self.s(")");
-			}
-
-			Expression::Not(e) => {
-				self.s("(!");
 				self.print_expression(*e, storage);
 				self.s(")");
 			}
