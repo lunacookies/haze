@@ -1,4 +1,4 @@
-proc break_outside_loop() {
+func break_outside_loop() {
 	for {}
 	break
 	for {}

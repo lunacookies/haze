@@ -9,7 +9,7 @@ struct Nested {
 	d int
 }
 
-proc main() int {
+func main() int {
 	var f Foo
 	var n Nested
 

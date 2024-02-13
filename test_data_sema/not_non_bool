@@ -1,4 +1,4 @@
-proc not_non_bool() {
+func not_non_bool() {
 	!10
 }
 ======

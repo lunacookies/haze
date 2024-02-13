@@ -1,0 +1,5 @@
+func return_with_value_from_no_return_value_function() {
+	return true
+}
+======
+test:2:9: error: cannot return with value from function which does not return value

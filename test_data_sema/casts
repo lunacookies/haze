@@ -1,4 +1,4 @@
-proc casts() {
+func casts() {
 	i := 0
 	by := cast(byte) i
 	i = cast(int) by
@@ -7,7 +7,7 @@ proc casts() {
 	bptr := cast(*bool) &i
 }
 ======
-proc casts
+func casts
 	var i int
 	var by byte
 	var bptr *bool

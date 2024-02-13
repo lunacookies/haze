@@ -1,3 +1,3 @@
-proc main() int {}
+func main() int {}
 ======
 exit status: 0

@@ -25,16 +25,16 @@ impl CodegenCtx<'_> {
 			self.newline();
 		}
 
-		for (name, procedure) in &self.index.procedures {
-			self.gen_procedure_declaration(name, procedure);
+		for (name, function) in &self.index.functions {
+			self.gen_function_declaration(name, function);
 			self.s(";");
 			self.newline();
 		}
 
-		for (name, procedure) in &self.hir.procedures {
+		for (name, function) in &self.hir.functions {
 			self.newline();
-			let index_procedure = &self.index.procedures[name];
-			self.gen_procedure(name, procedure, index_procedure);
+			let index_function = &self.index.functions[name];
+			self.gen_function(name, function, index_function);
 			self.newline();
 		}
 
@@ -63,8 +63,8 @@ impl CodegenCtx<'_> {
 		}
 	}
 
-	fn gen_procedure_declaration(&mut self, name: &str, procedure: &resolver::Procedure) {
-		match &procedure.return_ty {
+	fn gen_function_declaration(&mut self, name: &str, function: &resolver::Function) {
+		match &function.return_ty {
 			Some(return_ty) => self.gen_declaration(name, return_ty),
 			None => {
 				self.s("void ");
@@ -72,12 +72,12 @@ impl CodegenCtx<'_> {
 			}
 		}
 
-		if procedure.parameters.is_empty() {
+		if function.parameters.is_empty() {
 			self.s("(void)");
 		} else {
 			self.s("(");
 
-			for (i, parameter) in procedure.parameters.iter().enumerate() {
+			for (i, parameter) in function.parameters.iter().enumerate() {
 				if i != 0 {
 					self.s(", ");
 				}
@@ -89,13 +89,13 @@ impl CodegenCtx<'_> {
 		}
 	}
 
-	fn gen_procedure(
+	fn gen_function(
 		&mut self,
 		name: &str,
-		procedure: &hir::Procedure,
-		index_procedure: &resolver::Procedure,
+		function: &hir::Function,
+		index_function: &resolver::Function,
 	) {
-		self.gen_procedure_declaration(name, index_procedure);
+		self.gen_function_declaration(name, index_function);
 
 		self.newline();
 		self.s("{");
@@ -103,7 +103,7 @@ impl CodegenCtx<'_> {
 
 		let mut did_print_variables = false;
 
-		for variable in procedure.storage.variables.values() {
+		for variable in function.storage.variables.values() {
 			if variable.is_parameter {
 				continue;
 			}
@@ -118,11 +118,11 @@ impl CodegenCtx<'_> {
 			self.newline();
 		}
 
-		match &procedure.storage.statements[procedure.body] {
+		match &function.storage.statements[function.body] {
 			hir::Statement::Block(body) => {
 				for s in body {
 					self.newline();
-					self.gen_statement(*s, &procedure.storage);
+					self.gen_statement(*s, &function.storage);
 				}
 			}
 

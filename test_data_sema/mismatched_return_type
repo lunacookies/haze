@@ -1,5 +1,5 @@
-proc mismatched_return_type() int {
+func mismatched_return_type() int {
 	return true
 }
 ======
-test:2:9: error: cannot return “bool” from procedure which returns “int”
+test:2:9: error: cannot return “bool” from function which returns “int”

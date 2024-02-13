@@ -1,4 +1,4 @@
-proc mismatched_assignment() {
+func mismatched_assignment() {
 	a := 0
 	a = false
 }

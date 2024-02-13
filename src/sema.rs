@@ -3,7 +3,7 @@ use la_arena::{ArenaMap, Idx};
 
 use crate::{
 	ast,
-	hir::{BodyStorage, Expression, Hir, Procedure, Statement, Variable},
+	hir::{BodyStorage, Expression, Function, Hir, Statement, Variable},
 	lexer::Loc,
 	resolver::{self, Index, Ty},
 };
@@ -13,21 +13,21 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 
 	for definition in &ast.definitions {
 		match &definition.kind {
-			ast::DefinitionKind::Procedure(proc) => match (&proc.body, proc.is_extern) {
+			ast::DefinitionKind::Function(func) => match (&func.body, func.is_extern) {
 				(Some(body), true) => {
-					crate::error(body.loc.clone(), "body provided for extern procedure".to_string())
+					crate::error(body.loc.clone(), "body provided for extern function".to_string())
 				}
 
 				(Some(body), false) => {
-					let ctx = SemaContext::new(index, &proc.name, body);
-					hir.procedures.insert(proc.name.clone(), ctx.analyze());
+					let ctx = SemaContext::new(index, &func.name, body);
+					hir.functions.insert(func.name.clone(), ctx.analyze());
 				}
 
 				(None, true) => {}
 
 				(None, false) => crate::error(
 					definition.loc.clone(),
-					"non-extern procedure has no body".to_string(),
+					"non-extern function has no body".to_string(),
 				),
 			},
 			ast::DefinitionKind::Struct(_) => {}
@@ -39,8 +39,8 @@ pub fn analyze(ast: &ast::Ast, index: &Index) -> Hir {
 
 struct SemaContext<'a> {
 	index: &'a Index,
-	procedure: &'a resolver::Procedure,
-	procedure_body: &'a ast::Statement,
+	function: &'a resolver::Function,
+	function_body: &'a ast::Statement,
 	storage: BodyStorage,
 	scopes: Vec<IndexMap<String, Idx<Variable>>>,
 	expression_tys: ArenaMap<Idx<Expression>, Ty>,
@@ -50,13 +50,13 @@ struct SemaContext<'a> {
 impl SemaContext<'_> {
 	fn new<'a>(
 		index: &'a Index,
-		procedure_name: &str,
-		procedure_body: &'a ast::Statement,
+		function_name: &str,
+		function_body: &'a ast::Statement,
 	) -> SemaContext<'a> {
 		SemaContext {
 			index,
-			procedure: &index.procedures[procedure_name],
-			procedure_body,
+			function: &index.functions[function_name],
+			function_body,
 			storage: BodyStorage::default(),
 			scopes: Vec::new(),
 			expression_tys: ArenaMap::new(),
@@ -64,10 +64,10 @@ impl SemaContext<'_> {
 		}
 	}
 
-	fn analyze(mut self) -> Procedure {
+	fn analyze(mut self) -> Function {
 		self.push_scope();
 
-		for parameter in &self.procedure.parameters {
+		for parameter in &self.function.parameters {
 			let variable = self.storage.variables.alloc(Variable {
 				name: parameter.name.clone(),
 				ty: parameter.ty.clone(),
@@ -76,9 +76,9 @@ impl SemaContext<'_> {
 			self.insert_into_scopes(parameter.name.clone(), variable);
 		}
 
-		let body = self.analyze_statement(self.procedure_body).unwrap();
+		let body = self.analyze_statement(self.function_body).unwrap();
 
-		Procedure { storage: self.storage, body }
+		Function { storage: self.storage, body }
 	}
 
 	fn analyze_statement(&mut self, statement: &ast::Statement) -> Option<Idx<Statement>> {
@@ -189,12 +189,12 @@ impl SemaContext<'_> {
 				Statement::Break
 			}
 
-			ast::StatementKind::Return { value } => match (&self.procedure.return_ty, value) {
+			ast::StatementKind::Return { value } => match (&self.function.return_ty, value) {
 				(Some(return_ty), Some(value)) => {
 					let value_idx = self.analyze_expression(value, Some(return_ty));
 					let value_ty = &self.expression_tys[value_idx];
 					if value_ty != return_ty {
-						crate::error(value.loc.clone(), format!("cannot return “{value_ty}” from procedure which returns “{return_ty}”"));
+						crate::error(value.loc.clone(), format!("cannot return “{value_ty}” from function which returns “{return_ty}”"));
 					}
 
 					Statement::Return { value: Some(value_idx) }
@@ -203,13 +203,13 @@ impl SemaContext<'_> {
 				(Some(return_ty), None) => crate::error(
 					statement.loc.clone(),
 					format!(
-						"cannot return without value from procedure which returns “{return_ty}”"
+						"cannot return without value from function which returns “{return_ty}”"
 					),
 				),
 
 				(None, Some(value)) => crate::error(
 					value.loc.clone(),
-					"cannot return with value from procedure which does not return value"
+					"cannot return with value from function which does not return value"
 						.to_string(),
 				),
 
@@ -290,7 +290,7 @@ impl SemaContext<'_> {
 					Some(t) => (Expression::Call { name: name.clone(), arguments }, t.clone()),
 					None => crate::error(
 						expression.loc.clone(),
-						format!("cannot call procedure “{name}” in expression since it does not return a value"),
+						format!("cannot call function “{name}” in expression since it does not return a value"),
 					),
 				}
 			}
@@ -470,17 +470,17 @@ impl SemaContext<'_> {
 		arguments: &[ast::Expression],
 		loc: &Loc,
 	) -> (Vec<Idx<Expression>>, Option<&Ty>) {
-		let procedure = match self.index.procedures.get(name) {
+		let function = match self.index.functions.get(name) {
 			Some(p) => p,
-			None => crate::error(loc.clone(), format!("undefined procedure “{name}”")),
+			None => crate::error(loc.clone(), format!("undefined function “{name}”")),
 		};
 
-		if procedure.parameters.len() != arguments.len() {
+		if function.parameters.len() != arguments.len() {
 			crate::error(
 				loc.clone(),
 				format!(
 					"“{name}” expected {} arguments but {} were provided",
-					procedure.parameters.len(),
+					function.parameters.len(),
 					arguments.len()
 				),
 			);
@@ -488,7 +488,7 @@ impl SemaContext<'_> {
 
 		let mut argument_idxs = Vec::new();
 
-		for (argument, parameter) in arguments.iter().zip(&procedure.parameters) {
+		for (argument, parameter) in arguments.iter().zip(&function.parameters) {
 			let idx = self.analyze_expression(argument, Some(&parameter.ty));
 			let argument_ty = &self.expression_tys[idx];
 
@@ -505,7 +505,7 @@ impl SemaContext<'_> {
 			argument_idxs.push(idx);
 		}
 
-		(argument_idxs, procedure.return_ty.as_ref())
+		(argument_idxs, function.return_ty.as_ref())
 	}
 
 	fn resolve_ty(&mut self, ty: &ast::Ty) -> Ty {

@@ -18,7 +18,7 @@ pub enum TokenKind {
 	Integer,
 	QuotedString,
 
-	ProcKw,
+	FuncKw,
 	StructKw,
 	VarKw,
 	IfKw,
@@ -100,7 +100,7 @@ impl fmt::Display for Loc {
 }
 
 const KEYWORDS: &[(&str, TokenKind)] = &[
-	("proc", TokenKind::ProcKw),
+	("func", TokenKind::FuncKw),
 	("struct", TokenKind::StructKw),
 	("var", TokenKind::VarKw),
 	("if", TokenKind::IfKw),

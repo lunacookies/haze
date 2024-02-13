@@ -1,3 +1,0 @@
-proc p() #extern {}
-======
-test:1:18: error: body provided for extern procedure

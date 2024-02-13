@@ -1,4 +1,4 @@
-proc main() int {
+func main() int {
 	two := cast(int) true + 1 + cast(int) false
 
 	big_int := 259

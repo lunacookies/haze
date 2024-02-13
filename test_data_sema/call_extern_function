@@ -1,0 +1,9 @@
+func foo() #extern
+func call_extern_function() {
+	foo()
+}
+======
+func call_extern_function
+{
+	call foo()
+}

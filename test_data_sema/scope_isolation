@@ -1,4 +1,4 @@
-proc scope_isolation() {
+func scope_isolation() {
 	{
 		a := 10
 	}

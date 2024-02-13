@@ -1,5 +1,0 @@
-proc return_with_value_from_no_return_value_procedure() {
-	return true
-}
-======
-test:2:9: error: cannot return with value from procedure which does not return value

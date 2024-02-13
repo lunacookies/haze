@@ -1,6 +1,6 @@
-proc struct var if else for break true false cast return
+func struct var if else for break true false cast return
 ======
-ProcKw test:1:1 "proc"
+FuncKw test:1:1 "func"
 StructKw test:1:6 "struct"
 VarKw test:1:13 "var"
 IfKw test:1:17 "if"

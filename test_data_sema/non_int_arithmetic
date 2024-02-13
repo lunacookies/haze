@@ -1,4 +1,4 @@
-proc non_int_arithmetic() {
+func non_int_arithmetic() {
 	x := true
 	1 + x
 }

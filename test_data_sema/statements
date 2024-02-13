@@ -2,7 +2,7 @@ struct Wrapper {
 	value int
 }
 
-proc statements() Wrapper {
+func statements() Wrapper {
 	var w Wrapper
 	var a int
 
@@ -36,9 +36,9 @@ proc statements() Wrapper {
 	return w
 }
 
-proc no_return_value(val int) {}
+func no_return_value(val int) {}
 ======
-proc statements
+func statements
 	var w Wrapper
 	var a int
 	var b int
@@ -69,7 +69,7 @@ proc statements
 	return w
 }
 
-proc no_return_value
+func no_return_value
 	param val int
 {
 }

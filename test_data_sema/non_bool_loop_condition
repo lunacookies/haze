@@ -1,4 +1,4 @@
-proc non_bool_loop_condition() {
+func non_bool_loop_condition() {
 	for 1 {}
 }
 ======

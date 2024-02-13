@@ -10,12 +10,12 @@ pub fn resolve(index: &indexer::Index) -> Index {
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Index {
-	pub procedures: IndexMap<String, Procedure>,
+	pub functions: IndexMap<String, Function>,
 	pub named_tys: IndexMap<String, NamedTy>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Procedure {
+pub struct Function {
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
 	pub is_extern: bool,
@@ -54,7 +54,7 @@ pub enum Ty {
 
 struct Resolver<'a> {
 	index: &'a indexer::Index,
-	procedures: IndexMap<String, Procedure>,
+	functions: IndexMap<String, Function>,
 	named_tys: IndexMap<String, NamedTy>,
 	in_progress_tys: Vec<String>,
 }
@@ -63,7 +63,7 @@ impl Resolver<'_> {
 	fn new(index: &indexer::Index) -> Resolver<'_> {
 		Resolver {
 			index,
-			procedures: IndexMap::new(),
+			functions: IndexMap::new(),
 			named_tys: IndexMap::new(),
 			in_progress_tys: Vec::new(),
 		}
@@ -74,28 +74,28 @@ impl Resolver<'_> {
 			self.resolve_ty_definition(name, ty);
 		}
 
-		for (name, procedure) in &self.index.procedures {
-			self.resolve_procedure(name, procedure);
+		for (name, function) in &self.index.functions {
+			self.resolve_function(name, function);
 		}
 
-		Index { procedures: self.procedures, named_tys: self.named_tys }
+		Index { functions: self.functions, named_tys: self.named_tys }
 	}
 
-	fn resolve_procedure(&mut self, name: &str, procedure: &indexer::Procedure) {
+	fn resolve_function(&mut self, name: &str, function: &indexer::Function) {
 		let mut parameters = Vec::new();
 
-		for parameter in &procedure.parameters {
+		for parameter in &function.parameters {
 			parameters.push(Parameter {
 				name: parameter.name.clone(),
 				ty: self.resolve_ty(&parameter.ty),
 			});
 		}
 
-		let return_ty = procedure.return_ty.as_ref().map(|t| self.resolve_ty(t));
+		let return_ty = function.return_ty.as_ref().map(|t| self.resolve_ty(t));
 
-		self.procedures.insert(
+		self.functions.insert(
 			name.to_string(),
-			Procedure { parameters, return_ty, is_extern: procedure.is_extern },
+			Function { parameters, return_ty, is_extern: function.is_extern },
 		);
 	}
 
@@ -159,16 +159,16 @@ impl Index {
 	pub fn pretty_print(&self) -> String {
 		let mut s = String::new();
 
-		for (name, procedure) in &self.procedures {
+		for (name, function) in &self.functions {
 			if !s.is_empty() {
 				s.push('\n');
 			}
 
-			s.push_str("proc ");
+			s.push_str("func ");
 			s.push_str(name);
 			s.push('(');
 
-			for (i, parameter) in procedure.parameters.iter().enumerate() {
+			for (i, parameter) in function.parameters.iter().enumerate() {
 				if i != 0 {
 					s.push_str(", ");
 				}
@@ -180,12 +180,12 @@ impl Index {
 
 			s.push(')');
 
-			if let Some(return_ty) = &procedure.return_ty {
+			if let Some(return_ty) = &function.return_ty {
 				s.push(' ');
 				s.push_str(&return_ty.to_string());
 			}
 
-			if procedure.is_extern {
+			if function.is_extern {
 				s.push_str(" #extern");
 			}
 

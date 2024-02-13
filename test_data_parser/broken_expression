@@ -1,4 +1,4 @@
-proc broken_expression() {
+func broken_expression() {
 	1 + var
 }
 ======

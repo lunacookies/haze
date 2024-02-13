@@ -1,6 +1,6 @@
 struct Empty {}
 
-proc inc_non_integer() {
+func inc_non_integer() {
 	var x Empty
 	x++
 }

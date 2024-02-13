@@ -1,4 +1,4 @@
-proc statements() {
+func statements() {
 	var a int
 	var b int
 	c := 100
@@ -44,7 +44,7 @@ proc statements() {
 	for i := 0; i <= 10; i++ {}
 }
 ======
-proc statements()
+func statements()
 {
 	var a int
 	var b int

@@ -1,0 +1,34 @@
+func no_params() {}
+func one_param(a int) {}
+func two_params(a int, b int) {}
+func trailing_comma(a int,) {}
+func with_return() int {}
+func without_body()
+func extern() #extern
+func extern_with_return() int #extern
+======
+func no_params()
+{
+}
+
+func one_param(a int)
+{
+}
+
+func two_params(a int, b int)
+{
+}
+
+func trailing_comma(a int)
+{
+}
+
+func with_return() int
+{
+}
+
+func without_body()
+
+func extern() #extern
+
+func extern_with_return() int #extern

@@ -1,4 +1,4 @@
-proc numbers() byte {
+func numbers() byte {
 	default := 0
 	var i int
 	i = 5
@@ -11,9 +11,9 @@ proc numbers() byte {
 	return 4
 }
 
-proc take_byte(b byte) {}
+func take_byte(b byte) {}
 ======
-proc numbers
+func numbers
 	var default int
 	var i int
 	var b byte
@@ -28,7 +28,7 @@ proc numbers
 	return 4_byte
 }
 
-proc take_byte
+func take_byte
 	param b byte
 {
 }

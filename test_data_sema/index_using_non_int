@@ -1,4 +1,4 @@
-proc index_using_non_int() {
+func index_using_non_int() {
 	b := cast(byte) 0
 	p := &b
 	p[b]

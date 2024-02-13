@@ -1,4 +1,4 @@
-proc invalid_cast() {
+func invalid_cast() {
 	cast(*int) 10
 }
 ======

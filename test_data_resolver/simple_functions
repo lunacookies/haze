@@ -1,0 +1,21 @@
+func nothing() {}
+func int_param(a int) {}
+func int_params(a int, b int) {}
+func int_return() int {}
+func bool_return() bool {}
+func extern_with_return() int #extern
+func extern_without_return() #extern
+======
+func nothing()
+
+func int_param(a int)
+
+func int_params(a int, b int)
+
+func int_return() int
+
+func bool_return() bool
+
+func extern_with_return() int #extern
+
+func extern_without_return() #extern

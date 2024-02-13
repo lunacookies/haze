@@ -1,4 +1,4 @@
-proc nested_loop_variable_shadowing() {
+func nested_loop_variable_shadowing() {
 	for i := 0; i < 10; i++ {
 		for i := 0; i < 10; i++ {}
 	}

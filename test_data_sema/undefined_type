@@ -1,4 +1,4 @@
-proc undefined_type() {
+func undefined_type() {
 	var x int
 	var y Foo
 }

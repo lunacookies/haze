@@ -1,4 +1,4 @@
-proc declaration_shadowing() {
+func declaration_shadowing() {
 	var a int
 	var a int
 }

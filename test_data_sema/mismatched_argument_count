@@ -1,6 +1,6 @@
-proc takes_three(x int, y int, z int) {}
+func takes_three(x int, y int, z int) {}
 
-proc mismatched_argument_count() {
+func mismatched_argument_count() {
 	takes_three(1)
 }
 ======

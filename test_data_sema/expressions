@@ -1,4 +1,4 @@
-proc expressions(parameter int) {
+func expressions(parameter int) {
 	10
 	true
 	false
@@ -15,11 +15,11 @@ proc expressions(parameter int) {
 	s := "a string"
 }
 
-proc add(x int, y int) int {
+func add(x int, y int) int {
 	return x + y
 }
 ======
-proc expressions
+func expressions
 	param parameter int
 	var a int
 	var b int
@@ -44,7 +44,7 @@ proc expressions
 	s = "a string"
 }
 
-proc add
+func add
 	param x int
 	param y int
 {

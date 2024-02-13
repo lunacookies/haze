@@ -1,19 +1,19 @@
-proc main() int {
+func main() int {
 	return cast(int) equal_example() + cast(int) not_equal_example()
 }
 
-proc equal_example() bool {
+func equal_example() bool {
 	s1 := "atest"
 	s2 := "btest"
 	return memcmp(&s1[1], &s2[1], 4) == 0
 }
 
-proc not_equal_example() bool {
+func not_equal_example() bool {
 	s1 := "atest"
 	s2 := "bquux"
 	return memcmp(&s1[1], &s2[1], 4) != 0
 }
 
-proc memcmp(s1 *byte, s2 *byte, len int) int #extern
+func memcmp(s1 *byte, s2 *byte, len int) int #extern
 ======
 exit status: 2

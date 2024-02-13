@@ -1,0 +1,5 @@
+func call_undefined_function() {
+	foo()
+}
+======
+test:2:2: error: undefined function “foo”

@@ -1,9 +1,0 @@
-proc foo() #extern
-proc call_extern_procedure() {
-	foo()
-}
-======
-proc call_extern_procedure
-{
-	call foo()
-}

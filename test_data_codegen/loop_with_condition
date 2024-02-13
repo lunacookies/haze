@@ -1,4 +1,4 @@
-proc main() int {
+func main() int {
 	i := 1
 
 	for i < 20 {

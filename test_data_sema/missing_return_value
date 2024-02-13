@@ -1,5 +1,5 @@
-proc missing_return_value() bool {
+func missing_return_value() bool {
 	return
 }
 ======
-test:2:2: error: cannot return without value from procedure which returns “bool”
+test:2:2: error: cannot return without value from function which returns “bool”

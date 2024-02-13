@@ -1,8 +1,8 @@
-proc identity(n int) int {
+func identity(n int) int {
 	return n
 }
 
-proc mismatched_argument_type() {
+func mismatched_argument_type() {
 	identity(true)
 }
 ======

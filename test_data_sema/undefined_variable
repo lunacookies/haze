@@ -1,4 +1,4 @@
-proc undefined_variable() {
+func undefined_variable() {
 	foo
 }
 ======

@@ -8,12 +8,12 @@ pub fn index(ast: &ast::Ast) -> Index {
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Index {
-	pub procedures: IndexMap<String, Procedure>,
+	pub functions: IndexMap<String, Function>,
 	pub tys: IndexMap<String, TyDefinition>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Procedure {
+pub struct Function {
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
 	pub is_extern: bool,
@@ -72,21 +72,21 @@ impl Indexer {
 
 	fn index_definition(&mut self, definition: &ast::Definition) {
 		match &definition.kind {
-			ast::DefinitionKind::Procedure(proc) => {
+			ast::DefinitionKind::Function(func) => {
 				let mut parameters = Vec::new();
 
-				for parameter in &proc.parameters {
+				for parameter in &func.parameters {
 					parameters.push(Parameter {
 						name: parameter.name.clone(),
 						ty: Self::index_ty(&parameter.ty),
 					});
 				}
 
-				let return_ty = proc.return_ty.as_ref().map(Self::index_ty);
+				let return_ty = func.return_ty.as_ref().map(Self::index_ty);
 
-				self.index.procedures.insert(
-					proc.name.clone(),
-					Procedure { parameters, return_ty, is_extern: proc.is_extern },
+				self.index.functions.insert(
+					func.name.clone(),
+					Function { parameters, return_ty, is_extern: func.is_extern },
 				);
 			}
 

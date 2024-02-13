@@ -1,4 +1,4 @@
-proc definition_shadowing() {
+func definition_shadowing() {
 	a := 10
 	a := 20
 }

@@ -1,4 +1,4 @@
-proc cast_to_same() {
+func cast_to_same() {
 	b := cast(byte) 1
 	cast(byte) b
 }

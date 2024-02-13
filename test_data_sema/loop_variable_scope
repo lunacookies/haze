@@ -1,4 +1,4 @@
-proc loop_variable_scope() {
+func loop_variable_scope() {
 	for i := 0; i < 5; i++ {}
 	i
 }

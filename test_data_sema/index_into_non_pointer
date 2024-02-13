@@ -1,4 +1,4 @@
-proc index_into_non_pointer() {
+func index_into_non_pointer() {
 	1[0]
 }
 ======

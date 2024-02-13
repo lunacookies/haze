@@ -1,4 +1,4 @@
-proc main() int {
+func main() int {
 	a := 1
 	p := &a
 	one := p[0]

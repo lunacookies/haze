@@ -1,4 +1,4 @@
-proc main() int {
+func main() int {
 	s := "hello world"
 	sum := 0
 	for i := 0; i < 11; i++ {

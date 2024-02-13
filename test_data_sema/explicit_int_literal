@@ -1,4 +1,4 @@
-proc explicit_int_literal() {
+func explicit_int_literal() {
 	cast(int) 10
 }
 ======

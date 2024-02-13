@@ -1,4 +1,4 @@
-proc expressions() {
+func expressions() {
 	10; 20
 	abc
 	true; false
@@ -15,11 +15,11 @@ proc expressions() {
 	~1 - 1
 	!true && false
 
-	proc_name()
-	proc_name(a)
-	proc_name(a, b)
-	proc_name(1 + 1, 2 * 2)
-	proc_name(trailing, comma,)
+	func_name()
+	func_name(a)
+	func_name(a, b)
+	func_name(1 + 1, 2 * 2)
+	func_name(trailing, comma,)
 
 	var my_t MyType
 	my_t.a = 92
@@ -51,7 +51,7 @@ struct Nested {
 	c int
 }
 ======
-proc expressions()
+func expressions()
 {
 	10
 	20
@@ -69,11 +69,11 @@ proc expressions()
 	((((1 | 2) ^ 3) | 4) ^ 5)
 	((~1) - 1)
 	((!true) && false)
-	proc_name()
-	proc_name(a)
-	proc_name(a, b)
-	proc_name((1 + 1), (2 * 2))
-	proc_name(trailing, comma)
+	func_name()
+	func_name(a)
+	func_name(a, b)
+	func_name((1 + 1), (2 * 2))
+	func_name(trailing, comma)
 	var my_t MyType
 	(my_t.a) = 92
 	((my_t.b).c) = 29

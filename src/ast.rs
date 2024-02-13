@@ -15,12 +15,12 @@ pub struct Definition {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DefinitionKind {
-	Procedure(Procedure),
+	Function(Function),
 	Struct(Struct),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Procedure {
+pub struct Function {
 	pub name: String,
 	pub parameters: Vec<Parameter>,
 	pub return_ty: Option<Ty>,
@@ -172,18 +172,18 @@ impl PrettyPrintCtx {
 			}
 
 			match &definition.kind {
-				DefinitionKind::Procedure(proc) => self.print_procedure(proc),
+				DefinitionKind::Function(func) => self.print_function(func),
 				DefinitionKind::Struct(strukt) => self.print_struct(strukt),
 			}
 		}
 	}
 
-	fn print_procedure(&mut self, proc: &Procedure) {
-		self.s("proc ");
-		self.s(&proc.name);
+	fn print_function(&mut self, func: &Function) {
+		self.s("func ");
+		self.s(&func.name);
 		self.s("(");
 
-		for (i, parameter) in proc.parameters.iter().enumerate() {
+		for (i, parameter) in func.parameters.iter().enumerate() {
 			if i != 0 {
 				self.s(", ");
 			}
@@ -195,16 +195,16 @@ impl PrettyPrintCtx {
 
 		self.s(")");
 
-		if let Some(return_ty) = &proc.return_ty {
+		if let Some(return_ty) = &func.return_ty {
 			self.s(" ");
 			self.print_ty(return_ty);
 		}
 
-		if proc.is_extern {
+		if func.is_extern {
 			self.s(" #extern");
 		}
 
-		if let Some(body) = &proc.body {
+		if let Some(body) = &func.body {
 			self.newline();
 			self.print_statement(body);
 		}

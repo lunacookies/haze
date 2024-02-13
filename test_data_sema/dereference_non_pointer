@@ -1,4 +1,4 @@
-proc dereference_non_pointer() {
+func dereference_non_pointer() {
 	*10
 }
 ======

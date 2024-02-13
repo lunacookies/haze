@@ -1,4 +1,4 @@
-proc mismatched_arithmetic_types() {
+func mismatched_arithmetic_types() {
 	10 + cast(byte) 20
 }
 ======

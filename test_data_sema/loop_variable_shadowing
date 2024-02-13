@@ -1,4 +1,4 @@
-proc loop_variable_redeclaration() {
+func loop_variable_redeclaration() {
 	i := 0
 	for i := 0; i < 10; i++ {}
 }

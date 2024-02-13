@@ -1,0 +1,7 @@
+func no_return_value() {}
+
+func no_return_value_function_expression() {
+	v := no_return_value()
+}
+======
+test:4:7: error: cannot call function “no_return_value” in expression since it does not return a value

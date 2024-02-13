@@ -1,9 +1,9 @@
-proc reuse_loop_variable_name() {
+func reuse_loop_variable_name() {
 	for i := 0; i < 5; i++ {}
 	for i := 0; i < 5; i++ {}
 }
 ======
-proc reuse_loop_variable_name
+func reuse_loop_variable_name
 	var i int
 	var i2 int
 {

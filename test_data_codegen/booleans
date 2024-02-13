@@ -1,4 +1,4 @@
-proc main() int {
+func main() int {
 	b := !false || !true && true
 	return cast(int) b
 }

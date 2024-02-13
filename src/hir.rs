@@ -7,11 +7,11 @@ use crate::{ast, resolver::Ty};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Hir {
-	pub procedures: IndexMap<String, Procedure>,
+	pub functions: IndexMap<String, Function>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Procedure {
+pub struct Function {
 	pub storage: BodyStorage,
 	pub body: Idx<Statement>,
 }
@@ -98,17 +98,17 @@ struct PrettyPrintCtx {
 
 impl PrettyPrintCtx {
 	fn print_ast(&mut self, hir: &Hir) {
-		for (i, (name, proc)) in hir.procedures.iter().enumerate() {
+		for (i, (name, func)) in hir.functions.iter().enumerate() {
 			if i != 0 {
 				self.newline();
 			}
 
-			self.print_procedure(name, proc);
+			self.print_function(name, func);
 		}
 	}
 
-	fn print_procedure(&mut self, name: &str, proc: &Procedure) {
-		self.s("proc ");
+	fn print_function(&mut self, name: &str, func: &Function) {
+		self.s("func ");
 		self.s(name);
 
 		self.indentation += 1;
@@ -116,7 +116,7 @@ impl PrettyPrintCtx {
 		self.disambiguated_variable_names.clear();
 		let mut seen_variable_names = HashSet::new();
 
-		for (variable_idx, variable) in proc.storage.variables.iter() {
+		for (variable_idx, variable) in func.storage.variables.iter() {
 			self.newline();
 
 			if variable.is_parameter {
@@ -143,7 +143,7 @@ impl PrettyPrintCtx {
 		self.indentation -= 1;
 		self.newline();
 
-		self.print_statement(proc.body, &proc.storage);
+		self.print_statement(func.body, &func.storage);
 		self.newline();
 	}
 

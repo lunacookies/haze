@@ -3,7 +3,7 @@ use std::{cell::Cell, path::PathBuf};
 use crate::{
 	ast::{
 		Ast, BinaryOperator, Definition, DefinitionKind, Expression, ExpressionKind, Field,
-		Parameter, Procedure, Statement, StatementKind, Struct, Ty, TyKind, UnaryOperator,
+		Function, Parameter, Statement, StatementKind, Struct, Ty, TyKind, UnaryOperator,
 	},
 	lexer::{lex, Loc, Token, TokenKind},
 };
@@ -39,15 +39,15 @@ impl Parser {
 
 	fn parse_definition(&mut self) -> Definition {
 		match self.current() {
-			TokenKind::ProcKw => self.parse_procedure(),
+			TokenKind::FuncKw => self.parse_function(),
 			TokenKind::StructKw => self.parse_struct(),
 			_ => self.error("expected definition".to_string()),
 		}
 	}
 
-	fn parse_procedure(&mut self) -> Definition {
+	fn parse_function(&mut self) -> Definition {
 		let loc = self.current_loc();
-		self.bump(TokenKind::ProcKw);
+		self.bump(TokenKind::FuncKw);
 
 		let name = self.expect_text(TokenKind::Identifier);
 
@@ -80,14 +80,14 @@ impl Parser {
 			let directive = self.expect_text(TokenKind::Identifier);
 			match directive.as_str() {
 				"extern" => is_extern = true,
-				_ => crate::error(loc, format!("invalid procedure directive “#{directive}”")),
+				_ => crate::error(loc, format!("invalid function directive “#{directive}”")),
 			}
 		}
 
 		let body = if self.at(TokenKind::LBrace) { Some(self.parse_block()) } else { None };
 
 		Definition {
-			kind: DefinitionKind::Procedure(Procedure {
+			kind: DefinitionKind::Function(Function {
 				name,
 				parameters,
 				return_ty,

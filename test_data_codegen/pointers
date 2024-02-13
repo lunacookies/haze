@@ -1,4 +1,4 @@
-proc main() int {
+func main() int {
 	x := 5
 	ptr_to_x := &x
 	*ptr_to_x = 4
