@@ -171,10 +171,32 @@ impl Lexer<'_> {
 			b'"' => {
 				self.i += 1;
 				self.loc.column += 1;
+				let mut in_escape = false;
 
-				while self.bytes[self.i] != b'"' {
+				loop {
+					let b = self.bytes[self.i];
+
+					if self.bytes[self.i] == b'\\' {
+						in_escape = true;
+						self.i += 1;
+						self.loc.column += 1;
+						continue;
+					}
+
+					if !in_escape && b == b'"' {
+						break;
+					}
+
 					if self.bytes[self.i] == b'\n' {
 						crate::error(self.loc.clone(), "unterminated string literal".to_string());
+					}
+
+					if in_escape {
+						if matches!(b, b'\\' | b'n' | b't' | b'"') {
+							in_escape = false;
+						} else {
+							crate::error(self.loc.clone(), "invalid escape sequence".to_string());
+						}
 					}
 
 					self.i += 1;

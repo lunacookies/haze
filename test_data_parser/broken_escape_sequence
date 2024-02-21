@@ -1,0 +1,5 @@
+func broken_escape_sequence() {
+	"\z"
+}
+======
+test:2:4: error: invalid escape sequence

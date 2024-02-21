@@ -400,10 +400,32 @@ impl Parser {
 				let loc = self.current_loc();
 				let text = self.expect_text(TokenKind::QuotedString);
 
-				Expression {
-					kind: ExpressionKind::String(text[1..text.len() - 1].to_string()),
-					loc,
+				let mut out = Vec::new();
+				let mut in_escape = false;
+
+				for &b in text[1..text.len() - 1].as_bytes() {
+					if in_escape {
+						out.push(match b {
+							b'\\' => b'\\',
+							b'n' => b'\n',
+							b't' => b'\t',
+							b'"' => b'"',
+							_ => unreachable!(),
+						});
+						in_escape = false;
+						continue;
+					}
+
+					if b == b'\\' {
+						in_escape = true;
+						continue;
+					}
+
+					out.push(b);
 				}
+
+				let string = String::from_utf8(out).unwrap();
+				Expression { kind: ExpressionKind::String(string), loc }
 			}
 
 			TokenKind::Identifier if self.lookahead() == TokenKind::LParen => {

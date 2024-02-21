@@ -3,6 +3,7 @@ func expressions() {
 	abc
 	true; false
 	"hello"
+	"\t\\textit{\"italics\"}\n"
 
 	a + b
 	1 + 2 + 3 + 4
@@ -59,6 +60,7 @@ func expressions()
 	true
 	false
 	"hello"
+	"\t\\textit{\"italics\"}\n"
 	(a + b)
 	(((1 + 2) + 3) + 4)
 	(1 + (2 * 3))
