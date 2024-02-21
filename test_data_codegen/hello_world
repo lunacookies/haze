@@ -1,0 +1,9 @@
+func main() int {
+	s := "hello, world!\n"
+	write(1, s, 14)
+}
+
+func write(fd int, p *byte, len int) #extern
+======
+hello, world!
+exit status: 0
