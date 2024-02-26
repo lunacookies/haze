@@ -48,7 +48,7 @@ func expressions
 	ptr_value = (*ptr)
 	also_ptr_value = (ptr[0])
 	s = "a string"
-	(slice.data[8])
+	(slice[8])
 	slice_data = slice.data
 	slice_count = slice.count
 }

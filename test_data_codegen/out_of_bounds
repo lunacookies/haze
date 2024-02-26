@@ -1,0 +1,16 @@
+func main() int {
+	s := "demo"
+	p(s[0])
+	p(s[1])
+	p(s[2])
+	p(s[3])
+	p(s[4])
+}
+
+func p(b byte) {
+	write(1, &b, 1)
+}
+
+func write(fd int, p *byte, len int) #extern
+======
+demosignal: 5 (SIGTRAP)

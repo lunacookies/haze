@@ -19,7 +19,21 @@ impl CodegenCtx<'_> {
 		self.newline();
 		self.s("#include <stdint.h>");
 		self.newline();
-		self.s("struct slice { uint8_t *data; int count; };");
+
+		self.s("struct __slice { uint8_t *data; int count; };");
+		self.newline();
+
+		self.s("void *__slice_at(struct __slice s, int i)");
+		self.newline();
+		self.s("{");
+		self.indentation += 1;
+		self.newline();
+		self.s("if (i >= s.count) __builtin_debugtrap();");
+		self.newline();
+		self.s("return s.data + i;");
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
 		self.newline();
 
 		for (name, ty) in &self.index.named_tys {
@@ -262,7 +276,7 @@ impl CodegenCtx<'_> {
 			hir::Expression::Byte(i) => self.s(&i.to_string()),
 
 			hir::Expression::String(s) => {
-				self.s("(struct slice){");
+				self.s("(struct __slice){");
 				self.indentation += 1;
 				self.newline();
 
@@ -356,6 +370,19 @@ impl CodegenCtx<'_> {
 				self.s("])");
 			}
 
+			hir::Expression::SliceIndexing { slice, index, element_ty } => {
+				let pointer_ty = resolver::Ty::Pointer { pointee: Box::new(element_ty.clone()) };
+				self.s("(*(");
+				self.gen_declaration("", &pointer_ty);
+				self.s(")__slice_at(");
+				self.gen_expression(*slice, storage);
+				self.s(", (int)sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s(") * (");
+				self.gen_expression(*index, storage);
+				self.s(")))");
+			}
+
 			hir::Expression::AddressOf(e) => {
 				self.s("(&");
 				self.gen_expression(*e, storage);
@@ -400,7 +427,7 @@ impl CodegenCtx<'_> {
 
 			resolver::Ty::Pointer { pointee } => self.gen_base_ty(pointee),
 
-			resolver::Ty::Slice { element: _ } => self.s("struct slice"),
+			resolver::Ty::Slice { element: _ } => self.s("struct __slice"),
 		}
 	}
 

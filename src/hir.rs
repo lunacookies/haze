@@ -74,6 +74,7 @@ pub enum Expression {
 	SliceData { slice: Idx<Expression>, element_ty: Ty },
 	SliceCount { slice: Idx<Expression> },
 	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
+	SliceIndexing { slice: Idx<Expression>, index: Idx<Expression>, element_ty: Ty },
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
 	Cast { ty: Ty, operand: Idx<Expression> },
@@ -284,6 +285,14 @@ impl PrettyPrintCtx {
 			Expression::Indexing { lhs, index } => {
 				self.s("(");
 				self.print_expression(*lhs, storage);
+				self.s("[");
+				self.print_expression(*index, storage);
+				self.s("])");
+			}
+
+			Expression::SliceIndexing { slice, index, element_ty: _ } => {
+				self.s("(");
+				self.print_expression(*slice, storage);
 				self.s("[");
 				self.print_expression(*index, storage);
 				self.s("])");

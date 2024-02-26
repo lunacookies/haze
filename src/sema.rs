@@ -401,27 +401,23 @@ impl SemaContext<'_> {
 				let lhs_idx = self.analyze_expression(lhs, None);
 				let index_idx = self.analyze_expression(index, Some(&Ty::Int));
 
-				// Clone instead of taking an immutable borrow
-				// so we don’t have an immutable borrow of self
-				// while trying to call self.alloc_expression().
-				let lhs_ty = self.expression_tys[lhs_idx].clone();
 				let index_ty = &self.expression_tys[index_idx];
 				if index_ty != &Ty::Int {
 					crate::error(index.loc.clone(), format!("cannot use “{index_ty}” as an index"));
 				}
 
+				let lhs_ty = &self.expression_tys[lhs_idx];
 				let ty = match lhs_ty {
 					Ty::Pointer { pointee } => pointee.as_ref().clone(),
-
 					Ty::Slice { element } => {
-						let data_idx = self.alloc_expression(Expression::SliceData {
-							slice: lhs_idx,
-							element_ty: element.as_ref().clone(),
-						});
 						break 'blk (
-							Expression::Indexing { lhs: data_idx, index: index_idx },
+							Expression::SliceIndexing {
+								slice: lhs_idx,
+								index: index_idx,
+								element_ty: element.as_ref().clone(),
+							},
 							element.as_ref().clone(),
-						);
+						)
 					}
 
 					_ => crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”")),
