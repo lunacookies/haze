@@ -1,0 +1,6 @@
+func index_slice_using_non_int(s []byte) {
+	b := cast(byte) 0
+	s[b]
+}
+======
+test:3:4: error: cannot use “byte” as an index
