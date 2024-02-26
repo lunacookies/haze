@@ -363,6 +363,7 @@ impl TokenKind {
 				| TokenKind::Identifier
 				| TokenKind::TrueKw
 				| TokenKind::FalseKw
+				| TokenKind::Minus
 				| TokenKind::And | TokenKind::Star
 				| TokenKind::Bang
 				| TokenKind::Tilde

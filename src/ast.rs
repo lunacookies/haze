@@ -132,8 +132,9 @@ pub enum BinaryOperator {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UnaryOperator {
-	Not,
+	Negate,
 	BitNot,
+	Not,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -466,8 +467,9 @@ impl fmt::Display for BinaryOperator {
 impl fmt::Display for UnaryOperator {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		let s = match self {
-			UnaryOperator::Not => "!",
+			UnaryOperator::Negate => "-",
 			UnaryOperator::BitNot => "~",
+			UnaryOperator::Not => "!",
 		};
 		write!(f, "{s}")
 	}

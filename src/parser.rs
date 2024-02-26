@@ -475,6 +475,20 @@ impl Parser {
 				Expression { kind: ExpressionKind::False, loc }
 			}
 
+			TokenKind::Minus => {
+				let loc = self.current_loc();
+				self.bump(TokenKind::Minus);
+				let operand = self.parse_lhs();
+
+				Expression {
+					kind: ExpressionKind::Unary {
+						operand: Box::new(operand),
+						operator: UnaryOperator::Negate,
+					},
+					loc,
+				}
+			}
+
 			TokenKind::And => {
 				let loc = self.current_loc();
 				self.bump(TokenKind::And);

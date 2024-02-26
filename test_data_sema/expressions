@@ -5,7 +5,7 @@ func expressions(parameter int, slice []int) {
 	"hello"
 	a := 92
 	a + 2 * 3 * 4 * 5
-	~a - 1
+	~a - -1
 	!true && false
 	parameter
 	b := add(9, 2)
@@ -42,7 +42,7 @@ func expressions
 	"hello"
 	a = 92
 	(a + (((2 * 3) * 4) * 5))
-	((~a) - 1)
+	((~a) - (-1))
 	((!true) && false)
 	parameter
 	b = add(9, 2)
