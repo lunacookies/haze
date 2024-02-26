@@ -1,0 +1,18 @@
+struct Types {
+	i int
+	by byte
+	bo bool
+	random Random
+	p *int
+	nested **int
+}
+======
+struct Types
+{
+	i int
+	by byte
+	bo bool
+	random Random
+	p *int
+	nested **int
+}
