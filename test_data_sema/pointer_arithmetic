@@ -1,0 +1,6 @@
+func pointer_arithmetic() {
+	var p *int
+	p + 1
+}
+======
+test:3:2: error: cannot use operator “+” with “*int”
