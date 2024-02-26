@@ -19,6 +19,8 @@ impl CodegenCtx<'_> {
 		self.newline();
 		self.s("#include <stdint.h>");
 		self.newline();
+		self.s("struct slice { uint8_t *data; int count; };");
+		self.newline();
 
 		for (name, ty) in &self.index.named_tys {
 			self.gen_ty(name, ty);
@@ -370,6 +372,8 @@ impl CodegenCtx<'_> {
 			},
 
 			resolver::Ty::Pointer { pointee } => self.gen_base_ty(pointee),
+
+			resolver::Ty::Slice { element: _ } => self.s("struct slice"),
 		}
 	}
 
@@ -378,7 +382,8 @@ impl CodegenCtx<'_> {
 			resolver::Ty::Int
 			| resolver::Ty::Byte
 			| resolver::Ty::Bool
-			| resolver::Ty::Named(_) => self.s(name),
+			| resolver::Ty::Named(_)
+			| resolver::Ty::Slice { element: _ } => self.s(name),
 			resolver::Ty::Pointer { pointee } => {
 				self.s("(");
 				self.s("*");

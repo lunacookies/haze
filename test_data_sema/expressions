@@ -1,4 +1,4 @@
-func expressions(parameter int) {
+func expressions(parameter int, slice []int) {
 	10
 	true
 	false
@@ -13,6 +13,7 @@ func expressions(parameter int) {
 	ptr_value := *ptr
 	also_ptr_value := ptr[0]
 	s := "a string"
+	slice[8]
 }
 
 func add(x int, y int) int {
@@ -21,6 +22,7 @@ func add(x int, y int) int {
 ======
 func expressions
 	param parameter int
+	param slice []int
 	var a int
 	var b int
 	var ptr *int
@@ -42,6 +44,7 @@ func expressions
 	ptr_value = (*ptr)
 	also_ptr_value = (ptr[0])
 	s = "a string"
+	(slice[8])
 }
 
 func add

@@ -354,10 +354,12 @@ impl SemaContext<'_> {
 				let lhs_ty = &self.expression_tys[lhs_idx];
 
 				let ty = match lhs_ty {
-					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } => crate::error(
-						lhs.loc.clone(),
-						format!("“{lhs_ty}” is not a struct so it has no fields"),
-					),
+					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } | Ty::Slice { .. } => {
+						crate::error(
+							lhs.loc.clone(),
+							format!("“{lhs_ty}” is not a struct so it has no fields"),
+						)
+					}
 
 					Ty::Named(name) => match &self.index.named_tys[name] {
 						resolver::NamedTy::Struct(strukt) => 'blk: {
@@ -385,6 +387,7 @@ impl SemaContext<'_> {
 				let lhs_ty = &self.expression_tys[lhs_idx];
 				let ty = match lhs_ty {
 					Ty::Pointer { pointee } => pointee,
+					Ty::Slice { element } => element,
 					_ => crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”")),
 				};
 
@@ -513,6 +516,7 @@ impl SemaContext<'_> {
 			ast::TyKind::Int => Ty::Int,
 			ast::TyKind::Byte => Ty::Byte,
 			ast::TyKind::Bool => Ty::Bool,
+
 			ast::TyKind::Named(name) => {
 				if self.index.named_tys.contains_key(name) {
 					Ty::Named(name.clone())
@@ -520,8 +524,13 @@ impl SemaContext<'_> {
 					crate::error(ty.loc.clone(), format!("undefined type “{name}”"))
 				}
 			}
+
 			ast::TyKind::Pointer { pointee } => {
 				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
+			}
+
+			ast::TyKind::Slice { element } => {
+				Ty::Slice { element: Box::new(self.resolve_ty(element)) }
 			}
 		}
 	}

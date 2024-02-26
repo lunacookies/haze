@@ -371,7 +371,7 @@ impl TokenKind {
 	}
 
 	pub fn can_start_ty(self) -> bool {
-		matches!(self, TokenKind::Identifier | TokenKind::Star)
+		matches!(self, TokenKind::Identifier | TokenKind::Star | TokenKind::LBracket)
 	}
 }
 

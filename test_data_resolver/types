@@ -4,7 +4,8 @@ struct Types {
 	bo bool
 	random Random
 	p *int
-	nested **int
+	slice []int
+	nested **[]*int
 }
 
 struct Random {}
@@ -20,5 +21,6 @@ struct Types
 	bo bool
 	random Random
 	p *int
-	nested **int
+	slice []int
+	nested **[]*int
 }

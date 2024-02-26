@@ -54,6 +54,7 @@ pub enum TyKind {
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
+	Slice { element: Box<Ty> },
 }
 
 #[derive(Default)]
@@ -109,8 +110,13 @@ impl Indexer {
 			ast::TyKind::Byte => Ty { kind: TyKind::Byte, loc },
 			ast::TyKind::Bool => Ty { kind: TyKind::Bool, loc },
 			ast::TyKind::Named(n) => Ty { kind: TyKind::Named(n.clone()), loc },
+
 			ast::TyKind::Pointer { pointee } => {
 				Ty { kind: TyKind::Pointer { pointee: Box::new(Self::index_ty(pointee)) }, loc }
+			}
+
+			ast::TyKind::Slice { element } => {
+				Ty { kind: TyKind::Slice { element: Box::new(Self::index_ty(element)) }, loc }
 			}
 		}
 	}

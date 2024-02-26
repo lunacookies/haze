@@ -549,6 +549,13 @@ impl Parser {
 				Ty { kind: TyKind::Pointer { pointee: Box::new(pointee) }, loc }
 			}
 
+			TokenKind::LBracket => {
+				self.bump(TokenKind::LBracket);
+				self.expect(TokenKind::RBracket);
+				let element = self.parse_ty();
+				Ty { kind: TyKind::Slice { element: Box::new(element) }, loc }
+			}
+
 			TokenKind::Identifier => {
 				let text = self.expect_text(TokenKind::Identifier);
 

@@ -149,6 +149,7 @@ pub enum TyKind {
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
+	Slice { element: Box<Ty> },
 }
 
 impl Ast {
@@ -404,9 +405,15 @@ impl PrettyPrintCtx {
 			TyKind::Byte => self.s("byte"),
 			TyKind::Bool => self.s("bool"),
 			TyKind::Named(n) => self.s(n),
+
 			TyKind::Pointer { pointee } => {
 				self.s("*");
 				self.print_ty(pointee);
+			}
+
+			TyKind::Slice { element } => {
+				self.s("[]");
+				self.print_ty(element);
 			}
 		}
 	}
