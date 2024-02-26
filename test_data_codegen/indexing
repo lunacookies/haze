@@ -1,6 +1,6 @@
 func main() int {
 	a := 1
-	p := &a
+	p := cast([*]int) &a
 	one := p[0]
 
 	s := "hello"

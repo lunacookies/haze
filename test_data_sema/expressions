@@ -11,13 +11,12 @@ func expressions(parameter int, slice []int) {
 	b := add(9, 2)
 	ptr := &b
 	ptr_value := *ptr
-	also_ptr_value := ptr[0]
+	also_ptr := cast([*]int) ptr
+	also_ptr_value := also_ptr[0]
 	s := "a string"
 	slice[8]
 	slice_data := slice.data
 	slice_count := slice.count
-	many_pointer := cast([*]int) &parameter
-	*many_pointer
 }
 
 func add(x int, y int) int {
@@ -31,11 +30,11 @@ func expressions
 	var b int
 	var ptr *int
 	var ptr_value int
+	var also_ptr [*]int
 	var also_ptr_value int
 	var s []byte
 	var slice_data *int
 	var slice_count int
-	var many_pointer [*]int
 {
 	10
 	true
@@ -49,13 +48,12 @@ func expressions
 	b = add(9, 2)
 	ptr = (&b)
 	ptr_value = (*ptr)
-	also_ptr_value = (ptr[0])
+	also_ptr = cast([*]int, ptr)
+	also_ptr_value = (also_ptr[0])
 	s = "a string"
 	(slice[8])
 	slice_data = slice.data
 	slice_count = slice.count
-	many_pointer = cast([*]int, (&parameter))
-	(*many_pointer)
 }
 
 func add

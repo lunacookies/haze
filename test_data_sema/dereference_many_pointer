@@ -1,0 +1,5 @@
+func dereference_many_pointer(p [*]byte) {
+	*p
+}
+======
+test:2:3: error: cannot dereference “[*]byte”

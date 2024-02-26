@@ -408,7 +408,7 @@ impl SemaContext<'_> {
 
 				let lhs_ty = &self.expression_tys[lhs_idx];
 				let ty = match lhs_ty {
-					Ty::SinglePointer { pointee } => pointee.as_ref().clone(),
+					Ty::ManyPointer { pointee } => pointee.as_ref().clone(),
 					Ty::Slice { element } => {
 						break 'blk (
 							Expression::SliceIndexing {
@@ -438,7 +438,7 @@ impl SemaContext<'_> {
 				let ty = &self.expression_tys[e_idx];
 
 				let result_ty = match ty {
-					Ty::SinglePointer { pointee } | Ty::ManyPointer { pointee } => &**pointee,
+					Ty::SinglePointer { pointee } => &**pointee,
 					_ => crate::error(e.loc.clone(), format!("cannot dereference “{ty}”")),
 				};
 
