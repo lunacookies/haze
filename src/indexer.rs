@@ -54,6 +54,7 @@ pub enum TyKind {
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
+	MultiElementPointer { element: Box<Ty> },
 	Slice { element: Box<Ty> },
 }
 
@@ -114,6 +115,11 @@ impl Indexer {
 			ast::TyKind::Pointer { pointee } => {
 				Ty { kind: TyKind::Pointer { pointee: Box::new(Self::index_ty(pointee)) }, loc }
 			}
+
+			ast::TyKind::MultiElementPointer { element } => Ty {
+				kind: TyKind::MultiElementPointer { element: Box::new(Self::index_ty(element)) },
+				loc,
+			},
 
 			ast::TyKind::Slice { element } => {
 				Ty { kind: TyKind::Slice { element: Box::new(Self::index_ty(element)) }, loc }

@@ -50,6 +50,7 @@ pub enum Ty {
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
+	MultiElementPointer { element: Box<Ty> },
 	Slice { element: Box<Ty> },
 }
 
@@ -153,6 +154,10 @@ impl Resolver<'_> {
 				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 
+			indexer::TyKind::MultiElementPointer { element } => {
+				Ty::MultiElementPointer { element: Box::new(self.resolve_ty(element)) }
+			}
+
 			indexer::TyKind::Slice { element } => {
 				Ty::Slice { element: Box::new(self.resolve_ty(element)) }
 			}
@@ -232,6 +237,7 @@ impl fmt::Display for Ty {
 			Ty::Bool => write!(f, "bool"),
 			Ty::Named(name) => write!(f, "{name}"),
 			Ty::Pointer { pointee } => write!(f, "*{pointee}"),
+			Ty::MultiElementPointer { element } => write!(f, "[*]{element}"),
 			Ty::Slice { element } => write!(f, "[]{element}"),
 		}
 	}

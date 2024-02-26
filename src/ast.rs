@@ -149,6 +149,7 @@ pub enum TyKind {
 	Bool,
 	Named(String),
 	Pointer { pointee: Box<Ty> },
+	MultiElementPointer { element: Box<Ty> },
 	Slice { element: Box<Ty> },
 }
 
@@ -409,6 +410,11 @@ impl PrettyPrintCtx {
 			TyKind::Pointer { pointee } => {
 				self.s("*");
 				self.print_ty(pointee);
+			}
+
+			TyKind::MultiElementPointer { element } => {
+				self.s("[*]");
+				self.print_ty(element);
 			}
 
 			TyKind::Slice { element } => {

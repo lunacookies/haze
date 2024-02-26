@@ -5,6 +5,7 @@ struct Types {
 	random Random
 	p *int
 	slice []int
+	multi [*]int
 	nested **[]*int
 }
 
@@ -22,5 +23,6 @@ struct Types
 	random Random
 	p *int
 	slice []int
+	multi [*]int
 	nested **[]*int
 }

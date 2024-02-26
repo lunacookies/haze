@@ -354,7 +354,7 @@ impl SemaContext<'_> {
 				let lhs_ty = &self.expression_tys[lhs_idx];
 
 				match lhs_ty {
-					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } => crate::error(
+					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } | Ty::MultiElementPointer{..} => crate::error(
 						lhs.loc.clone(),
 						format!("“{lhs_ty}” is not a struct so it has no fields"),
 					),
@@ -554,6 +554,10 @@ impl SemaContext<'_> {
 
 			ast::TyKind::Pointer { pointee } => {
 				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
+			}
+
+			ast::TyKind::MultiElementPointer { element } => {
+				Ty::MultiElementPointer { element: Box::new(self.resolve_ty(element)) }
 			}
 
 			ast::TyKind::Slice { element } => {

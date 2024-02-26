@@ -551,9 +551,20 @@ impl Parser {
 
 			TokenKind::LBracket => {
 				self.bump(TokenKind::LBracket);
-				self.expect(TokenKind::RBracket);
-				let element = self.parse_ty();
-				Ty { kind: TyKind::Slice { element: Box::new(element) }, loc }
+				match self.current() {
+					TokenKind::RBracket => {
+						self.bump(TokenKind::RBracket);
+						let element = self.parse_ty();
+						Ty { kind: TyKind::Slice { element: Box::new(element) }, loc }
+					}
+					TokenKind::Star => {
+						self.bump(TokenKind::Star);
+						self.expect(TokenKind::RBracket);
+						let element = self.parse_ty();
+						Ty { kind: TyKind::MultiElementPointer { element: Box::new(element) }, loc }
+					}
+					_ => self.error("expected type".to_string()),
+				}
 			}
 
 			TokenKind::Identifier => {

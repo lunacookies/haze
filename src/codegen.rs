@@ -427,6 +427,8 @@ impl CodegenCtx<'_> {
 
 			resolver::Ty::Pointer { pointee } => self.gen_base_ty(pointee),
 
+			resolver::Ty::MultiElementPointer { element } => self.gen_base_ty(element),
+
 			resolver::Ty::Slice { element: _ } => self.s("struct __slice"),
 		}
 	}
@@ -438,7 +440,8 @@ impl CodegenCtx<'_> {
 			| resolver::Ty::Bool
 			| resolver::Ty::Named(_)
 			| resolver::Ty::Slice { element: _ } => self.s(name),
-			resolver::Ty::Pointer { pointee } => {
+			resolver::Ty::Pointer { pointee }
+			| resolver::Ty::MultiElementPointer { element: pointee } => {
 				self.s("(");
 				self.s("*");
 				self.gen_ty_expression(name, pointee);
