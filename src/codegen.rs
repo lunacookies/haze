@@ -350,7 +350,7 @@ impl CodegenCtx<'_> {
 
 			hir::Expression::SliceData { slice, element_ty } => {
 				let pointer_ty =
-					resolver::Ty::SinglePointer { pointee: Box::new(element_ty.clone()) };
+					resolver::Ty::ManyPointer { pointee: Box::new(element_ty.clone()) };
 				self.s("((");
 				self.gen_declaration("", &pointer_ty);
 				self.s(")(");

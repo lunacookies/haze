@@ -365,7 +365,7 @@ impl SemaContext<'_> {
 								slice: lhs_idx,
 								element_ty: element_ty.as_ref().clone(),
 							},
-							Ty::SinglePointer { pointee: element_ty.clone() },
+							Ty::ManyPointer { pointee: element_ty.clone() },
 						),
 						"count" => (Expression::SliceCount { slice: lhs_idx }, Ty::Int),
 						_ => crate::error(

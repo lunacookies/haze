@@ -3,7 +3,7 @@ func main() int {
 	write(1, s.data, s.count)
 }
 
-func write(fd int, p *byte, len int) #extern
+func write(fd int, p [*]byte, len int) #extern
 ======
 hello, world!
 exit status: 0
