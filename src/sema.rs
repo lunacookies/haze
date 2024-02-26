@@ -439,6 +439,7 @@ impl SemaContext<'_> {
 
 				let result_ty = match ty {
 					Ty::Pointer { pointee } => &**pointee,
+					Ty::MultiElementPointer { element } => &**element,
 					_ => crate::error(e.loc.clone(), format!("cannot dereference “{ty}”")),
 				};
 
@@ -477,7 +478,10 @@ impl SemaContext<'_> {
 					(Ty::Byte, Ty::Int) => {}
 					(Ty::Bool, Ty::Int) => {}
 					(Ty::Bool, Ty::Byte) => {}
-					(Ty::Pointer { .. }, Ty::Pointer { .. }) => {}
+					(
+						Ty::Pointer { .. } | Ty::MultiElementPointer { .. },
+						Ty::Pointer { .. } | Ty::MultiElementPointer { .. },
+					) => {}
 
 					_ => crate::error(
 						expression.loc.clone(),
