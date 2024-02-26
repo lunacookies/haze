@@ -1,10 +1,11 @@
 func main() int {
-	s := "demo"
+	s := "demo\n"
 	p(s[0])
 	p(s[1])
 	p(s[2])
 	p(s[3])
 	p(s[4])
+	p(s[5])
 }
 
 func p(b byte) {
@@ -13,4 +14,5 @@ func p(b byte) {
 
 func write(fd int, p *byte, len int) #extern
 ======
-demosignal: 5 (SIGTRAP)
+demo
+signal: 5 (SIGTRAP)
