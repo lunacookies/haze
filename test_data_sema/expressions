@@ -14,6 +14,8 @@ func expressions(parameter int, slice []int) {
 	also_ptr_value := ptr[0]
 	s := "a string"
 	slice[8]
+	slice_data := slice.data
+	slice_count := slice.count
 }
 
 func add(x int, y int) int {
@@ -28,7 +30,9 @@ func expressions
 	var ptr *int
 	var ptr_value int
 	var also_ptr_value int
-	var s *byte
+	var s []byte
+	var slice_data *int
+	var slice_count int
 {
 	10
 	true
@@ -44,7 +48,9 @@ func expressions
 	ptr_value = (*ptr)
 	also_ptr_value = (ptr[0])
 	s = "a string"
-	(slice[8])
+	(slice.data[8])
+	slice_data = slice.data
+	slice_count = slice.count
 }
 
 func add

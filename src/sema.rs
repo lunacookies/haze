@@ -270,7 +270,7 @@ impl SemaContext<'_> {
 			},
 
 			ast::ExpressionKind::String(s) => {
-				(Expression::String(s.clone()), Ty::Pointer { pointee: Box::new(Ty::Byte) })
+				(Expression::String(s.clone()), Ty::Slice { element: Box::new(Ty::Byte) })
 			}
 
 			ast::ExpressionKind::Variable(name) => match self.lookup_in_scopes(name) {
@@ -353,19 +353,38 @@ impl SemaContext<'_> {
 				let lhs_idx = self.analyze_expression(lhs, None);
 				let lhs_ty = &self.expression_tys[lhs_idx];
 
-				let ty = match lhs_ty {
-					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } | Ty::Slice { .. } => {
-						crate::error(
+				match lhs_ty {
+					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } => crate::error(
+						lhs.loc.clone(),
+						format!("“{lhs_ty}” is not a struct so it has no fields"),
+					),
+
+					Ty::Slice { element: element_ty } => match field.as_str() {
+						"data" => (
+							Expression::SliceData {
+								slice: lhs_idx,
+								element_ty: element_ty.as_ref().clone(),
+							},
+							Ty::Pointer { pointee: element_ty.clone() },
+						),
+						"count" => (Expression::SliceCount { slice: lhs_idx }, Ty::Int),
+						_ => crate::error(
 							lhs.loc.clone(),
-							format!("“{lhs_ty}” is not a struct so it has no fields"),
-						)
-					}
+							format!("invalid magic slice field “{field}”: the only valid magic fields are “data” and “count”"),
+						),
+					},
 
 					Ty::Named(name) => match &self.index.named_tys[name] {
 						resolver::NamedTy::Struct(strukt) => 'blk: {
 							for f in &strukt.fields {
 								if &f.name == field {
-									break 'blk &f.ty;
+									break 'blk (
+										Expression::FieldAccess {
+											lhs: lhs_idx,
+											field: field.clone(),
+										},
+										f.ty.clone(),
+									);
 								}
 							}
 
@@ -375,19 +394,32 @@ impl SemaContext<'_> {
 							)
 						}
 					},
-				};
-
-				(Expression::FieldAccess { lhs: lhs_idx, field: field.clone() }, ty.clone())
+				}
 			}
 
-			ast::ExpressionKind::Indexing { lhs, index } => {
+			ast::ExpressionKind::Indexing { lhs, index } => 'blk: {
 				let lhs_idx = self.analyze_expression(lhs, None);
 				let index_idx = self.analyze_expression(index, Some(&Ty::Int));
 
-				let lhs_ty = &self.expression_tys[lhs_idx];
+				// Clone instead of taking an immutable borrow
+				// so we don’t have an immutable borrow of self
+				// while trying to call self.alloc_expression().
+				let lhs_ty = self.expression_tys[lhs_idx].clone();
+
 				let ty = match lhs_ty {
-					Ty::Pointer { pointee } => pointee,
-					Ty::Slice { element } => element,
+					Ty::Pointer { pointee } => pointee.as_ref().clone(),
+
+					Ty::Slice { element } => {
+						let data_idx = self.alloc_expression(Expression::SliceData {
+							slice: lhs_idx,
+							element_ty: element.as_ref().clone(),
+						});
+						break 'blk (
+							Expression::Indexing { lhs: data_idx, index: index_idx },
+							element.as_ref().clone(),
+						);
+					}
+
 					_ => crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”")),
 				};
 
@@ -396,7 +428,7 @@ impl SemaContext<'_> {
 					crate::error(index.loc.clone(), format!("cannot use “{index_ty}” as an index"));
 				}
 
-				(Expression::Indexing { lhs: lhs_idx, index: index_idx }, (**ty).clone())
+				(Expression::Indexing { lhs: lhs_idx, index: index_idx }, ty)
 			}
 
 			ast::ExpressionKind::AddressOf(e) => {

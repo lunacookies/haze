@@ -71,6 +71,8 @@ pub enum Expression {
 	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, operator: ast::BinaryOperator },
 	Unary { operand: Idx<Expression>, operator: ast::UnaryOperator },
 	FieldAccess { lhs: Idx<Expression>, field: String },
+	SliceData { slice: Idx<Expression>, element_ty: Ty },
+	SliceCount { slice: Idx<Expression> },
 	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
@@ -267,6 +269,16 @@ impl PrettyPrintCtx {
 				self.s(".");
 				self.s(field);
 				self.s(")");
+			}
+
+			Expression::SliceData { slice, element_ty: _ } => {
+				self.print_expression(*slice, storage);
+				self.s(".data");
+			}
+
+			Expression::SliceCount { slice } => {
+				self.print_expression(*slice, storage);
+				self.s(".count");
 			}
 
 			Expression::Indexing { lhs, index } => {

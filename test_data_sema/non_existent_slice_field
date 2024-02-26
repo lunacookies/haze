@@ -1,0 +1,5 @@
+func non_existent_slice_field(s []int) {
+	s.foo
+}
+======
+test:2:2: error: invalid magic slice field “foo”: the only valid magic fields are “data” and “count”

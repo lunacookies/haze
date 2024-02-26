@@ -1,6 +1,6 @@
 func main() int {
 	s := "hello, world!\n"
-	write(1, s, 14)
+	write(1, s.data, s.count)
 }
 
 func write(fd int, p *byte, len int) #extern

@@ -262,7 +262,11 @@ impl CodegenCtx<'_> {
 			hir::Expression::Byte(i) => self.s(&i.to_string()),
 
 			hir::Expression::String(s) => {
-				self.s("(uint8_t[]){ ");
+				self.s("(struct slice){");
+				self.indentation += 1;
+				self.newline();
+
+				self.s(".data = (uint8_t[]){ ");
 
 				for (i, b) in s.as_bytes().iter().enumerate() {
 					if i != 0 {
@@ -272,7 +276,16 @@ impl CodegenCtx<'_> {
 					self.s(&b.to_string());
 				}
 
-				self.s(" }");
+				self.s(" },");
+				self.newline();
+
+				self.s(".count = ");
+				self.s(&s.len().to_string());
+				self.s(",");
+
+				self.indentation -= 1;
+				self.newline();
+				self.s("}");
 			}
 
 			hir::Expression::Variable(variable) => self.s(&storage.variables[*variable].name),
@@ -319,6 +332,20 @@ impl CodegenCtx<'_> {
 				self.s(".");
 				self.s(field);
 				self.s(")");
+			}
+
+			hir::Expression::SliceData { slice, element_ty } => {
+				let pointer_ty = resolver::Ty::Pointer { pointee: Box::new(element_ty.clone()) };
+				self.s("((");
+				self.gen_declaration("", &pointer_ty);
+				self.s(")(");
+				self.gen_expression(*slice, storage);
+				self.s(".data))");
+			}
+
+			hir::Expression::SliceCount { slice } => {
+				self.gen_expression(*slice, storage);
+				self.s(".count");
 			}
 
 			hir::Expression::Indexing { lhs, index } => {
