@@ -16,8 +16,8 @@ func expressions(parameter int, slice []int) {
 	slice[8]
 	slice_data := slice.data
 	slice_count := slice.count
-	multi_element_pointer := cast([*]int) &parameter
-	*multi_element_pointer
+	many_pointer := cast([*]int) &parameter
+	*many_pointer
 }
 
 func add(x int, y int) int {
@@ -35,7 +35,7 @@ func expressions
 	var s []byte
 	var slice_data *int
 	var slice_count int
-	var multi_element_pointer [*]int
+	var many_pointer [*]int
 {
 	10
 	true
@@ -54,8 +54,8 @@ func expressions
 	(slice[8])
 	slice_data = slice.data
 	slice_count = slice.count
-	multi_element_pointer = cast([*]int, (&parameter))
-	(*multi_element_pointer)
+	many_pointer = cast([*]int, (&parameter))
+	(*many_pointer)
 }
 
 func add

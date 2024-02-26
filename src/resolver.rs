@@ -49,8 +49,8 @@ pub enum Ty {
 	Byte,
 	Bool,
 	Named(String),
-	Pointer { pointee: Box<Ty> },
-	MultiElementPointer { element: Box<Ty> },
+	SinglePointer { pointee: Box<Ty> },
+	ManyPointer { pointee: Box<Ty> },
 	Slice { element: Box<Ty> },
 }
 
@@ -150,12 +150,12 @@ impl Resolver<'_> {
 				Ty::Named(n)
 			}
 
-			indexer::TyKind::Pointer { pointee } => {
-				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
+			indexer::TyKind::SinglePointer { pointee } => {
+				Ty::SinglePointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 
-			indexer::TyKind::MultiElementPointer { element } => {
-				Ty::MultiElementPointer { element: Box::new(self.resolve_ty(element)) }
+			indexer::TyKind::ManyPointer { pointee } => {
+				Ty::ManyPointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 
 			indexer::TyKind::Slice { element } => {
@@ -236,8 +236,8 @@ impl fmt::Display for Ty {
 			Ty::Byte => write!(f, "byte"),
 			Ty::Bool => write!(f, "bool"),
 			Ty::Named(name) => write!(f, "{name}"),
-			Ty::Pointer { pointee } => write!(f, "*{pointee}"),
-			Ty::MultiElementPointer { element } => write!(f, "[*]{element}"),
+			Ty::SinglePointer { pointee } => write!(f, "*{pointee}"),
+			Ty::ManyPointer { pointee } => write!(f, "[*]{pointee}"),
 			Ty::Slice { element } => write!(f, "[]{element}"),
 		}
 	}

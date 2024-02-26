@@ -53,8 +53,8 @@ pub enum TyKind {
 	Byte,
 	Bool,
 	Named(String),
-	Pointer { pointee: Box<Ty> },
-	MultiElementPointer { element: Box<Ty> },
+	SinglePointer { pointee: Box<Ty> },
+	ManyPointer { pointee: Box<Ty> },
 	Slice { element: Box<Ty> },
 }
 
@@ -112,14 +112,14 @@ impl Indexer {
 			ast::TyKind::Bool => Ty { kind: TyKind::Bool, loc },
 			ast::TyKind::Named(n) => Ty { kind: TyKind::Named(n.clone()), loc },
 
-			ast::TyKind::Pointer { pointee } => {
-				Ty { kind: TyKind::Pointer { pointee: Box::new(Self::index_ty(pointee)) }, loc }
-			}
-
-			ast::TyKind::MultiElementPointer { element } => Ty {
-				kind: TyKind::MultiElementPointer { element: Box::new(Self::index_ty(element)) },
+			ast::TyKind::SinglePointer { pointee } => Ty {
+				kind: TyKind::SinglePointer { pointee: Box::new(Self::index_ty(pointee)) },
 				loc,
 			},
+
+			ast::TyKind::ManyPointer { pointee } => {
+				Ty { kind: TyKind::ManyPointer { pointee: Box::new(Self::index_ty(pointee)) }, loc }
+			}
 
 			ast::TyKind::Slice { element } => {
 				Ty { kind: TyKind::Slice { element: Box::new(Self::index_ty(element)) }, loc }

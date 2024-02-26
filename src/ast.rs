@@ -148,8 +148,8 @@ pub enum TyKind {
 	Byte,
 	Bool,
 	Named(String),
-	Pointer { pointee: Box<Ty> },
-	MultiElementPointer { element: Box<Ty> },
+	SinglePointer { pointee: Box<Ty> },
+	ManyPointer { pointee: Box<Ty> },
 	Slice { element: Box<Ty> },
 }
 
@@ -407,14 +407,14 @@ impl PrettyPrintCtx {
 			TyKind::Bool => self.s("bool"),
 			TyKind::Named(n) => self.s(n),
 
-			TyKind::Pointer { pointee } => {
+			TyKind::SinglePointer { pointee } => {
 				self.s("*");
 				self.print_ty(pointee);
 			}
 
-			TyKind::MultiElementPointer { element } => {
+			TyKind::ManyPointer { pointee } => {
 				self.s("[*]");
-				self.print_ty(element);
+				self.print_ty(pointee);
 			}
 
 			TyKind::Slice { element } => {

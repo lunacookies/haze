@@ -349,7 +349,8 @@ impl CodegenCtx<'_> {
 			}
 
 			hir::Expression::SliceData { slice, element_ty } => {
-				let pointer_ty = resolver::Ty::Pointer { pointee: Box::new(element_ty.clone()) };
+				let pointer_ty =
+					resolver::Ty::SinglePointer { pointee: Box::new(element_ty.clone()) };
 				self.s("((");
 				self.gen_declaration("", &pointer_ty);
 				self.s(")(");
@@ -371,7 +372,8 @@ impl CodegenCtx<'_> {
 			}
 
 			hir::Expression::SliceIndexing { slice, index, element_ty } => {
-				let pointer_ty = resolver::Ty::Pointer { pointee: Box::new(element_ty.clone()) };
+				let pointer_ty =
+					resolver::Ty::SinglePointer { pointee: Box::new(element_ty.clone()) };
 				self.s("(*(");
 				self.gen_declaration("", &pointer_ty);
 				self.s(")__slice_at(");
@@ -425,9 +427,9 @@ impl CodegenCtx<'_> {
 				}
 			},
 
-			resolver::Ty::Pointer { pointee } => self.gen_base_ty(pointee),
+			resolver::Ty::SinglePointer { pointee } => self.gen_base_ty(pointee),
 
-			resolver::Ty::MultiElementPointer { element } => self.gen_base_ty(element),
+			resolver::Ty::ManyPointer { pointee } => self.gen_base_ty(pointee),
 
 			resolver::Ty::Slice { element: _ } => self.s("struct __slice"),
 		}
@@ -440,8 +442,7 @@ impl CodegenCtx<'_> {
 			| resolver::Ty::Bool
 			| resolver::Ty::Named(_)
 			| resolver::Ty::Slice { element: _ } => self.s(name),
-			resolver::Ty::Pointer { pointee }
-			| resolver::Ty::MultiElementPointer { element: pointee } => {
+			resolver::Ty::SinglePointer { pointee } | resolver::Ty::ManyPointer { pointee } => {
 				self.s("(");
 				self.s("*");
 				self.gen_ty_expression(name, pointee);

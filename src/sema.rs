@@ -354,7 +354,7 @@ impl SemaContext<'_> {
 				let lhs_ty = &self.expression_tys[lhs_idx];
 
 				match lhs_ty {
-					Ty::Int | Ty::Byte | Ty::Bool | Ty::Pointer { .. } | Ty::MultiElementPointer{..} => crate::error(
+					Ty::Int | Ty::Byte | Ty::Bool | Ty::SinglePointer { .. } | Ty::ManyPointer{..} => crate::error(
 						lhs.loc.clone(),
 						format!("“{lhs_ty}” is not a struct so it has no fields"),
 					),
@@ -365,7 +365,7 @@ impl SemaContext<'_> {
 								slice: lhs_idx,
 								element_ty: element_ty.as_ref().clone(),
 							},
-							Ty::Pointer { pointee: element_ty.clone() },
+							Ty::SinglePointer { pointee: element_ty.clone() },
 						),
 						"count" => (Expression::SliceCount { slice: lhs_idx }, Ty::Int),
 						_ => crate::error(
@@ -408,7 +408,7 @@ impl SemaContext<'_> {
 
 				let lhs_ty = &self.expression_tys[lhs_idx];
 				let ty = match lhs_ty {
-					Ty::Pointer { pointee } => pointee.as_ref().clone(),
+					Ty::SinglePointer { pointee } => pointee.as_ref().clone(),
 					Ty::Slice { element } => {
 						break 'blk (
 							Expression::SliceIndexing {
@@ -430,7 +430,7 @@ impl SemaContext<'_> {
 				let e = self.analyze_expression(e, None);
 				let ty = &self.expression_tys[e];
 
-				(Expression::AddressOf(e), Ty::Pointer { pointee: Box::new(ty.clone()) })
+				(Expression::AddressOf(e), Ty::SinglePointer { pointee: Box::new(ty.clone()) })
 			}
 
 			ast::ExpressionKind::Dereference(e) => {
@@ -438,8 +438,7 @@ impl SemaContext<'_> {
 				let ty = &self.expression_tys[e_idx];
 
 				let result_ty = match ty {
-					Ty::Pointer { pointee } => &**pointee,
-					Ty::MultiElementPointer { element } => &**element,
+					Ty::SinglePointer { pointee } | Ty::ManyPointer { pointee } => &**pointee,
 					_ => crate::error(e.loc.clone(), format!("cannot dereference “{ty}”")),
 				};
 
@@ -479,8 +478,8 @@ impl SemaContext<'_> {
 					(Ty::Bool, Ty::Int) => {}
 					(Ty::Bool, Ty::Byte) => {}
 					(
-						Ty::Pointer { .. } | Ty::MultiElementPointer { .. },
-						Ty::Pointer { .. } | Ty::MultiElementPointer { .. },
+						Ty::SinglePointer { .. } | Ty::ManyPointer { .. },
+						Ty::SinglePointer { .. } | Ty::ManyPointer { .. },
 					) => {}
 
 					_ => crate::error(
@@ -556,12 +555,12 @@ impl SemaContext<'_> {
 				}
 			}
 
-			ast::TyKind::Pointer { pointee } => {
-				Ty::Pointer { pointee: Box::new(self.resolve_ty(pointee)) }
+			ast::TyKind::SinglePointer { pointee } => {
+				Ty::SinglePointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 
-			ast::TyKind::MultiElementPointer { element } => {
-				Ty::MultiElementPointer { element: Box::new(self.resolve_ty(element)) }
+			ast::TyKind::ManyPointer { pointee } => {
+				Ty::ManyPointer { pointee: Box::new(self.resolve_ty(pointee)) }
 			}
 
 			ast::TyKind::Slice { element } => {

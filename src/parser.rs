@@ -546,7 +546,7 @@ impl Parser {
 			TokenKind::Star => {
 				self.bump(TokenKind::Star);
 				let pointee = self.parse_ty();
-				Ty { kind: TyKind::Pointer { pointee: Box::new(pointee) }, loc }
+				Ty { kind: TyKind::SinglePointer { pointee: Box::new(pointee) }, loc }
 			}
 
 			TokenKind::LBracket => {
@@ -560,8 +560,8 @@ impl Parser {
 					TokenKind::Star => {
 						self.bump(TokenKind::Star);
 						self.expect(TokenKind::RBracket);
-						let element = self.parse_ty();
-						Ty { kind: TyKind::MultiElementPointer { element: Box::new(element) }, loc }
+						let pointee = self.parse_ty();
+						Ty { kind: TyKind::ManyPointer { pointee: Box::new(pointee) }, loc }
 					}
 					_ => self.error("expected type".to_string()),
 				}
