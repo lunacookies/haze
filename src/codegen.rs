@@ -28,7 +28,7 @@ impl CodegenCtx<'_> {
 		self.s("{");
 		self.indentation += 1;
 		self.newline();
-		self.s("if (i >= s.count) __builtin_debugtrap();");
+		self.s("if (i < 0 || i >= s.count) __builtin_debugtrap();");
 		self.newline();
 		self.s("return s.data + i;");
 		self.indentation -= 1;
