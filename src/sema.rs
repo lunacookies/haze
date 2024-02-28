@@ -407,7 +407,7 @@ impl SemaContext<'_> {
 
 				match &self.expression_tys[lhs_idx] {
 					Ty::ManyPointer { pointee } => (
-						Expression::Indexing { lhs: lhs_idx, index: index_idx },
+						Expression::ManyPointerIndexing { lhs: lhs_idx, index: index_idx },
 						pointee.as_ref().clone(),
 					),
 

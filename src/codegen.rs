@@ -403,7 +403,7 @@ impl CodegenCtx<'_> {
 				self.s("))");
 			}
 
-			hir::Expression::Indexing { lhs, index } => {
+			hir::Expression::ManyPointerIndexing { lhs, index } => {
 				self.s("(");
 				self.gen_expression(*lhs, storage);
 				self.s("[");

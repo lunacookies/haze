@@ -92,7 +92,7 @@ pub enum Expression {
 		slice: Idx<Expression>,
 		element_ty: Ty,
 	},
-	Indexing {
+	ManyPointerIndexing {
 		lhs: Idx<Expression>,
 		index: Idx<Expression>,
 	},
@@ -308,7 +308,7 @@ impl PrettyPrintCtx {
 				self.s(".count");
 			}
 
-			Expression::Indexing { lhs, index } => {
+			Expression::ManyPointerIndexing { lhs, index } => {
 				self.s("(");
 				self.print_expression(*lhs, storage);
 				self.s("[");
