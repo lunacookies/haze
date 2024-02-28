@@ -1,0 +1,27 @@
+func main() int {
+	return go(1)
+}
+
+func go(a int) int {
+	{
+		var a2 []byte
+	}
+
+	{
+		var a2 []byte
+	}
+
+	a2 := a + 1
+
+	for i := 0; i < 5; i++ {
+		a2++
+	}
+
+	for i := 0; i < 5; i++ {
+		a2++
+	}
+
+	return a2
+}
+======
+exit status: 12

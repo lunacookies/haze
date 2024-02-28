@@ -1,9 +1,16 @@
-use la_arena::Idx;
+use la_arena::{ArenaMap, Idx};
 
 use crate::{hir, resolver};
 
 pub fn codegen(index: &resolver::Index, hir: &hir::Hir) -> String {
-	CodegenCtx { index, hir, buf: String::new(), indentation: 0 }.gen()
+	CodegenCtx {
+		index,
+		hir,
+		buf: String::new(),
+		indentation: 0,
+		disambiguated_variable_names: ArenaMap::new(),
+	}
+	.gen()
 }
 
 struct CodegenCtx<'a> {
@@ -11,6 +18,7 @@ struct CodegenCtx<'a> {
 	hir: &'a hir::Hir,
 	buf: String,
 	indentation: usize,
+	disambiguated_variable_names: ArenaMap<Idx<hir::Variable>, String>,
 }
 
 impl CodegenCtx<'_> {
@@ -140,15 +148,18 @@ impl CodegenCtx<'_> {
 		self.s("{");
 		self.indentation += 1;
 
+		self.disambiguated_variable_names.clear();
+		hir::disambiguated_variable_names(function, &mut self.disambiguated_variable_names);
 		let mut did_print_variables = false;
 
-		for variable in function.storage.variables.values() {
+		for (variable_idx, variable) in function.storage.variables.iter() {
 			if variable.is_parameter {
 				continue;
 			}
 
+			let name = self.disambiguated_variable_names[variable_idx].clone();
 			self.newline();
-			self.gen_declaration(&variable.name, &variable.ty);
+			self.gen_declaration(&name, &variable.ty);
 			self.s(";");
 			did_print_variables = true;
 		}
@@ -325,7 +336,10 @@ impl CodegenCtx<'_> {
 				self.s("}");
 			}
 
-			hir::Expression::Variable(variable) => self.s(&storage.variables[*variable].name),
+			hir::Expression::Variable(variable) => {
+				let name = self.disambiguated_variable_names[*variable].clone();
+				self.s(&name);
+			}
 
 			hir::Expression::Call { name, arguments } => {
 				self.s(name);

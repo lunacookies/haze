@@ -152,7 +152,7 @@ impl PrettyPrintCtx {
 		self.indentation += 1;
 
 		self.disambiguated_variable_names.clear();
-		let mut seen_variable_names = HashSet::new();
+		disambiguated_variable_names(func, &mut self.disambiguated_variable_names);
 
 		for (variable_idx, variable) in func.storage.variables.iter() {
 			self.newline();
@@ -163,16 +163,7 @@ impl PrettyPrintCtx {
 				self.s("var ");
 			}
 
-			let mut name = variable.name.clone();
-			let mut disambiguation_number = 1;
-			while seen_variable_names.contains(&name) {
-				disambiguation_number += 1;
-				name = format!("{name}{disambiguation_number}");
-			}
-
-			self.s(&name);
-			assert!(self.disambiguated_variable_names.insert(variable_idx, name.clone()).is_none());
-			seen_variable_names.insert(name);
+			self.s(&self.disambiguated_variable_names[variable_idx].clone());
 
 			self.s(" ");
 			self.s(&variable.ty.to_string());
@@ -389,5 +380,21 @@ impl PrettyPrintCtx {
 		for _ in 0..self.indentation {
 			self.buf.push('\t');
 		}
+	}
+}
+
+pub fn disambiguated_variable_names(func: &Function, map: &mut ArenaMap<Idx<Variable>, String>) {
+	let mut seen = HashSet::new();
+
+	for (variable_idx, variable) in func.storage.variables.iter() {
+		let mut name = variable.name.clone();
+		let mut disambiguation_number = 1;
+		while seen.contains(&name) {
+			disambiguation_number += 1;
+			name = format!("{name}{disambiguation_number}");
+		}
+
+		assert!(map.insert(variable_idx, name.clone()).is_none());
+		seen.insert(name);
 	}
 }
