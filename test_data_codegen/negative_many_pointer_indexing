@@ -1,0 +1,11 @@
+func main() int {
+	s := "foo\n"
+	p := s[1:s.count].data
+	p[-1] = "b"[0]
+	write(1, s.data, s.count)
+}
+
+func write(fd int, p [*]byte, len int) #extern
+======
+boo
+exit status: 0

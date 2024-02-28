@@ -436,6 +436,16 @@ impl SemaContext<'_> {
 
 				let lhs_ty = &self.expression_tys[lhs_idx];
 				match lhs_ty {
+					Ty::ManyPointer { pointee } => (
+						Expression::ManyPointerSlicing {
+							pointer: lhs_idx,
+							start: start_idx,
+							end: end_idx,
+							element_ty: pointee.as_ref().clone(),
+						},
+						Ty::Slice { element: pointee.clone() },
+					),
+
 					Ty::Slice { element } => (
 						Expression::SliceSlicing {
 							slice: lhs_idx,

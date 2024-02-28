@@ -101,6 +101,12 @@ pub enum Expression {
 		index: Idx<Expression>,
 		element_ty: Ty,
 	},
+	ManyPointerSlicing {
+		pointer: Idx<Expression>,
+		start: Idx<Expression>,
+		end: Idx<Expression>,
+		element_ty: Ty,
+	},
 	SliceSlicing {
 		slice: Idx<Expression>,
 		start: Idx<Expression>,
@@ -321,6 +327,16 @@ impl PrettyPrintCtx {
 				self.print_expression(*slice, storage);
 				self.s("[");
 				self.print_expression(*index, storage);
+				self.s("])");
+			}
+
+			Expression::ManyPointerSlicing { pointer, start, end, element_ty: _ } => {
+				self.s("(");
+				self.print_expression(*pointer, storage);
+				self.s("[");
+				self.print_expression(*start, storage);
+				self.s(":");
+				self.print_expression(*end, storage);
 				self.s("])");
 			}
 

@@ -63,6 +63,25 @@ impl CodegenCtx<'_> {
 		self.s("}");
 		self.newline();
 
+		self.s("struct __slice __slice_many_pointer(uint8_t *p, int start, int end)");
+		self.newline();
+		self.s("{");
+		self.indentation += 1;
+		self.newline();
+		self.s("if (end < start) {");
+		self.indentation += 1;
+		self.newline();
+		self.s("__builtin_debugtrap();");
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
+		self.newline();
+		self.s("return (struct __slice){ .data = p + start, .count = end - start };");
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
+		self.newline();
+
 		for (name, ty) in &self.index.named_tys {
 			if name == "__slice" {
 				continue; // hack for test_data_codegen/out_of_bounds_slicing
@@ -423,6 +442,20 @@ impl CodegenCtx<'_> {
 				self.s(") * (");
 				self.gen_expression(*index, storage);
 				self.s(")))");
+			}
+
+			hir::Expression::ManyPointerSlicing { pointer, start, end, element_ty } => {
+				self.s("__slice_many_pointer((uint8_t *)(");
+				self.gen_expression(*pointer, storage);
+				self.s("), (int)sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s(") * (");
+				self.gen_expression(*start, storage);
+				self.s("), (int)sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s(") * (");
+				self.gen_expression(*end, storage);
+				self.s("))");
 			}
 
 			hir::Expression::SliceSlicing { slice, start, end, element_ty } => {

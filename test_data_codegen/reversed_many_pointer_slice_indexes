@@ -1,5 +1,5 @@
 func main() int {
-	"foo"[1:0]
+	"foo".data[1:0]
 }
 ======
 signal: 5 (SIGTRAP)

@@ -18,6 +18,7 @@ func expressions(parameter int, slice []int) {
 	sliced := slice[0:10]
 	slice_data := slice.data
 	slice_count := slice.count
+	sliced = slice_data[20:30]
 }
 
 func add(x int, y int) int {
@@ -57,6 +58,7 @@ func expressions
 	sliced = (slice[0:10])
 	slice_data = slice.data
 	slice_count = slice.count
+	sliced = (slice_data[20:30])
 }
 
 func add

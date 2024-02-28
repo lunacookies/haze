@@ -1,0 +1,6 @@
+func slice_many_pointer_using_non_int_start(p [*]byte) {
+	b := cast(byte) 0
+	p[b:10]
+}
+======
+test:3:4: error: cannot use “byte” as an index
