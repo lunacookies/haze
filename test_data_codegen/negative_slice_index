@@ -13,11 +13,13 @@ func p(s []byte) {
 
 func write(fd int, p [*]byte, len int) #extern
 ======
-g
-ng
-ing
-ting
-sting
-esting
-testing
+stdout:
+	g
+	ng
+	ing
+	ting
+	sting
+	esting
+	testing
+stderr:
 signal: 5 (SIGTRAP)

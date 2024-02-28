@@ -8,4 +8,6 @@ func main() int {
 	return i
 }
 ======
+stdout:
+stderr:
 exit status: 32

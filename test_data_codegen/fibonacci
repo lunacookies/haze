@@ -10,4 +10,6 @@ func f(n int) int {
 	return f(n - 1) + f(n - 2)
 }
 ======
+stdout:
+stderr:
 exit status: 233

@@ -568,11 +568,43 @@ fn tests() {
 			.unwrap();
 
 		let output = Command::new("./test_tmp_out").output().unwrap();
-		let stdout = String::from_utf8_lossy(&output.stdout);
+		let stdout = indent(&String::from_utf8_lossy(&output.stdout));
+		let stderr = indent(&String::from_utf8_lossy(&output.stderr));
 
 		fs::remove_file("test_tmp_code.c").unwrap();
 		fs::remove_file("test_tmp_out").unwrap();
 
-		format!("{stdout}{}\n", output.status)
+		format!("stdout:\n{stdout}stderr:\n{stderr}{}\n", output.status)
 	});
+}
+
+#[cfg(test)]
+fn indent(s: &str) -> String {
+	let mut out = String::with_capacity(s.len());
+	let mut i = 0;
+
+	while i < s.len() {
+		let rest = &s[i..];
+
+		match rest.find('\n') {
+			Some(0) => {
+				out.push('\n');
+				i += 1;
+			}
+
+			Some(newline_index) => {
+				out.push('\t');
+				out.push_str(&rest[..=newline_index]);
+				i += newline_index + 1;
+			}
+
+			None => {
+				out.push('\t');
+				out.push_str(rest);
+				break;
+			}
+		}
+	}
+
+	out
 }

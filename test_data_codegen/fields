@@ -21,4 +21,6 @@ func main() int {
 	return 5 * n.c - f.b * f.nested.c + f.nested.d
 }
 ======
+stdout:
+stderr:
 exit status: 34

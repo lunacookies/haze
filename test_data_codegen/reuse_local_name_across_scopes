@@ -24,4 +24,6 @@ func go(a int) int {
 	return a2
 }
 ======
+stdout:
+stderr:
 exit status: 12

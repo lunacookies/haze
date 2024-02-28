@@ -16,10 +16,12 @@ func print(s []byte) {
 
 func write(fd int, p [*]byte, len int) #extern
 ======
-abcdefghijklmnopqrstuvwxyz
-abc
-b
+stdout:
+	abcdefghijklmnopqrstuvwxyz
+	abc
+	b
 
-uvwxyz
+	uvwxyz
 
+stderr:
 exit status: 0

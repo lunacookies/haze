@@ -1,3 +1,5 @@
 func main() int {}
 ======
+stdout:
+stderr:
 exit status: 0

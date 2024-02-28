@@ -11,5 +11,7 @@ func p(b byte) {
 
 func write(fd int, p *byte, len int) #extern
 ======
-demo
+stdout:
+	demo
+stderr:
 signal: 5 (SIGTRAP)

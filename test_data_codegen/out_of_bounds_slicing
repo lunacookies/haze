@@ -32,10 +32,12 @@ func alloc(count int) []byte {
 func calloc(count int, size int) [*]byte #extern
 func write(fd int, p [*]byte, len int) #extern
 ======
+stdout:
 
-h
-he
-hel
-hell
-hello
+	h
+	he
+	hel
+	hell
+	hello
+stderr:
 signal: 5 (SIGTRAP)

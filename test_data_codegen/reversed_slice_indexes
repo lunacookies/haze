@@ -2,4 +2,6 @@ func main() int {
 	"foo"[1:0]
 }
 ======
+stdout:
+stderr:
 signal: 5 (SIGTRAP)

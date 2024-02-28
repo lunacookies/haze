@@ -8,4 +8,6 @@ func main() int {
 	return two * still_three + two + still_three
 }
 ======
+stdout:
+stderr:
 exit status: 11

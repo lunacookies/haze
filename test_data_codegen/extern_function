@@ -16,4 +16,6 @@ func not_equal_example() bool {
 
 func memcmp(s1 *byte, s2 *byte, len int) int #extern
 ======
+stdout:
+stderr:
 exit status: 2

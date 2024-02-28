@@ -5,4 +5,6 @@ func main() int {
 	return x + *ptr_to_x
 }
 ======
+stdout:
+stderr:
 exit status: 8

@@ -7,5 +7,7 @@ func main() int {
 
 func write(fd int, p [*]byte, len int) #extern
 ======
-boo
+stdout:
+	boo
+stderr:
 exit status: 0

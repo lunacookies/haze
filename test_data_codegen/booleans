@@ -3,4 +3,6 @@ func main() int {
 	return cast(int) b
 }
 ======
+stdout:
+stderr:
 exit status: 1

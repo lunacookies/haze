@@ -40,5 +40,7 @@ func alloc(count int) []byte {
 func calloc(count int, size int) [*]byte #extern
 func write(fd int, p [*]byte, len int) #extern
 ======
-foo --- bazzzzzz
+stdout:
+	foo --- bazzzzzz
+stderr:
 exit status: 0

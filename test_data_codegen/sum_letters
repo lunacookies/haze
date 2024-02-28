@@ -8,4 +8,6 @@ func main() int {
 	return sum % 64
 }
 ======
+stdout:
+stderr:
 exit status: 28
