@@ -397,7 +397,7 @@ impl SemaContext<'_> {
 				}
 			}
 
-			ast::ExpressionKind::Indexing { lhs, index } => 'blk: {
+			ast::ExpressionKind::Indexing { lhs, index } => {
 				let lhs_idx = self.analyze_expression(lhs, None);
 				let index_idx = self.analyze_expression(index, Some(&Ty::Int));
 
@@ -406,24 +406,25 @@ impl SemaContext<'_> {
 					crate::error(index.loc.clone(), format!("cannot use “{index_ty}” as an index"));
 				}
 
-				let lhs_ty = &self.expression_tys[lhs_idx];
-				let ty = match lhs_ty {
-					Ty::ManyPointer { pointee } => pointee.as_ref().clone(),
-					Ty::Slice { element } => {
-						break 'blk (
-							Expression::SliceIndexing {
-								slice: lhs_idx,
-								index: index_idx,
-								element_ty: element.as_ref().clone(),
-							},
-							element.as_ref().clone(),
-						)
+				match &self.expression_tys[lhs_idx] {
+					Ty::ManyPointer { pointee } => (
+						Expression::Indexing { lhs: lhs_idx, index: index_idx },
+						pointee.as_ref().clone(),
+					),
+
+					Ty::Slice { element } => (
+						Expression::SliceIndexing {
+							slice: lhs_idx,
+							index: index_idx,
+							element_ty: element.as_ref().clone(),
+						},
+						element.as_ref().clone(),
+					),
+
+					lhs_ty => {
+						crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”"))
 					}
-
-					_ => crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”")),
-				};
-
-				(Expression::Indexing { lhs: lhs_idx, index: index_idx }, ty)
+				}
 			}
 
 			ast::ExpressionKind::AddressOf(e) => {
