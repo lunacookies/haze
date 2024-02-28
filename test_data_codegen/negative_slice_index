@@ -1,0 +1,23 @@
+func main() int {
+	s := "testing"
+	for i := s.count - 1; i >= -1; i-- {
+		p(s[i:s.count])
+	}
+}
+
+func p(s []byte) {
+	write(1, s.data, s.count)
+	nl := "\n"
+	write(1, nl.data, nl.count)
+}
+
+func write(fd int, p [*]byte, len int) #extern
+======
+g
+ng
+ing
+ting
+sting
+esting
+testing
+signal: 5 (SIGTRAP)

@@ -1,0 +1,6 @@
+func main() int {
+	s := "foo"
+	s[1:0]
+}
+======
+signal: 5 (SIGTRAP)

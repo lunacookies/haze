@@ -367,7 +367,9 @@ impl SemaContext<'_> {
 							},
 							Ty::ManyPointer { pointee: element_ty.clone() },
 						),
-						"count" => (Expression::SliceCount { slice: lhs_idx }, Ty::Int),
+
+						"count" => (Expression::SliceCount { slice: lhs_idx, element_ty: element_ty.as_ref().clone()}, Ty::Int),
+
 						_ => crate::error(
 							lhs.loc.clone(),
 							format!("invalid magic slice field “{field}”: the only valid magic fields are “data” and “count”"),
@@ -401,10 +403,7 @@ impl SemaContext<'_> {
 				let lhs_idx = self.analyze_expression(lhs, None);
 				let index_idx = self.analyze_expression(index, Some(&Ty::Int));
 
-				let index_ty = &self.expression_tys[index_idx];
-				if index_ty != &Ty::Int {
-					crate::error(index.loc.clone(), format!("cannot use “{index_ty}” as an index"));
-				}
+				self.check_index_ty(index_idx, index.loc.clone());
 
 				match &self.expression_tys[lhs_idx] {
 					Ty::ManyPointer { pointee } => (
@@ -424,6 +423,30 @@ impl SemaContext<'_> {
 					lhs_ty => {
 						crate::error(lhs.loc.clone(), format!("cannot index into “{lhs_ty}”"))
 					}
+				}
+			}
+
+			ast::ExpressionKind::Slicing { lhs, start, end } => {
+				let lhs_idx = self.analyze_expression(lhs, None);
+				let start_idx = self.analyze_expression(start, Some(&Ty::Int));
+				let end_idx = self.analyze_expression(end, Some(&Ty::Int));
+
+				self.check_index_ty(start_idx, start.loc.clone());
+				self.check_index_ty(end_idx, end.loc.clone());
+
+				let lhs_ty = &self.expression_tys[lhs_idx];
+				match lhs_ty {
+					Ty::Slice { element } => (
+						Expression::SliceSlicing {
+							slice: lhs_idx,
+							start: start_idx,
+							end: end_idx,
+							element_ty: element.as_ref().clone(),
+						},
+						lhs_ty.clone(),
+					),
+
+					_ => crate::error(lhs.loc.clone(), format!("cannot slice into “{lhs_ty}”")),
 				}
 			}
 
@@ -567,6 +590,13 @@ impl SemaContext<'_> {
 			ast::TyKind::Slice { element } => {
 				Ty::Slice { element: Box::new(self.resolve_ty(element)) }
 			}
+		}
+	}
+
+	fn check_index_ty(&self, index: Idx<Expression>, index_loc: Loc) {
+		let index_ty = &self.expression_tys[index];
+		if index_ty != &Ty::Int {
+			crate::error(index_loc, format!("cannot use “{index_ty}” as an index"));
 		}
 	}
 

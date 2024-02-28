@@ -364,16 +364,33 @@ impl Parser {
 					self.bump(TokenKind::LBracket);
 
 					let index = self.parse_expression();
-					self.expect(TokenKind::RBracket);
 
-					let loc = lhs.loc.clone();
-					lhs = Expression {
-						kind: ExpressionKind::Indexing {
-							lhs: Box::new(lhs),
-							index: Box::new(index),
-						},
-						loc,
-					};
+					if self.eat(TokenKind::Colon) {
+						let start = index;
+						let end = self.parse_expression();
+						self.expect(TokenKind::RBracket);
+
+						let loc = lhs.loc.clone();
+						lhs = Expression {
+							kind: ExpressionKind::Slicing {
+								lhs: Box::new(lhs),
+								start: Box::new(start),
+								end: Box::new(end),
+							},
+							loc,
+						};
+					} else {
+						self.expect(TokenKind::RBracket);
+
+						let loc = lhs.loc.clone();
+						lhs = Expression {
+							kind: ExpressionKind::Indexing {
+								lhs: Box::new(lhs),
+								index: Box::new(index),
+							},
+							loc,
+						};
+					}
 				}
 
 				_ => break,

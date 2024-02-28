@@ -65,19 +65,54 @@ pub enum Expression {
 	Byte(u8),
 	String(String),
 	Variable(Idx<Variable>),
-	Call { name: String, arguments: Vec<Idx<Expression>> },
+	Call {
+		name: String,
+		arguments: Vec<Idx<Expression>>,
+	},
 	True,
 	False,
-	Binary { lhs: Idx<Expression>, rhs: Idx<Expression>, operator: ast::BinaryOperator },
-	Unary { operand: Idx<Expression>, operator: ast::UnaryOperator },
-	FieldAccess { lhs: Idx<Expression>, field: String },
-	SliceData { slice: Idx<Expression>, element_ty: Ty },
-	SliceCount { slice: Idx<Expression> },
-	Indexing { lhs: Idx<Expression>, index: Idx<Expression> },
-	SliceIndexing { slice: Idx<Expression>, index: Idx<Expression>, element_ty: Ty },
+	Binary {
+		lhs: Idx<Expression>,
+		rhs: Idx<Expression>,
+		operator: ast::BinaryOperator,
+	},
+	Unary {
+		operand: Idx<Expression>,
+		operator: ast::UnaryOperator,
+	},
+	FieldAccess {
+		lhs: Idx<Expression>,
+		field: String,
+	},
+	SliceData {
+		slice: Idx<Expression>,
+		element_ty: Ty,
+	},
+	SliceCount {
+		slice: Idx<Expression>,
+		element_ty: Ty,
+	},
+	Indexing {
+		lhs: Idx<Expression>,
+		index: Idx<Expression>,
+	},
+	SliceIndexing {
+		slice: Idx<Expression>,
+		index: Idx<Expression>,
+		element_ty: Ty,
+	},
+	SliceSlicing {
+		slice: Idx<Expression>,
+		start: Idx<Expression>,
+		end: Idx<Expression>,
+		element_ty: Ty,
+	},
 	AddressOf(Idx<Expression>),
 	Dereference(Idx<Expression>),
-	Cast { ty: Ty, operand: Idx<Expression> },
+	Cast {
+		ty: Ty,
+		operand: Idx<Expression>,
+	},
 }
 
 impl Hir {
@@ -277,7 +312,7 @@ impl PrettyPrintCtx {
 				self.s(".data");
 			}
 
-			Expression::SliceCount { slice } => {
+			Expression::SliceCount { slice, element_ty: _ } => {
 				self.print_expression(*slice, storage);
 				self.s(".count");
 			}
@@ -295,6 +330,16 @@ impl PrettyPrintCtx {
 				self.print_expression(*slice, storage);
 				self.s("[");
 				self.print_expression(*index, storage);
+				self.s("])");
+			}
+
+			Expression::SliceSlicing { slice, start, end, element_ty: _ } => {
+				self.s("(");
+				self.print_expression(*slice, storage);
+				self.s("[");
+				self.print_expression(*start, storage);
+				self.s(":");
+				self.print_expression(*end, storage);
 				self.s("])");
 			}
 

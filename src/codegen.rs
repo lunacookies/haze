@@ -36,7 +36,30 @@ impl CodegenCtx<'_> {
 		self.s("}");
 		self.newline();
 
+		self.s("struct __slice __slice_slice(struct __slice s, int start, int end)");
+		self.newline();
+		self.s("{");
+		self.indentation += 1;
+		self.newline();
+		self.s("if (end < start || start < 0 || end < 0 || start > s.count || end > s.count) {");
+		self.indentation += 1;
+		self.newline();
+		self.s("__builtin_debugtrap();");
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
+		self.newline();
+		self.s("return (struct __slice){ .data = s.data + start, .count = end - start };");
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
+		self.newline();
+
 		for (name, ty) in &self.index.named_tys {
+			if name == "__slice" {
+				continue; // hack for test_data_codegen/out_of_bounds_slicing
+			}
+
 			self.gen_ty(name, ty);
 			self.newline();
 		}
@@ -358,9 +381,12 @@ impl CodegenCtx<'_> {
 				self.s(".data))");
 			}
 
-			hir::Expression::SliceCount { slice } => {
+			hir::Expression::SliceCount { slice, element_ty } => {
+				self.s("(");
 				self.gen_expression(*slice, storage);
-				self.s(".count");
+				self.s(".count / sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s("))");
 			}
 
 			hir::Expression::Indexing { lhs, index } => {
@@ -383,6 +409,20 @@ impl CodegenCtx<'_> {
 				self.s(") * (");
 				self.gen_expression(*index, storage);
 				self.s(")))");
+			}
+
+			hir::Expression::SliceSlicing { slice, start, end, element_ty } => {
+				self.s("__slice_slice(");
+				self.gen_expression(*slice, storage);
+				self.s(", (int)sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s(") * (");
+				self.gen_expression(*start, storage);
+				self.s("), (int)sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s(") * (");
+				self.gen_expression(*end, storage);
+				self.s("))");
 			}
 
 			hir::Expression::AddressOf(e) => {
@@ -443,10 +483,8 @@ impl CodegenCtx<'_> {
 			| resolver::Ty::Named(_)
 			| resolver::Ty::Slice { element: _ } => self.s(name),
 			resolver::Ty::SinglePointer { pointee } | resolver::Ty::ManyPointer { pointee } => {
-				self.s("(");
 				self.s("*");
 				self.gen_ty_expression(name, pointee);
-				self.s(")");
 			}
 		}
 	}

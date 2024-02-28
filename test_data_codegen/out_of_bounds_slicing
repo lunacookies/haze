@@ -1,0 +1,74 @@
+func main() int {
+	s_utf8 := "hello"
+	s := alloc_ints(s_utf8.count)
+	for i := 0; i < s_utf8.count; i++ {
+		s[i] = cast(int) s_utf8[i]
+	}
+
+	print(s[0:0])
+	print(s[0:1])
+	print(s[0:2])
+	print(s[0:3])
+	print(s[0:4])
+	print(s[0:5])
+	print(s[0:6])
+}
+
+func print(s []int) {
+	utf8 := alloc(s.count + 1)
+	for i := 0; i < s.count; i++ {
+		utf8[i] = cast(byte) s[i]
+	}
+	utf8[utf8.count - 1] = "\n"[0]
+	write(1, utf8.data, utf8.count)
+}
+
+func alloc_ints(count int) []int {
+	bytes := alloc(count * 4)
+	return create_int_slice(cast([*]int) bytes.data, count)
+}
+
+func alloc(count int) []byte {
+	p := calloc(count, 1)
+	return create_byte_slice(p, count)
+}
+
+func calloc(count int, size int) [*]byte #extern
+func write(fd int, p [*]byte, len int) #extern
+
+func create_int_slice(data [*]int, count int) []int {
+	var raw __slice
+	raw.data = cast([*]byte) data
+	raw.count = count * 4
+
+	var s []int
+	memcpy(cast([*]byte) &s, cast([*]byte) &raw, 16)
+
+	return s
+}
+
+func create_byte_slice(data [*]byte, count int) []byte {
+	var raw __slice
+	raw.data = data
+	raw.count = count
+
+	var s []byte
+	memcpy(cast([*]byte) &s, cast([*]byte) &raw, 16)
+
+	return s
+}
+
+func memcpy(target [*]byte, source [*]byte, n int) #extern
+
+struct __slice {
+	data [*]byte
+	count int
+}
+======
+
+h
+he
+hel
+hell
+hello
+signal: 5 (SIGTRAP)

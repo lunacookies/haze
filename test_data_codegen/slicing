@@ -1,0 +1,25 @@
+func main() int {
+	alphabet := "abcdefghijklmnopqrstuvwxyz"
+	print(alphabet)
+	print(alphabet[0:3])
+	print(alphabet[1:2])
+	print(alphabet[8:8])
+	print(alphabet[20:26])
+	print(alphabet[26:26])
+}
+
+func print(s []byte) {
+	nl := "\n"
+	write(1, s.data, s.count)
+	write(1, nl.data, nl.count)
+}
+
+func write(fd int, p [*]byte, len int) #extern
+======
+abcdefghijklmnopqrstuvwxyz
+abc
+b
+
+uvwxyz
+
+exit status: 0
