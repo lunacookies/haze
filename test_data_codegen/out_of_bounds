@@ -1,11 +1,8 @@
 func main() int {
 	s := "demo\n"
-	p(s[0])
-	p(s[1])
-	p(s[2])
-	p(s[3])
-	p(s[4])
-	p(s[5])
+	for i := 0; true; i++ {
+		p(s[i])
+	}
 }
 
 func p(b byte) {
