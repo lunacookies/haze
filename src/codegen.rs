@@ -83,10 +83,6 @@ impl CodegenCtx<'_> {
 		self.newline();
 
 		for (name, ty) in &self.index.named_tys {
-			if name == "__slice" {
-				continue; // hack for test_data_codegen/out_of_bounds_slicing
-			}
-
 			self.gen_ty(name, ty);
 			self.newline();
 		}

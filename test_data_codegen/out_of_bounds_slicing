@@ -21,45 +21,16 @@ func print(s []int) {
 
 func alloc_ints(count int) []int {
 	bytes := alloc(count * 4)
-	return create_int_slice(cast([*]int) bytes.data, count)
+	p := cast([*]int) bytes.data
+	return p[0:count]
 }
 
 func alloc(count int) []byte {
-	p := calloc(count, 1)
-	return create_byte_slice(p, count)
+	return calloc(count, 1)[0:count]
 }
 
 func calloc(count int, size int) [*]byte #extern
 func write(fd int, p [*]byte, len int) #extern
-
-func create_int_slice(data [*]int, count int) []int {
-	var raw __slice
-	raw.data = cast([*]byte) data
-	raw.count = count * 4
-
-	var s []int
-	memcpy(cast([*]byte) &s, cast([*]byte) &raw, 16)
-
-	return s
-}
-
-func create_byte_slice(data [*]byte, count int) []byte {
-	var raw __slice
-	raw.data = data
-	raw.count = count
-
-	var s []byte
-	memcpy(cast([*]byte) &s, cast([*]byte) &raw, 16)
-
-	return s
-}
-
-func memcpy(target [*]byte, source [*]byte, n int) #extern
-
-struct __slice {
-	data [*]byte
-	count int
-}
 ======
 
 h
