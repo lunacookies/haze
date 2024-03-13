@@ -445,6 +445,25 @@ impl Parser {
 				Expression { kind: ExpressionKind::String(string), loc }
 			}
 
+			TokenKind::CharacterLiteral => {
+				let loc = self.current_loc();
+				let text = self.expect_text(TokenKind::CharacterLiteral);
+
+				let b = match text.len() {
+					3 => text.as_bytes()[1],
+					4 => match text.as_bytes()[2] {
+						b'\\' => b'\\',
+						b'n' => b'\n',
+						b't' => b'\t',
+						b'\'' => b'\'',
+						_ => unreachable!(),
+					},
+					_ => unreachable!(),
+				};
+
+				Expression { kind: ExpressionKind::Character(b), loc }
+			}
+
 			TokenKind::Identifier if self.lookahead() == TokenKind::LParen => {
 				let loc = self.current_loc();
 				let name = self.expect_text(TokenKind::Identifier);

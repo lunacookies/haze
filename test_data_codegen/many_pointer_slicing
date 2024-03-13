@@ -10,8 +10,8 @@ func main() int {
 }
 
 func frob(data [*]int) {
-	set(data[3:8], "z"[0])
-	set(data[-4:-1], "-"[0])
+	set(data[3:8], 'z')
+	set(data[-4:-1], '-')
 }
 
 func set(s []int, b byte) {

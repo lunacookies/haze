@@ -3,6 +3,8 @@ func expressions(parameter int, slice []int) {
 	true
 	false
 	"hello"
+	'A'
+	'\n'
 	a := 92
 	a + 2 * 3 * 4 * 5
 	~a - -1
@@ -43,6 +45,8 @@ func expressions
 	true
 	false
 	"hello"
+	65_byte
+	10_byte
 	a = 92
 	(a + (((2 * 3) * 4) * 5))
 	((~a) - (-1))

@@ -15,7 +15,7 @@ func print(s []int) {
 	for i := 0; i < s.count; i++ {
 		utf8[i] = cast(byte) s[i]
 	}
-	utf8[utf8.count - 1] = "\n"[0]
+	utf8[utf8.count - 1] = '\n'
 	write(1, utf8.data, utf8.count)
 }
 
