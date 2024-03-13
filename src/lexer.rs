@@ -174,28 +174,19 @@ impl Lexer<'_> {
 				let mut in_escape = false;
 
 				loop {
-					let b = self.bytes[self.i];
+					match (in_escape, self.bytes[self.i]) {
+						(_, b'\n') => crate::error(
+							self.loc.clone(),
+							"unterminated string literal".to_string(),
+						),
+						(false, b'"') => break,
 
-					if self.bytes[self.i] == b'\\' {
-						in_escape = true;
-						self.i += 1;
-						self.loc.column += 1;
-						continue;
-					}
+						(false, b'\\') => in_escape = true,
+						(true, b'\\' | b'n' | b't' | b'"') => in_escape = false,
+						(false, _) => {}
 
-					if !in_escape && b == b'"' {
-						break;
-					}
-
-					if self.bytes[self.i] == b'\n' {
-						crate::error(self.loc.clone(), "unterminated string literal".to_string());
-					}
-
-					if in_escape {
-						if matches!(b, b'\\' | b'n' | b't' | b'"') {
-							in_escape = false;
-						} else {
-							crate::error(self.loc.clone(), "invalid escape sequence".to_string());
+						(true, _) => {
+							crate::error(self.loc.clone(), "invalid escape sequence".to_string())
 						}
 					}
 
