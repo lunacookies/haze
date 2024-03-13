@@ -1,0 +1,5 @@
+func useless_slice(s []int) {
+	s[:]
+}
+======
+test:2:3: error: useless slice

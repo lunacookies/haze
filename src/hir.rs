@@ -107,10 +107,14 @@ pub enum Expression {
 		end: Idx<Expression>,
 		element_ty: Ty,
 	},
+	ManyPointerOffset {
+		pointer: Idx<Expression>,
+		offset: Idx<Expression>,
+	},
 	SliceSlicing {
 		slice: Idx<Expression>,
 		start: Idx<Expression>,
-		end: Idx<Expression>,
+		end: Option<Idx<Expression>>,
 		element_ty: Ty,
 	},
 	AddressOf(Idx<Expression>),
@@ -340,13 +344,22 @@ impl PrettyPrintCtx {
 				self.s("])");
 			}
 
+			Expression::ManyPointerOffset { pointer, offset } => {
+				self.s("(");
+				self.print_expression(*pointer, storage);
+				self.s("[");
+				self.print_expression(*offset, storage);
+				self.s(":])");
+			}
 			Expression::SliceSlicing { slice, start, end, element_ty: _ } => {
 				self.s("(");
 				self.print_expression(*slice, storage);
 				self.s("[");
 				self.print_expression(*start, storage);
 				self.s(":");
-				self.print_expression(*end, storage);
+				if let Some(end) = end {
+					self.print_expression(*end, storage);
+				}
 				self.s("])");
 			}
 

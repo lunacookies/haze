@@ -1,0 +1,42 @@
+func main() int {
+	s := "abcdefgh"
+	print(s[:0])
+	print(s[0:])
+	print(s[:1])
+	print(s[1:])
+	print(s[:3])
+	print(s[3:])
+	print(s[:5])
+	print(s[5:])
+	print(s[:7])
+	print(s[7:])
+	print(s[:8])
+	print(s[8:])
+}
+
+func print(s []byte) {
+	q := "\""
+	nl := "\n"
+	write(1, q.data, q.count)
+	write(1, s.data, s.count)
+	write(1, q.data, q.count)
+	write(1, nl.data, nl.count)
+}
+
+func write(fd int, p [*]byte, len int) #extern
+======
+stdout:
+	""
+	"abcdefgh"
+	"a"
+	"bcdefgh"
+	"abc"
+	"defgh"
+	"abcde"
+	"fgh"
+	"abcdefg"
+	"h"
+	"abcdefgh"
+	""
+stderr:
+exit status: 0

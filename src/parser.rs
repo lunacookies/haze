@@ -361,12 +361,14 @@ impl Parser {
 				}
 
 				TokenKind::LBracket => {
+					let slice_start_loc = self.current_loc();
 					self.bump(TokenKind::LBracket);
 
-					let index = self.parse_expression();
-
 					if self.eat(TokenKind::Colon) {
-						let start = index;
+						if self.at(TokenKind::RBracket) {
+							crate::error(slice_start_loc, "useless slice".to_string());
+						}
+
 						let end = self.parse_expression();
 						self.expect(TokenKind::RBracket);
 
@@ -374,23 +376,48 @@ impl Parser {
 						lhs = Expression {
 							kind: ExpressionKind::Slicing {
 								lhs: Box::new(lhs),
-								start: Box::new(start),
-								end: Box::new(end),
+								start: None,
+								end: Some(Box::new(end)),
 							},
 							loc,
 						};
-					} else {
-						self.expect(TokenKind::RBracket);
+						continue;
+					}
+
+					let index = self.parse_expression();
+
+					if self.eat(TokenKind::Colon) {
+						let start = index;
+						let end = if self.eat(TokenKind::RBracket) {
+							None
+						} else {
+							let end = self.parse_expression();
+							self.expect(TokenKind::RBracket);
+							Some(Box::new(end))
+						};
 
 						let loc = lhs.loc.clone();
 						lhs = Expression {
-							kind: ExpressionKind::Indexing {
+							kind: ExpressionKind::Slicing {
 								lhs: Box::new(lhs),
-								index: Box::new(index),
+								start: Some(Box::new(start)),
+								end,
 							},
 							loc,
 						};
+						continue;
 					}
+
+					self.expect(TokenKind::RBracket);
+
+					let loc = lhs.loc.clone();
+					lhs = Expression {
+						kind: ExpressionKind::Indexing {
+							lhs: Box::new(lhs),
+							index: Box::new(index),
+						},
+						loc,
+					};
 				}
 
 				_ => break,

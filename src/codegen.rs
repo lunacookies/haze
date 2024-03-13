@@ -63,6 +63,17 @@ impl CodegenCtx<'_> {
 		self.s("}");
 		self.newline();
 
+		self.s("struct __slice __slice_slice_to_end(struct __slice s, int start)");
+		self.newline();
+		self.s("{");
+		self.indentation += 1;
+		self.newline();
+		self.s("return __slice_slice(s, start, s.count);");
+		self.indentation -= 1;
+		self.newline();
+		self.s("}");
+		self.newline();
+
 		self.s("struct __slice __slice_many_pointer(uint8_t *p, int start, int end)");
 		self.newline();
 		self.s("{");
@@ -454,7 +465,15 @@ impl CodegenCtx<'_> {
 				self.s("))");
 			}
 
-			hir::Expression::SliceSlicing { slice, start, end, element_ty } => {
+			hir::Expression::ManyPointerOffset { pointer, offset } => {
+				self.s("(");
+				self.gen_expression(*pointer, storage);
+				self.s(" + ");
+				self.gen_expression(*offset, storage);
+				self.s(")");
+			}
+
+			hir::Expression::SliceSlicing { slice, start, end: Some(end), element_ty } => {
 				self.s("__slice_slice(");
 				self.gen_expression(*slice, storage);
 				self.s(", (int)sizeof(");
@@ -465,6 +484,16 @@ impl CodegenCtx<'_> {
 				self.gen_declaration("", element_ty);
 				self.s(") * (");
 				self.gen_expression(*end, storage);
+				self.s("))");
+			}
+
+			hir::Expression::SliceSlicing { slice, start, end: None, element_ty } => {
+				self.s("__slice_slice_to_end(");
+				self.gen_expression(*slice, storage);
+				self.s(", (int)sizeof(");
+				self.gen_declaration("", element_ty);
+				self.s(") * (");
+				self.gen_expression(*start, storage);
 				self.s("))");
 			}
 

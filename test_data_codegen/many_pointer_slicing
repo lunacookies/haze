@@ -6,6 +6,7 @@ func main() int {
 	}
 
 	frob(cast([*]int) &s[8])
+	frob(s.data[8:])
 	print(s)
 }
 

@@ -430,23 +430,41 @@ impl SemaContext<'_> {
 
 			ast::ExpressionKind::Slicing { lhs, start, end } => {
 				let lhs_idx = self.analyze_expression(lhs, None);
-				let start_idx = self.analyze_expression(start, Some(&Ty::Int));
-				let end_idx = self.analyze_expression(end, Some(&Ty::Int));
 
-				self.check_index_ty(start_idx, start.loc.clone());
-				self.check_index_ty(end_idx, end.loc.clone());
+				let start_idx = match start {
+					Some(start) => {
+						let i = self.analyze_expression(start, Some(&Ty::Int));
+						self.check_index_ty(i, start.loc.clone());
+						i
+					}
+
+					None => self.alloc_expression(Expression::Integer(0)),
+				};
+
+				let end_idx = end.as_ref().map(|end| {
+					let i = self.analyze_expression(end, Some(&Ty::Int));
+					self.check_index_ty(i, end.loc.clone());
+					i
+				});
 
 				let lhs_ty = &self.expression_tys[lhs_idx];
 				match lhs_ty {
-					Ty::ManyPointer { pointee } => (
-						Expression::ManyPointerSlicing {
-							pointer: lhs_idx,
-							start: start_idx,
-							end: end_idx,
-							element_ty: pointee.as_ref().clone(),
-						},
-						Ty::Slice { element: pointee.clone() },
-					),
+					Ty::ManyPointer { pointee } => match end_idx {
+						Some(end_idx) => (
+							Expression::ManyPointerSlicing {
+								pointer: lhs_idx,
+								start: start_idx,
+								end: end_idx,
+								element_ty: pointee.as_ref().clone(),
+							},
+							Ty::Slice { element: pointee.clone() },
+						),
+
+						None => (
+							Expression::ManyPointerOffset { pointer: lhs_idx, offset: start_idx },
+							lhs_ty.clone(),
+						),
+					},
 
 					Ty::Slice { element } => (
 						Expression::SliceSlicing {

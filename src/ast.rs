@@ -104,7 +104,7 @@ pub enum ExpressionKind {
 	Unary { operand: Box<Expression>, operator: UnaryOperator },
 	FieldAccess { lhs: Box<Expression>, field: String },
 	Indexing { lhs: Box<Expression>, index: Box<Expression> },
-	Slicing { lhs: Box<Expression>, start: Box<Expression>, end: Box<Expression> },
+	Slicing { lhs: Box<Expression>, start: Option<Box<Expression>>, end: Option<Box<Expression>> },
 	AddressOf(Box<Expression>),
 	Dereference(Box<Expression>),
 	Cast { ty: Ty, operand: Box<Expression> },
@@ -387,9 +387,17 @@ impl PrettyPrintCtx {
 				self.s("(");
 				self.print_expression(lhs);
 				self.s("[");
-				self.print_expression(start);
+
+				if let Some(start) = start {
+					self.print_expression(start);
+				}
+
 				self.s(":");
-				self.print_expression(end);
+
+				if let Some(end) = end {
+					self.print_expression(end);
+				}
+
 				self.s("])");
 			}
 

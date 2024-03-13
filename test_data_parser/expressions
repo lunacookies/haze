@@ -46,6 +46,8 @@ func expressions() {
 	a[b[c]]
 	a[0:10]
 	a[b[c]:b[c + 1]]
+	a[:a.count]
+	a[0:]
 }
 
 struct MyType {
@@ -102,6 +104,8 @@ func expressions()
 	(a[(b[c])])
 	(a[0:10])
 	(a[(b[c]):(b[(c + 1)])])
+	(a[:(a.count)])
+	(a[0:])
 }
 
 struct MyType
