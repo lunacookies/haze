@@ -31,11 +31,11 @@ func print(s []int) {
 
 func alloc_ints(count int) []int {
 	p := cast([*]int) calloc(count, 4)
-	return p[0:count]
+	return p[:count]
 }
 
 func alloc(count int) []byte {
-	return calloc(count, 1)[0:count]
+	return calloc(count, 1)[:count]
 }
 
 func calloc(count int, size int) [*]byte #extern

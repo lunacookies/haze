@@ -1,6 +1,6 @@
 func main() int {
 	s := "foo\n"
-	p := s[1:s.count].data
+	p := s[1:].data
 	p[-1] = 'b'
 	write(1, s.data, s.count)
 }

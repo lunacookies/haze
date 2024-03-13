@@ -6,7 +6,7 @@ func main() int {
 	}
 
 	for i := 0; true; i++ {
-		print(s[0:i])
+		print(s[:i])
 	}
 }
 
@@ -22,11 +22,11 @@ func print(s []int) {
 func alloc_ints(count int) []int {
 	bytes := alloc(count * 4)
 	p := cast([*]int) bytes.data
-	return p[0:count]
+	return p[:count]
 }
 
 func alloc(count int) []byte {
-	return calloc(count, 1)[0:count]
+	return calloc(count, 1)[:count]
 }
 
 func calloc(count int, size int) [*]byte #extern

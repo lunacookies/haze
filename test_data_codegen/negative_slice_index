@@ -1,7 +1,7 @@
 func main() int {
 	s := "testing"
 	for i := s.count - 1; i >= -1; i-- {
-		p(s[i:s.count])
+		p(s[i:])
 	}
 }
 
