@@ -1,0 +1,3 @@
+'ab'
+======
+test:1:4: error: character literal contains more than one byte

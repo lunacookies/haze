@@ -1,0 +1,16 @@
+'a'
+'\n'
+'\t'
+'\\'
+'\''
+======
+CharacterLiteral test:1:1 "'a'"
+SemiOrNewline test:1:4 ""
+CharacterLiteral test:2:1 "'\\n'"
+SemiOrNewline test:2:5 ""
+CharacterLiteral test:3:1 "'\\t'"
+SemiOrNewline test:3:5 ""
+CharacterLiteral test:4:1 "'\\\\'"
+SemiOrNewline test:4:5 ""
+CharacterLiteral test:5:1 "'\\''"
+SemiOrNewline test:5:5 ""

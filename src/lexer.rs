@@ -17,6 +17,7 @@ pub enum TokenKind {
 	Identifier,
 	Integer,
 	QuotedString,
+	CharacterLiteral,
 
 	FuncKw,
 	StructKw,
@@ -205,6 +206,60 @@ impl Lexer<'_> {
 				return;
 			}
 
+			b'\'' => {
+				self.i += 1;
+				self.loc.column += 1;
+				let mut in_escape = false;
+				let mut byte_count = 0;
+
+				loop {
+					match (in_escape, self.bytes[self.i]) {
+						(_, b'\n') => crate::error(
+							self.loc.clone(),
+							"unterminated character literal".to_string(),
+						),
+
+						(true, b'\\' | b'n' | b't' | b'\'') => in_escape = false,
+						(true, _) => {
+							crate::error(self.loc.clone(), "invalid escape sequence".to_string())
+						}
+
+						(false, b'\'') => break,
+						(false, b'\\') => {
+							in_escape = true;
+							self.i += 1;
+							self.loc.column += 1;
+							continue;
+						}
+
+						(false, _) => {}
+					}
+
+					self.i += 1;
+					self.loc.column += 1;
+					byte_count += 1;
+				}
+
+				match byte_count {
+					0 => crate::error(self.loc.clone(), "empty character literal".to_string()),
+					1 => {}
+					_ => crate::error(
+						self.loc.clone(),
+						"character literal contains more than one byte".to_string(),
+					),
+				}
+
+				self.i += 1;
+				self.loc.column += 1;
+
+				self.tokens.push(Token {
+					kind: TokenKind::CharacterLiteral,
+					text: self.text[start..self.i].to_string(),
+					loc,
+				});
+				return;
+			}
+
 			b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
 				while self.bytes[self.i].is_ascii_alphanumeric() || self.bytes[self.i] == b'_' {
 					self.i += 1;
@@ -333,6 +388,7 @@ impl TokenKind {
 			self,
 			TokenKind::Identifier
 				| TokenKind::QuotedString
+				| TokenKind::CharacterLiteral
 				| TokenKind::Integer
 				| TokenKind::PlusPlus
 				| TokenKind::MinusMinus
@@ -351,6 +407,7 @@ impl TokenKind {
 			self,
 			TokenKind::Integer
 				| TokenKind::QuotedString
+				| TokenKind::CharacterLiteral
 				| TokenKind::Identifier
 				| TokenKind::TrueKw
 				| TokenKind::FalseKw
